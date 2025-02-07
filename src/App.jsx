@@ -1,0 +1,78 @@
+import "./App.css";
+// In App.jsx
+// import Sidebar from "./components/Sidebar";
+// import Navbar from "./components/Navbar";
+// import Dashbord from "./components/Dashbord";
+import Dashbord from "./page/Admin/Dashbord";
+// import ThemeContextProvider from "./ContextAPI/ContextAPI";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+} from "react-router-dom";
+import Homepage from "./page/Home/Homepage";
+
+import Login from "./page/login/Login";
+import Signup from "./page/login/Signup";
+import Tickets from "./page/Admin/Tickets"; // Your task management page
+import AdminLayout from "./page/Admin/AdminLayout";
+import UserDashboard from "./page/user/UserDashboard"
+import MyTickets from "./page/user/MyTickets"
+import RaiseTicket from "./page/user/RaiseTicket"
+import UserProfile from "./page/user/UserProfile"
+import UserLayout from "./page/user/UserLayout"
+import EngineerDashboard from "./page/Engineer/EngineerDashboard"
+import AssignedTasks from "./page/Engineer/AssignedTasks";
+import Hazards from "./page/Engineer/Hazards";
+import EngineersProfile from "./page/Engineer/EngineersProfile";
+import Engineers from "./page/Admin/Engineers"
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Home Page */}
+        <Route path="/" element={<Homepage />} />
+
+        {/* Login Page */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Signup />} />
+
+
+
+
+        {/* //Admin Routes */}
+        <Route path="/User" element={<UserLayout />}>
+          {/* Default route for Admin with Sidebar, Navbar, and Dashbord */}
+          <Route index element={<UserDashboard />} />
+
+          {/* Tickets route (this will only render Sidebar and TicketsCreate) */}
+          {/* <Route path="MyTickets" element={<MyTickets />} /> */}
+          <Route path="RaiseTicket" element={<RaiseTicket />} />
+          <Route path="UserProfile" element={<UserProfile />} />
+
+        </Route>
+        <Route path="/admin" element={<AdminLayout />}>
+          {/* Default route for Admin with Sidebar, Navbar, and Dashbord */}
+          <Route index element={<Dashbord />} />
+
+          {/* Tickets route (this will only render Sidebar and TicketsCreate) */}
+          {/* <Route path="Tickets" element={<Tickets />} /> */}
+          <Route  path="engineers"  element={<Engineers/>} />
+          <Route path=""/>
+        </Route>
+
+        <Route path="/engineer" element={<EngineerDashboard />}>
+          {/* Nested Routes (these will be rendered inside EngineerDashboard) */}
+          <Route index element={<AssignedTasks />} />  {/* Default route inside EngineerDashboard */}
+          <Route path="AssignedTasks" element={<AssignedTasks />} />
+          <Route path="Hazards" element={<Hazards />} />
+          <Route path="Profile" element={<EngineersProfile />} />
+        </Route>
+        
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
