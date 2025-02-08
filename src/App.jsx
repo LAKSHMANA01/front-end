@@ -25,7 +25,16 @@ import EngineerDashboard from "./page/Engineer/EngineerDashboard"
 import AssignedTasks from "./page/Engineer/AssignedTasks";
 import Hazards from "./page/Engineer/Hazards";
 import EngineersProfile from "./page/Engineer/EngineersProfile";
-import Engineers from "./page/Admin/Engineers"
+import Engineers from "./page/Admin/AdminEngineerList"
+import AdminTaskList from "./page/Admin/AdminTaskList";
+import AdminUserList from "./page/Admin/AdminUserList";
+import AdminCompletedTasks from "./page/Admin/AdminCompletedTasks";
+import AdminEngineerList from "./page/Admin/AdminEngineerList";
+import AdminDeferredTasks from "./page/Admin/AdminDeferredTasks";
+
+
+
+
 
 function App() {
   return (
@@ -41,7 +50,7 @@ function App() {
 
 
 
-        {/* //Admin Routes */}
+        
         <Route path="/User" element={<UserLayout />}>
           {/* Default route for Admin with Sidebar, Navbar, and Dashbord */}
           <Route index element={<UserDashboard />} />
@@ -50,16 +59,23 @@ function App() {
           {/* <Route path="MyTickets" element={<MyTickets />} /> */}
           <Route path="RaiseTicket" element={<RaiseTicket />} />
           <Route path="UserProfile" element={<UserProfile />} />
+          <Route path="UserProfile" element={<UserProfile />} />
+
 
         </Route>
+
+
         <Route path="/admin" element={<AdminLayout />}>
           {/* Default route for Admin with Sidebar, Navbar, and Dashbord */}
           <Route index element={<Dashbord />} />
-
+          <Route path="tasks" element={<AdminTaskList />} />
+          <Route path="users" element={<AdminUserList />} />
           {/* Tickets route (this will only render Sidebar and TicketsCreate) */}
           {/* <Route path="Tickets" element={<Tickets />} /> */}
-          <Route  path="engineers"  element={<Engineers/>} />
-          <Route path=""/>
+          <Route path="/admin/engineers" element={<AdminEngineerList />} />
+          <Route path="completed-tasks" element={<AdminCompletedTasks />} /> 
+          <Route path="deferred" element={<AdminDeferredTasks />} />
+       
         </Route>
 
         <Route path="/engineer" element={<EngineerDashboard />}>
@@ -69,7 +85,7 @@ function App() {
           <Route path="Hazards" element={<Hazards />} />
           <Route path="Profile" element={<EngineersProfile />} />
         </Route>
-        
+
       </Routes>
     </BrowserRouter>
   );
