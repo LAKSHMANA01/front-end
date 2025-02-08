@@ -19,14 +19,17 @@ const Sidebar = () => {
           <FaTachometerAlt />
           <Link to="/admin" className='hidden md:inline'>Dashboard</Link>
         </li>
-        <li className={`flex items-center py-5 px-4 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white ${isActive('/admin/tickets')}`}>
+
+        <li className={`flex items-center py-5 px-4 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white ${isActive('/admin/tasks')}`}>
           <FaShoppingCart />
-          <Link to="/admin/tickets" className='hidden md:inline'>Tasks</Link>
+          <Link to="/admin/tasks" className='hidden md:inline'>Tasks</Link>
         </li>
+
         <li className='flex items-center py-5 px-4 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
           <FaUser />
-          <span className='hidden md:inline'>Users</span>
+          <Link to="/admin/users" className='hidden md:inline'>user</Link>
         </li>
+        
         <li className='flex items-center py-5 px-4 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white'>
           <FaBox />
           <Link to="/admin/engineers" className=' md:inline'>Engineers</Link>
