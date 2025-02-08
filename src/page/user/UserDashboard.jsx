@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useParams } from 'react-router-dom';
-import { fetchTickets } from '../../redux/Slice/ticketSlice';
+import { fetchTickets } from '../../redux/Slice/UserSlice';
 import TaskCard from './Taskcard';
+
 
 
 const UserTicketList = () => {

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+
 export const submitTicket = createAsyncThunk(
   'tickets/submitTicket',
   async (ticketData, { rejectWithValue }) => {
