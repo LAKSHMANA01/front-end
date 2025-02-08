@@ -26,6 +26,7 @@ import AssignedTasks from "./page/Engineer/AssignedTasks";
 import Hazards from "./page/Engineer/Hazards";
 import EngineersProfile from "./page/Engineer/EngineersProfile";
 import Engineers from "./page/Admin/Engineers"
+// import PagaeNotFound from "./compoents/PageNotFound"
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         {/* Login Page */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Signup />} />
+        {/* <Route path="*" element={<PageNotFound />} /> */}
 
 
 
