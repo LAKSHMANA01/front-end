@@ -6,9 +6,11 @@ import {
   Settings,
   ChevronRight,
   ChevronLeft,
-  User
+  User,LogOut
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 const Sidebar = ({ activePath = '/'}) => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -106,6 +108,7 @@ const Sidebar = ({ activePath = '/'}) => {
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
             {isExpanded && (
               <div>
+                 <Link to="/"><LogOut/></Link>
                 <p className="text-sm font-medium dark:text-white">User Name</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Engineer</p>
               </div>

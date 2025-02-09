@@ -4,6 +4,7 @@ import { fetchAllTasks } from "../../redux/Slice/AdminSlice";
 import AdminNavbar from "./NavBar";
 import AdminTaskCard from "./AdminTaskCard";
 
+
 const AdminCompletedTasks = () => {
   const dispatch = useDispatch();
   const { tasks, loading, error } = useSelector((state) => state.admin);

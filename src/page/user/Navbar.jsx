@@ -4,9 +4,11 @@ import {
   Search, 
   Sun, 
   Moon,
-  Menu
+  Menu,
+  LogOut,
 } from "lucide-react";
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const Navbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -57,20 +59,23 @@ const Navbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) =>
       {/* Right side - Notifications, Theme Toggle, Profile */}
       <div className="flex items-center space-x-4">
         {/* Notifications */}
-        <button className="relative p-2 text-gray-600 dark:text-gray-300 
+        {/* <button className="relative p-2 text-gray-600 dark:text-gray-300 
           hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
           <Bell size={24} />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
-
+        </button> */}
+        <Link to="/"><LogOut/></Link>
         {/* Theme Toggle */}
         <button
           onClick={onToggleTheme}
           className="p-2 text-gray-600 dark:text-gray-300 
             hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
         >
-          {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+           {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+          
+         
         </button>
+        
 
         {/* Profile Section */}
         <div className="flex items-center space-x-3">

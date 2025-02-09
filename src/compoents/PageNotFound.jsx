@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HomeIcon, ArrowLeft, RefreshCcw, Search } from 'lucide-react';
+import pagenot404 from './../assets/PageNot404.jpg'
 
 const PageNotFound = () => {
   const [countdown, setCountdown] = useState(10);
@@ -39,7 +40,7 @@ const PageNotFound = () => {
         {/* Astronaut Illustration */}
         <div className="relative h-48">
           <img 
-            src=""
+            src={pagenot404}
             alt="Lost in Space"
             className={`mx-auto h-full object-contain ${
               isAnimating ? 'animate-bounce' : ''
