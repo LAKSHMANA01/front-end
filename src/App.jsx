@@ -33,7 +33,7 @@ import AdminUserList from "./page/Admin/AdminUserList";
 import AdminCompletedTasks from "./page/Admin/AdminCompletedTasks";
 import AdminEngineerList from "./page/Admin/AdminEngineerList";
 import AdminDeferredTasks from "./page/Admin/AdminDeferredTasks";
-
+import AdminEngineerTasks from "./page/Admin/AdminEngineerTasks"; 
 
 
 
@@ -78,6 +78,7 @@ function App() {
           <Route path="/admin/engineers" element={<AdminEngineerList />} />
           <Route path="completed-tasks" element={<AdminCompletedTasks />} /> 
           <Route path="deferred" element={<AdminDeferredTasks />} />
+          <Route path="engineer/:id" element={<AdminEngineerTasks />} />
        
         </Route>
 
