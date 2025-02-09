@@ -43,6 +43,20 @@ export const fetchDeferredTasks = createAsyncThunk(
   }
 );
 
+export const fetchEngineerTasks = createAsyncThunk(
+  "admin/fetchEngineerTasks",
+  async (engineerId, { rejectWithValue }) => {
+    try {
+      console.log("engineerId", engineerId);
+      const response = await axios.get(`https://localhost:8000/api/tasks/engineer/${engineerId}`); // ✅ API call
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error fetching tasks");
+    }
+  }
+);
+
+
 
 const adminSlice = createSlice({
   name: 'admin',
@@ -97,6 +111,18 @@ const adminSlice = createSlice({
       .addCase(fetchDeferredTasks.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
+      })
+      .addCase(fetchEngineerTasks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tasks = action.payload;
+      })
+      .addCase(fetchEngineerTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
