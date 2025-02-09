@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { fetchTickets } from '../../redux/Slice/UserSlice';
 import TaskCard from './Taskcard';
+import Loading from "../../compoents/Loadingpage"
 
 
 
@@ -22,7 +23,7 @@ const UserTicketList = () => {
 
 
   if (loading) {
-    return <div>Loading tickets...</div>;
+    return <div><Loading/></div>;
   }
 
   if (error) {

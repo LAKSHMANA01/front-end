@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchDeferredTasks } from "../../redux/Slice/AdminSlice";
 import AdminNavbar from "./NavBar";
 import AdminTaskCard from "./AdminTaskCard";
-
+import Loading from "../../compoents/Loadingpage"
 const AdminDeferredTasks = () => {
   const dispatch = useDispatch();
   const { deferredTasks, loading, error } = useSelector((state) => state.admin);
@@ -13,7 +13,7 @@ const AdminDeferredTasks = () => {
   }, [dispatch]);
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading deferred tasks...</div>;
+    return <div className="text-center text-gray-500"><Loading/></div>;
   }
 
   if (error) {
@@ -27,9 +27,11 @@ const AdminDeferredTasks = () => {
   return (
     <div className="space-y-6 p-4">
       <AdminNavbar />
+      <div className="flex flex-wrap gap-6"> 
       {deferredTasks.map((task) => (
         <AdminTaskCard key={task._id || task.id} task={task} />
       ))}
+      </div>
     </div>
   );
 };

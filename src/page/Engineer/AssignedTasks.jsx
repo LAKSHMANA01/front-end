@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { useParams } from 'react-router-dom';
 import { fetchEngineerTasks } from '../../redux/Slice/engineerTaskSlice';
 import TaskCard from './TaskCard';
+import Loading from "../../compoents/Loadingpage"
 
 const EngineerTaskList = () => { 
   
@@ -20,7 +21,7 @@ const EngineerTaskList = () => {
   }, [engineerId, dispatch]);
 
   if (loading) {
-    return <div>Loading tasks...</div>;
+    return <div><Loading/></div>;
   }
 
   if (error) {

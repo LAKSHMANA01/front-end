@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllUsers } from "../../redux/Slice/AdminSlice";
 import AdminNavbar from "./NavBar";
-
+import Loading from "../../compoents/Loadingpage"
 const AdminUserList = () => {
   const dispatch = useDispatch();
   const { users, loading, error } = useSelector((state) => state.admin);
@@ -11,7 +11,7 @@ const AdminUserList = () => {
     dispatch(fetchAllUsers()); // Fetch users when component mounts
   }, [dispatch]);
 
-  if (loading) return <p className="text-center text-lg">Loading users...</p>;
+  if (loading) return <p className="text-center text-lg"><Loading/></p>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   return (

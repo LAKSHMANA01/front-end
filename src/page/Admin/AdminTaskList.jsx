@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllTasks } from "../../redux/Slice/AdminSlice";
 import AdminTaskCard from "./AdminTaskCard";
 import AdminNavbar from "./NavBar";
+import Loading from "../../compoents/Loadingpage"
 
 const AdminTaskList = () => {
   const dispatch = useDispatch();
   const { tasks, loading, error } = useSelector((state) => state.admin);
+  
 
 
   useEffect(() => {
@@ -14,7 +16,7 @@ const AdminTaskList = () => {
   }, [dispatch]);
 
   if (loading) {
-    return <div className="text-center text-gray-500">Loading tasks...</div>;
+    return <div className="text-center text-gray-500"><Loading/></div>;
   }
 
   if (error) {
@@ -26,12 +28,17 @@ const AdminTaskList = () => {
   }
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 p-4 ">
 
         < AdminNavbar/>
+     
+        <div className="flex flex-wrap gap-6"> 
       {tasks.map((task) => (
-        <AdminTaskCard key={task._id || task.id} task={task} />
+       
+        <AdminTaskCard  key={task._id || task.id} task={task} />
+       
       ))}
+     </div>
     </div>
   );
 };

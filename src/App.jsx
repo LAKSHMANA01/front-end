@@ -25,8 +25,8 @@ import EngineerDashboard from "./page/Engineer/EngineerDashboard"
 import AssignedTasks from "./page/Engineer/AssignedTasks";
 import Hazards from "./page/Engineer/Hazards";
 import EngineersProfile from "./page/Engineer/EngineersProfile";
-import Engineers from "./page/Admin/Engineers"
-// import PagaeNotFound from "./compoents/PageNotFound"
+// import Engineers from "./page/Admin/Engineers"
+import PagaeNotFound from "./compoents/PageNotFound"
 import Engineers from "./page/Admin/AdminEngineerList"
 import AdminTaskList from "./page/Admin/AdminTaskList";
 import AdminUserList from "./page/Admin/AdminUserList";
@@ -48,7 +48,7 @@ function App() {
         {/* Login Page */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Signup />} />
-        {/* <Route path="*" element={<PageNotFound />} /> */}
+        <Route path="*" element={<PagaeNotFound />} /> 
 
 
 

@@ -22,6 +22,25 @@ export const fetchEngineerTasks = createAsyncThunk(
   }
 );
 
+export const EngineerUpdateProfile = createAsyncThunk(
+  'engineerTasks/fetchEngineerTasks',
+  async ( userId ,{ rejectWithValue }) => {
+    console.log("userid from asyncthunk")
+    try {                   
+
+      const response = await axios(`https://localhost:8000/api/tickets/engineer/${userId}`);
+      console.log("userid  data", response.data)
+      return response.data;
+
+    } catch (error) {
+      // Return a rejected value to handle errors
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 const engineerTaskSlice = createSlice({
   name: 'engineerTasks',
   initialState: {

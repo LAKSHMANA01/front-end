@@ -4,6 +4,7 @@ import { fetchAllEngineers } from "../../redux/Slice/AdminSlice";
 import { Link } from "react-router-dom"; // ✅ Import Link
 import AdminNavbar from "./NavBar";
 import Card from "../../compoents/Card";
+import Loading from "../../compoents/Loadingpage"
 
 const AdminEngineerList = () => {
   const dispatch = useDispatch();
@@ -13,7 +14,7 @@ const AdminEngineerList = () => {
     dispatch(fetchAllEngineers());
   }, [dispatch]);
 
-  if (loading) return <div className="text-center text-gray-500">Loading engineers...</div>;
+  if (loading) return <div className="text-center text-gray-500"><Loading/></div>;
   if (error) return <div className="text-center text-red-500">Error: {error}</div>;
   if (!engineers || engineers.length === 0) return <p className="text-center text-gray-500">No engineers available.</p>;
 

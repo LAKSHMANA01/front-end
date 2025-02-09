@@ -39,7 +39,7 @@ const PageNotFound = () => {
         {/* Astronaut Illustration */}
         <div className="relative h-48">
           <img 
-            src="/api/placeholder/200/200"
+            src=""
             alt="Lost in Space"
             className={`mx-auto h-full object-contain ${
               isAnimating ? 'animate-bounce' : ''
