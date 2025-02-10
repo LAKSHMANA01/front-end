@@ -3,6 +3,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ThemeContextProvider from '../../ContextAPI/ContextAPI';
+import Navbar from "../../compoents/Navbar";
 // import Navbar from './Navbar';
 // import Dashbord from '../../compoents/Dashbord';
 

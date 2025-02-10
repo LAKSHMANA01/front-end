@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 
-const Navbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) => {
+const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
@@ -86,4 +86,4 @@ const Navbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) =>
   );
 };
 
-export default Navbar;
+export default EngineerNavbar;

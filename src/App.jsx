@@ -24,7 +24,7 @@ import UserLayout from "./page/user/UserLayout"
 import EngineerDashboard from "./page/Engineer/EngineerDashboard"
 import AssignedTasks from "./page/Engineer/AssignedTasks";
 import Hazards from "./page/Engineer/Hazards";
-import EngineersProfile from "./page/Engineer/EngineersProfile";
+import EngineerProfile from "./page/Engineer/EngineerProfile";
 // import Engineers from "./page/Admin/Engineers"
 import PagaeNotFound from "./compoents/PageNotFound"
 import Engineers from "./page/Admin/AdminEngineerList"
@@ -34,7 +34,7 @@ import AdminCompletedTasks from "./page/Admin/AdminCompletedTasks";
 import AdminEngineerList from "./page/Admin/AdminEngineerList";
 import AdminDeferredTasks from "./page/Admin/AdminDeferredTasks";
 import AdminEngineerTasks from "./page/Admin/AdminEngineerTasks"; 
-import  Search from "./page/Admin/Searchbar"
+import  Search from "./compoents/Searchbar"
 
 
 
@@ -63,7 +63,7 @@ function App() {
           {/* <Route path="MyTickets" element={<MyTickets />} /> */}
           <Route path="RaiseTicket" element={<RaiseTicket />} />
           <Route path="UserProfile" element={<UserProfile />} />
-          <Route path="UserProfile" element={<UserProfile />} />
+          {/* <Route path="UserProfile" element={<UserProfile />} /> */}
 
 
         </Route>
@@ -89,7 +89,7 @@ function App() {
           <Route index element={<AssignedTasks />} />  {/* Default route inside EngineerDashboard */}
           <Route path="AssignedTasks" element={<AssignedTasks />} />
           <Route path="Hazards" element={<Hazards />} />
-          <Route path="Profile" element={<EngineersProfile />} />
+          <Route path="Profile" element={<EngineerProfile />} />
         </Route>
 
       </Routes>
