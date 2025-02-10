@@ -43,6 +43,36 @@ export const fetchDeferredTasks = createAsyncThunk(
   }
 );
 
+// Fetch available engineers
+export const fetchAvailableEngineers = createAsyncThunk(
+  'tasks/fetchAvailableEngineers',
+  async () => {
+    try {
+      const response = await axios.get('/api/engineers/available');
+      return response.data.engineers; // Assuming API returns an array of engineers
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message); // Handle error
+    }
+  }
+);
+
+// Reassign ticket to an engineer
+export const reassignTicket = createAsyncThunk(
+  'tasks/reassignTicket',
+  async ({ ticketId, engineerId }) => {
+    try {
+      const response = await axios.patch(`/api/reassign/${ticketId}/${engineerId}`, {}, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data; // Assuming the response has details of reassigned ticket
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message); // Handle error
+    }
+  }
+);
+
 export const fetchEngineerTasks = createAsyncThunk(
   "admin/fetchEngineerTasks",
   async (engineerId, { rejectWithValue }) => {
@@ -123,7 +153,19 @@ const adminSlice = createSlice({
       .addCase(fetchEngineerTasks.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(fetchAvailableEngineers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchAvailableEngineers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.availableEngineers = action.payload;
+      })
+      .addCase(fetchAvailableEngineers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      
   },
 });
 

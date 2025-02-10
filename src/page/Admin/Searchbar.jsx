@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Loader } from 'lucide-react';
+import { fetchAllEngineers } from '../../redux/Slice/AdminSlice';
+import { useDispatch,useSelector } from 'react-redux';
 
 const TaskSearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -7,12 +9,14 @@ const TaskSearch = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const dispatch = useDispatch()
+  const { tasks }= useSelector((state)=>state.admin)
 
   // Debounce search to avoid too many API calls
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery) {
-        fetchSearchResults();
+        dispatch(fetchAllEngineers());
       }
     }, 500);
 

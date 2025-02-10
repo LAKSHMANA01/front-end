@@ -59,7 +59,7 @@ const PageNotFound = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-md mx-auto">
+        {/* <div className="max-w-md mx-auto">
           <div className="relative">
             <input
               type="text"
@@ -70,9 +70,9 @@ const PageNotFound = () => {
             />
             <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
           </div>
-        </div>
+        </div> */}
 
-        {/* Action Buttons */}
+        {/* Action Buttons
         <div className="flex flex-wrap gap-4 justify-center">
           <button
             onClick={handleGoBack}
@@ -97,14 +97,14 @@ const PageNotFound = () => {
             <RefreshCcw className={`w-4 h-4 ${isAnimating ? 'animate-spin' : ''}`} />
             Refresh
           </button>
-        </div>
+        </div> */}
 
         {/* Quick Links */}
         <div className="border-t border-gray-200 pt-8">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">
+          {/* <h3 className="text-lg font-medium text-gray-700 mb-4">
             Popular Pages
-          </h3>
-          <div className="flex flex-wrap gap-2 justify-center">
+          </h3> */}
+          {/* <div className="flex flex-wrap gap-2 justify-center">
             {['Dashboard', 'Profile', 'Settings', 'Help Center'].map((link) => (
               <a
                 key={link}
@@ -114,7 +114,7 @@ const PageNotFound = () => {
                 {link}
               </a>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

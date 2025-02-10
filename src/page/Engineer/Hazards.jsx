@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 const EngineerDashboard = () => {
-  const [tickets, setTickets] = useState([]);
-  const [hazards, setHazards] = useState([]);
+  // Static dummy data for tickets and hazards
+  const [tickets, setTickets] = useState([
+    { id: 1, title: 'Fix Server Issue', description: 'Server is down', status: 'pending', location: [51.505, -0.09] },
+    { id: 2, title: 'Network Upgrade', description: 'Upgrade network infrastructure', status: 'accepted', location: [51.515, -0.1] },
+  ]);
 
-  // Fetch tickets and hazards from backend
-  useEffect(() => {
-    fetch('/api/engineer/tickets')
-      .then((response) => response.json())
-      .then((data) => setTickets(data));
-
-    fetch('/api/hazards')
-      .then((response) => response.json())
-      .then((data) => setHazards(data));
-  }, []);
+  const [hazards, setHazards] = useState([
+    { id: 1, title: 'Electrical Hazard', description: 'Exposed wires in server room' },
+    { id: 2, title: 'Fire Hazard', description: 'Flammable materials near servers' },
+  ]);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -62,8 +59,11 @@ const EngineerDashboard = () => {
             <div key={hazard.id} className="border p-4 rounded-lg">
               <h3 className="font-bold">{hazard.title}</h3>
               <p>{hazard.description}</p>
-              <button className="bg-red-500 text-white px-4 py-2 rounded mt-2">
+              <button className="bg-red-500 text-white px-2 py-2 rounded mt-2 gap-2">
                 Delete Hazard
+              </button>
+              <button className="bg-green-500 text-white px-2 py-2 rounded mt-2">
+               
               </button>
             </div>
           ))}
