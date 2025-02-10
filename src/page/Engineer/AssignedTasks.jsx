@@ -86,6 +86,9 @@ const AssignedTasks = () => {
                         <p className="text-gray-500 text-sm mb-2">
                             <strong>Created On:</strong> {new Date(selectedTask.createdAt).toLocaleDateString()}
                         </p>
+                        <p className="text-gray-500 text-sm mb-2">
+                            <strong>Updated On:</strong> {new Date(selectedTask.updatedAt).toLocaleDateString()}
+                        </p>
 
                         <div className="flex items-center justify-between mb-4">
                             <span className={`px-3 py-1 rounded-full ${getStatusStyle(selectedTask.status)}`}>
