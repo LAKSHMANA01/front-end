@@ -38,6 +38,7 @@ export const fetchUpdateEngineerProfile = createAsyncThunk(
     }
   }
 );
+
 export const updateTaskStatus = createAsyncThunk(
   'engineer/updateTaskStatus',
   async ({ taskId, status }, { rejectWithValue }) => {
@@ -50,11 +51,69 @@ export const updateTaskStatus = createAsyncThunk(
   }
 );
 
+export const HazardsTickets = createAsyncThunk(
+   'engineer/fetchHazardsTickets',
+  async ({ rejectWithValue }) => {
+    try {
+      console.log("data comeing in axio")
+      const response =  await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      console.log("response.data inside fetchEngineerTasks:",response.data);
+      return response.data; // Return updated task info
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// AsyncThunk for Harzards engineer updateing
+export const HazardsUpdateTickets = createAsyncThunk(
+  'engineer/HazardsUpdateTickets',
+  async (updatedData, { rejectWithValue }) => {
+    console.log("updatedData inside fetchUpdateHazardsUpdateTickets:", updatedData);
+    try {
+      const response = await axios.patch(
+        `https://localhost:8000/api/hazards/updateHazard/${updatedData._id}`, 
+        updatedData, 
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      const res = await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      console.log("response.data inside  Hazards :", response.data);
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to HazardsUpdateTickets');
+    }
+  }
+);
+// AsyncThunk for Harzards engineer updateing
+export const HazardsDeleteTickets = createAsyncThunk(
+  'engineer/HazardsDeleteTickets',
+  async (updatedData, { rejectWithValue }) => {
+    console.log("deletedData inside fetchUpdateHazardsUpdateTickets:", updatedData);
+    try {
+      const response = await axios.delete(
+        `https://localhost:8000/api/hazards/deleteHazard/${updatedData}`, 
+       
+      );
+      const res = await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      console.log("response.data inside  Hazards :", response.data);
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to HazardsUpdateTickets');
+    }
+  }
+);
+
+
 const engineerSlice = createSlice({
   name: 'engineer',
   initialState: {
     tasks: [],
     updateProfile: [],
+    Hazards:[],
     loading: false,
     error: null,
   },
@@ -97,7 +156,52 @@ const engineerSlice = createSlice({
       })
       .addCase(updateTaskStatus.rejected, (state, action) => {
         state.error = action.payload;
-      });
+      })
+      // Hazards data setting here 
+      .addCase( HazardsTickets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase( HazardsTickets.fulfilled, (state, action) => {
+        state.Hazards = action.payload;
+        console.log("data comeing in fulfilled")
+        state.loading = false;
+      })
+      .addCase( HazardsTickets.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      // Hazards  update dat patch to engineer
+      .addCase( HazardsUpdateTickets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(HazardsUpdateTickets.fulfilled, (state, action) => {
+        state.Hazards = action.payload;
+        console.log("data comeing inside udpate Hazards patch")
+        state.loading = false;
+      })
+      .addCase( HazardsUpdateTickets.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+     // Hazards delete tasks
+      .addCase( HazardsDeleteTickets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(HazardsDeleteTickets.fulfilled, (state, action) => {
+        state.Hazards = action.payload;
+         
+        
+        console.log("data comeing inside deleting data delete")
+        state.loading = false;
+      })
+      .addCase( HazardsDeleteTickets.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
   },
 });
 

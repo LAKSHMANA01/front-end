@@ -35,6 +35,7 @@ import AdminEngineerList from "./page/Admin/AdminEngineerList";
 import AdminDeferredTasks from "./page/Admin/AdminDeferredTasks";
 import AdminEngineerTasks from "./page/Admin/AdminEngineerTasks"; 
 import  Search from "./compoents/Searchbar"
+import RaiseEngineerTickes from "./page/Engineer/HazardsTicket"
 
 
 
@@ -83,18 +84,18 @@ function App() {
           <Route path="search" element={<Search />} />
        
         </Route>
-
+      
         <Route path="/engineer" element={<EngineerDashboard />}>
           {/* Nested Routes (these will be rendered inside EngineerDashboard) */}
           <Route index element={<AssignedTasks />} />  {/* Default route inside EngineerDashboard */}
           <Route path="AssignedTasks" element={<AssignedTasks />} />
           <Route path="Hazards" element={<Hazards />} />
           <Route path="Profile" element={<EngineerProfile />} />
-        </Route>
-
+          <Route path="RiseTickets" element={<RaiseEngineerTickes />} />
+        </Route> 
       </Routes>
     </BrowserRouter>
-  );
+  );      
 }
 
 export default App;

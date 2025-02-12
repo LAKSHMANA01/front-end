@@ -14,11 +14,11 @@ const AdminLayout = () => {
     <ThemeContextProvider>
         {/* <Navbar/> */}
       <div className="flex"> 
-        <Sidebar />
        
      
 
 
+        <Sidebar />
         <div className="grow  bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
         {/* {window.location.pathname !== "/admin/Tickets" && <Navbar />} */}
         {/* {window.location.pathname !== "/admin/Tickets" && <Dashbord />} */}

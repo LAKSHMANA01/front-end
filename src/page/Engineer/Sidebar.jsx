@@ -6,15 +6,14 @@ import {
   Settings,
   ChevronRight,
   ChevronLeft,
-  User,LogOut
+  User, LogOut
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
-
-const Sidebar = ({ activePath = '/'}) => {
+const Sidebar = ({ activePath = '/' }) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const menuItems = [
     { path: '/engineer', icon: LayoutDashboard, label: 'Dashboard' },
@@ -33,20 +32,23 @@ const Sidebar = ({ activePath = '/'}) => {
   return (
     <div 
       className={`
-        relative min-h-screen
+         fixed top-0 left-0 z-40
+        h-screen
         bg-white dark:bg-gray-900
         transition-all duration-300 ease-in-out
         border-r border-gray-200 dark:border-gray-800
-        ${isExpanded ? 'w-30' : 'w-20'}
+        ${isExpanded ? 'w-64' : 'w-20'} // Set proper width classes
         shadow-lg
+         
+        relative // Added to fix position of button within sidebar
       `}
     >
       {/* Toggle Button */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute -right-3 top-8 bg-blue-600 text-white
-          rounded-full p-1 hover:bg-blue-700 transition-colors
-          shadow-lg  md:block"
+         onClick={() => setIsExpanded(!isExpanded)}
+         className="absolute -right-3 top-8 bg-blue-600 text-white
+           rounded-full p-1 hover:bg-blue-700 transition-colors
+           shadow-lg  md:block"
       >
         {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>
