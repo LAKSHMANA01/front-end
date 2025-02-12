@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import apiClient from "../../utils/apiClient";
 
 // Fetch all tasks
 export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get('https://localhost:8000/api/admin/tasks'); // Replace with your API
+    const response = await apiClient.get('/admin/tasks'); // Replace with your API
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch tasks");
