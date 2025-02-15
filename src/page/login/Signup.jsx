@@ -8,6 +8,7 @@ function Signup() {
         email: "",
         phone: "",
         address: "",
+        pincode:"",
         password: "",
         securityQuestion: "",
         securityAnswer: "",
@@ -22,6 +23,8 @@ function Signup() {
     // Validation functions
     const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const validatePassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(password);
+    const validatePincode = (pincode) => /^[1-9][0-9]{5}$/.test(pincode); // Basic Indian pincode validation
+
 
     // Handle input change
     const handleChange = (e) => {
@@ -51,6 +54,8 @@ function Signup() {
         if (formData.role === "engineer" && (!formData.specialization || formData.availability.length === 0))
             newErrors.engineerFields = "Please provide specialization and availability.";
 
+        if (!validatePincode(formData.pincode)) newErrors.pincode = "Invalid pincode format.";
+
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
@@ -67,6 +72,7 @@ function Signup() {
                 email: formData.email,
                 phone: formData.phone,
                 address: formData.address,
+                pincode:formData.pincode,
                 password: formData.password,
                 securityQuestion: formData.securityQuestion,
                 securityAnswer: formData.securityAnswer,
@@ -91,7 +97,7 @@ function Signup() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Left Side Fields */}
                         <div>
-                            {["name", "email", "phone", "address"].map((field) => (
+                            {["name", "email", "phone", "address","pincode"].map((field) => (
                                 <div className="mb-4" key={field}>
                                     <label className="block text-lg font-medium mb-2">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
                                     <input
