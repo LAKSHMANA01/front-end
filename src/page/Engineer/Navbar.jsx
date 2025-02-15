@@ -13,21 +13,18 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between">
-      {/* Left side - Mobile menu and Search */}
+    <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50">
+      {/* Left side - Mobile menu */}
       <div className="flex items-center space-x-4">
         <button className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
           <Menu size={24} />
         </button>
-        
-        <div className={`
-          relative flex items-center
-          ${isSearchOpen ? 'w-full md:w-96' : 'w-auto'}
-        `}>
-          <div className={`
-            flex items-center w-full
-            ${isSearchOpen ? 'block' : 'hidden md:flex'}
-          `}>
+      </div>
+
+      {/* Middle - Search Bar */}
+      <div className={`flex items-center justify-center w-full absolute top-0 left-0 right-0 transition-all duration-300 ease-in-out ${isSearchOpen ? 'md:w-96' : 'md:w-auto'} `}>
+        <div className={`relative flex items-center ${isSearchOpen ? 'w-full md:w-96' : 'w-auto'}`}>
+          <div className={`flex items-center w-full ${isSearchOpen ? 'block' : 'hidden md:flex'}`}>
             <div className="relative w-full">
               <input
                 type="text"
@@ -56,13 +53,10 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
 
       {/* Right side - Notifications, Theme Toggle, Profile */}
       <div className="flex items-center space-x-4">
-        {/* Notifications */}
-        {/* <button className="relative p-2 text-gray-600 dark:text-gray-300 
-          hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
-          <Bell size={24} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button> */}
-         <Link to="/"><LogOut/></Link>
+        {/* Logout */}
+        <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+          <LogOut size={24} />
+        </Link>
 
         {/* Theme Toggle */}
         <button
