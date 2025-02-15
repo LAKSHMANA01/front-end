@@ -5,11 +5,12 @@ import axios from 'axios';
 export const fetchEngineerTasks = createAsyncThunk(
   'engineer/fetchEngineerTasks',
   async (userId, { rejectWithValue }) => {
-    console.log(`userId inside fetchEngineerTasks: ${userId}`);
+    console.log(`userId inside fetchEngineerTasks: ${userId} 123`);
     try {
-      const response = await axios.get(`https://localhost:8000/api/tickets/engineer/${userId}`);
+      const response = await axios.get(`https://localhost:8000/api/tasks/engineer/engineer3@example.com`);
       console.log(`response.data inside fetchEngineerTasks: ${response.data}`);
       return response.data;
+      
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch engineer tasks');
     }
