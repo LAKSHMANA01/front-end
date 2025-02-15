@@ -4,6 +4,7 @@ import ticketReducer from './Slice/UserSlice';
 import engineerReducer from './Slice/EngineerSlice';
 import  RaiseTickets from "./Slice/raiseticke"
 import adminReducer from "./Slice/AdminSlice";
+import authReducer from "./Slice/authSlice"
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     tickets: ticketReducer,
     engineer: engineerReducer,
     RaiseTicket :  RaiseTickets,
-    admin: adminReducer
+    admin: adminReducer,
+    auth: authReducer,
      
   },
 });

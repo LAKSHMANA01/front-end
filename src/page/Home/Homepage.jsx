@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronRight, CheckCircle, MapPin, Shield, Server, Wifi, Users, Clipboard, AlertTriangle, Mail, Smartphone, Calendar, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Footer from '../../compoents/Footer'
+import { Link,useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const features = [
     {
@@ -28,6 +28,23 @@ const LandingPage = () => {
       icon: Smartphone
     }
   ];
+
+  const token = sessionStorage.getItem("token");
+  const email = sessionStorage.getItem("email");
+  const role = sessionStorage.getItem("role");
+
+  const handleRaiseTicket = () => {
+    if (!token) {
+      // Redirect to login if user is not authenticated
+      navigate("/login");
+    } else if (role === "user") {
+      // If logged in and role is "user", go to raise ticket page
+      navigate("/raise-ticket");
+    } else {
+      // If logged in but role is not "user" (admin or engineer)
+      alert("Only users can raise tickets.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -85,9 +102,10 @@ const LandingPage = () => {
             </p>
 
             <div className="flex gap-4 justify-center pt-8">
-              <button className="bg-blue-600 text-white px-8 py-4 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition">
+              <button className="bg-blue-600 text-white px-8 py-4 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition"
+              onClick={handleRaiseTicket}>
                 <Mail className="w-5 h-5" />
-                Request Demo
+                Raise Ticket
               </button>
               <button className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg hover:bg-blue-50 transition">
                 Learn More

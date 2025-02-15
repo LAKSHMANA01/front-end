@@ -60,6 +60,7 @@ const TaskCard = ({ task }) => {
               Assigned to: {task.assignee?.name || 'Not assigned'}
             </span>
           </div>
+          
         </div>
       </div>
 
