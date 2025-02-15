@@ -13,7 +13,7 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <nav className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between">
+    <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between">
       {/* Left side - Mobile menu and Search */}
       <div className="flex items-center space-x-4">
         <button className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">

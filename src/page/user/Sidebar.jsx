@@ -30,10 +30,16 @@
       navigate(path); // Use navigate to change the route
     };
   
+
+
+
+
     return (
       <div 
         className={`
-          relative min-h-screen
+
+          fixed min-h-screen
+          top-0 left-0 z-40
           bg-white dark:bg-gray-900
           transition-all duration-300 ease-in-out
           border-r border-gray-200 dark:border-gray-800
