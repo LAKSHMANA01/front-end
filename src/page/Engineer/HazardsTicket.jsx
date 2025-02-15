@@ -1,44 +1,59 @@
 // TicketForm.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { MapPin, AlertTriangle, Send } from "lucide-react";
 import CustomCard from "./CustomCard";
-import { submitTicket } from "../../redux/Slice/raiseticke";
-import { useDispatch, useSelector } from "react-redux";
+import { HazardsTicket } from "../../redux/Slice/raiseticke";
+import { useDispatch, useSelector, } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const TicketForm = () => {
   const userId = 2;
   const [ticketForm, setTicketForm] = useState({
-    serviceType: "installation",
-    address: "",
-    description: "",
-    priority: "medium",
+   hazardType: "installation",
+   description: "",
+   riskLevel: "medium",
+   address: "",
+   pincode:""
   });
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const Raisetickets = useSelector((state) => state.Raisetickets);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     console.log("Ticket submitted:", ticketForm);
-
-    const formDatawithUserId = {
-      ...ticketForm,
-      //  userId: userId // Add userId to the submitted data
+  
+    // Make sure the data matches the backend's expected format
+    const formData = {
+      hazardType: ticketForm.hazardType, // "laksmana"
+      description: ticketForm.description, // "Hazard Description"
+      riskLevel: ticketForm.riskLevel, // Ensure you're passing the correct risk level from ticketForm
+      address: ticketForm.address, // "satyam, vizag"
+      pincode: ticketForm.pincode, // "530013"
     };
+  
     try {
-      await dispatch(submitTicket({ ...ticketForm }));
+      const response = await dispatch(HazardsTicket(formData));
+      toast.success("Ticket submitted successfully!");
+      console.log("Ticket submitted successfully:", response);
       // Reset form on success
       setTicketForm({
-        serviceType: "installation",
-        address: "",
+        hazardType: "installation", // Default value, can be changed by the user
         description: "",
-        priority: "medium",
+        riskLevel: "medium", // Default, can be changed by the user
+        address: "",
+        pincode: "",
       });
+      // navigate("/engineer/Hazards")
     } catch (err) {
       console.error("Failed to submit ticket:", err);
     }
   };
+  
 
   const inputStyles =
     "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
@@ -53,7 +68,7 @@ const TicketForm = () => {
             className={inputStyles}
             value={ticketForm.serviceType}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm, serviceType: e.target.value })
+              setTicketForm({ ...ticketForm,hazardType: e.target.value })
             }
             required99
           >
@@ -127,9 +142,9 @@ const TicketForm = () => {
           <label className={labelStyles}>Priority Level</label>
           <select
             className={inputStyles}
-            value={ticketForm.priority}
+            value={ticketForm.riskLevel}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm, priority: e.target.value })
+              setTicketForm({ ...ticketForm, riskLevel: e.target.value })
             }
           >
             <option value="low">Low - Not Urgent</option>
@@ -152,17 +167,17 @@ const TicketForm = () => {
           />
         </div> */}
 
-        {/* <div>
+        <div>
           <label className={labelStyles}>
-            Preferred Service Date
+           Enter pin Code
           </label>
           <input
-            type="date"
+            type="text"
             className={inputStyles}
-            value={ticketForm.preferredDate}
-            onChange={(e) => setTicketForm({...ticketForm, preferredDate: e.target.value})}
+            value={ticketForm.pincode}
+            onChange={(e) => setTicketForm({...ticketForm,  pincode: e.target.value})}
           />
-        </div> */}
+        </div>
 
         <button
           type="submit"
@@ -172,6 +187,7 @@ const TicketForm = () => {
           Submit Ticket
         </button>
       </form>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </CustomCard>
   );
 };

@@ -41,6 +41,7 @@ import ThemeContextProvider from "../../ContextAPI/ContextAPI";
 import AdminTaskList from "../../compoents/AdminTaskList"; // Import AdminTaskList
 import Navbar from './NavBar';
 import AdminNavbar from "./NavBar";
+import AdminSearch from "./AdminSearch";
 
 function AdminDashboard() {
   const location = useLocation();

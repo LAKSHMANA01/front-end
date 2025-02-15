@@ -15,7 +15,7 @@ export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, 
 // Fetch all users
 export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get('https://localhost:8000/api/admin/users'); // Replace with your API
+    const response = await apiClient.get('/admin/users'); // Replace with your API
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch users");
@@ -44,12 +44,42 @@ export const fetchDeferredTasks = createAsyncThunk(
   }
 );
 
+// Fetch available engineers
+export const fetchAvailableEngineers = createAsyncThunk(
+  'tasks/fetchAvailableEngineers',
+  async () => {
+    try {
+      const response = await axios.get('/api/engineers/available');
+      return response.data.engineers; // Assuming API returns an array of engineers
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message); // Handle error
+    }
+  }
+);
+
+// Reassign ticket to an engineer
+export const reassignTicket = createAsyncThunk(
+  'tasks/reassignTicket',
+  async ({ ticketId, engineerId }) => {
+    try {
+      const response = await axios.patch(`/api/reassign/${ticketId}/${engineerId}`, {}, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data; // Assuming the response has details of reassigned ticket
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message); // Handle error
+    }
+  }
+);
+
 export const fetchEngineerTasks = createAsyncThunk(
   "admin/fetchEngineerTasks",
   async (engineerId, { rejectWithValue }) => {
     try {
       console.log("engineerId", engineerId);
-      const response = await axios.get(`https://localhost:8000/api/tasks/engineer/${engineerId}`); // ✅ API call
+      const response = await axios.get(`https://localhost:8000/api/tasks/engineer/${engineerId}`); 
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Error fetching tasks");
@@ -124,7 +154,19 @@ const adminSlice = createSlice({
       .addCase(fetchEngineerTasks.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(fetchAvailableEngineers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchAvailableEngineers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.availableEngineers = action.payload;
+      })
+      .addCase(fetchAvailableEngineers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      
   },
 });
 

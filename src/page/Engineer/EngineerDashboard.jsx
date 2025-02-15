@@ -3,6 +3,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ThemeContextProvider from '../../ContextAPI/ContextAPI';
+import Navbar from "../../compoents/Navbar";
 // import Navbar from './Navbar';
 // import Dashbord from '../../compoents/Dashbord';
 
@@ -13,11 +14,11 @@ const AdminLayout = () => {
     <ThemeContextProvider>
         {/* <Navbar/> */}
       <div className="flex"> 
-        <Sidebar />
        
      
 
 
+        <Sidebar />
         <div className="grow  bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
         {/* {window.location.pathname !== "/admin/Tickets" && <Navbar />} */}
         {/* {window.location.pathname !== "/admin/Tickets" && <Dashbord />} */}

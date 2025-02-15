@@ -1,39 +1,85 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import apiClient from '../../utils/apiClient';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import apiClient from "../../utils/apiClient";
 
 function Signup() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [address, setAddress] = useState('');
-    const [password, setPassword] = useState('');
-    const [securityQuestion, setSecurityQuestion] = useState('');
-    const [securityAnswer, setSecurityAnswer] = useState('');
-    const [role, setRole] = useState('');
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        password: "",
+        securityQuestion: "",
+        securityAnswer: "",
+        role: "",
+        specialization: "",
+        availability: [],
+    });
 
+    const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
+    // Validation functions
+    const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const validatePassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(password);
+
+    // Handle input change
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // Handle availability checkbox change
+    const handleAvailabilityChange = (day) => {
+        setFormData((prev) => ({
+            ...prev,
+            availability: prev.availability.includes(day)
+                ? prev.availability.filter((d) => d !== day)
+                : [...prev.availability, day],
+        }));
+    };
+
+    // Form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Validate fields
+        const newErrors = {};
+        if (!validateEmail(formData.email)) newErrors.email = "Invalid email format.";
+        if (!validatePassword(formData.password))
+            newErrors.password = "Password must be 8-15 characters long, include a capital letter, a number, and a special character.";
+        if (formData.role === "engineer" && (!formData.specialization || formData.availability.length === 0))
+            newErrors.engineerFields = "Please provide specialization and availability.";
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
         try {
-            const response = await apiClient.post('/users/newUser', {
-                name,
-                email,
-                phone,
-                address,
-                password,
-                securityQuestion,
-                securityAnswer,
-                role
+            // const response = await apiClient.post("/users/newUser", {
+            //     ...formData,
+            //     specialization: formData.role === "engineer" ? formData.specialization : undefined,
+            //     availability: formData.role === "engineer" ? formData.availability : undefined,
+            // });
+            const response = await apiClient.post("/users/newUser", {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                address: formData.address,
+                password: formData.password,
+                securityQuestion: formData.securityQuestion,
+                securityAnswer: formData.securityAnswer,
+                role: formData.role,
+                specialization: formData.role === "engineer" ? formData.specialization : null,
+                availability: formData.role === "engineer" ? formData.availability : [],
             });
 
             alert("Registration successful! Please log in.");
-            navigate('/login');
+            navigate("/login");
         } catch (error) {
-            console.error("Signup Error:", error);
-            alert("Signup failed. Please try again.");
+            console.error("Signup Error:", error.response?.data?.message || error.message);
+            alert(error.response?.data?.message || "Signup failed. Please try again.");
         }
     };
 
@@ -43,108 +89,79 @@ function Signup() {
                 <h2 className="text-3xl font-semibold mb-6 text-center">Register</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Left Side Fields */}
                         <div>
-                            <div className="mb-4">
-                                <label className="block text-lg font-medium mb-2">Name</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter Name"
-                                    autoComplete="off"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-lg font-medium mb-2">Email</label>
-                                <input
-                                    type="email"
-                                    placeholder="Enter Email"
-                                    autoComplete="off"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-lg font-medium mb-2">Phone</label>
-                                <input
-                                    type="tel"
-                                    placeholder="Enter Phone Number"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-lg font-medium mb-2">Address</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter Address"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    required
-                                />
-                            </div>
+                            {["name", "email", "phone", "address"].map((field) => (
+                                <div className="mb-4" key={field}>
+                                    <label className="block text-lg font-medium mb-2">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                                    <input
+                                        type={field === "email" ? "email" : "text"}
+                                        placeholder={`Enter ${field}`}
+                                        className="w-full px-4 py-2 border rounded-md"
+                                        name={field}
+                                        value={formData[field]}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                    {errors[field] && <p className="text-red-500 text-sm mt-1">{errors[field]}</p>}
+                                </div>
+                            ))}
                         </div>
 
+                        {/* Right Side Fields */}
                         <div>
-                            <div className="mb-4">
-                                <label className="block text-lg font-medium mb-2">Password</label>
-                                <input
-                                    type="password"
-                                    placeholder="Enter Password"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-lg font-medium mb-2">Security Question</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter a security question"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={securityQuestion}
-                                    onChange={(e) => setSecurityQuestion(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-lg font-medium mb-2">Security Answer</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter your security answer"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={securityAnswer}
-                                    onChange={(e) => setSecurityAnswer(e.target.value)}
-                                    required
-                                />
-                            </div>
+                            {["password", "securityQuestion", "securityAnswer"].map((field) => (
+                                <div className="mb-4" key={field}>
+                                    <label className="block text-lg font-medium mb-2">{field.replace(/([A-Z])/g, " $1")}</label>
+                                    <input
+                                        type={field === "password" ? "password" : "text"}
+                                        placeholder={`Enter ${field}`}
+                                        className="w-full px-4 py-2 border rounded-md"
+                                        name={field}
+                                        value={formData[field]}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                    {errors[field] && <p className="text-red-500 text-sm mt-1">{errors[field]}</p>}
+                                </div>
+                            ))}
 
                             <div className="mb-4">
                                 <label className="block text-lg font-medium mb-2">Role</label>
-                                <select
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={role}
-                                    onChange={(e) => setRole(e.target.value)}
-                                    required
-                                >
+                                <select className="w-full px-4 py-2 border rounded-md" name="role" value={formData.role} onChange={handleChange} required>
                                     <option value="" disabled>Select your role</option>
                                     <option value="engineer">Engineer</option>
                                     <option value="user">User</option>
                                 </select>
                             </div>
+
+                            {/* Engineer Fields */}
+                            {formData.role === "engineer" && (
+                                <>
+                                    <div className="mb-4">
+                                        <label className="block text-lg font-medium mb-2">Specialization</label>
+                                        <select className="w-full px-4 py-2 border rounded-md" name="specialization" value={formData.specialization} onChange={handleChange} required>
+                                            <option value="" disabled>Select Specialization</option>
+                                            <option value="Installation">Installation</option>
+                                            <option value="Fault">Fault</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label className="block text-lg font-medium mb-2">Availability</label>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
+                                                <label key={day} className="flex items-center">
+                                                    <input type="checkbox" className="mr-2" checked={formData.availability.includes(day)} onChange={() => handleAvailabilityChange(day)} />
+                                                    {day}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {errors.engineerFields && <p className="text-red-500 text-sm mt-1">{errors.engineerFields}</p>}
+                                </>
+                            )}
                         </div>
                     </div>
 

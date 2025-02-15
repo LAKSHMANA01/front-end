@@ -25,7 +25,7 @@ import UserLayout from "./page/user/UserLayout"
 import EngineerDashboard from "./page/Engineer/EngineerDashboard"
 import AssignedTasks from "./page/Engineer/AssignedTasks";
 import Hazards from "./page/Engineer/Hazards";
-import EngineersProfile from "./page/Engineer/EngineersProfile";
+import EngineerProfile from "./page/Engineer/EngineerProfile";
 // import Engineers from "./page/Admin/Engineers"
 import PagaeNotFound from "./compoents/PageNotFound"
 import Engineers from "./page/Admin/AdminEngineerList"
@@ -35,8 +35,11 @@ import AdminCompletedTasks from "./page/Admin/AdminCompletedTasks";
 import AdminEngineerList from "./page/Admin/AdminEngineerList";
 import AdminDeferredTasks from "./page/Admin/AdminDeferredTasks";
 import AdminEngineerTasks from "./page/Admin/AdminEngineerTasks"; 
+import  Search from "./compoents/Searchbar"
+import RaiseEngineerTickes from "./page/Engineer/HazardsTicket"
 
 import ProtectedRoute from "./utils/protectedRoute";
+import Logout from "./utils/logout";
 
 
 function App() {
@@ -50,6 +53,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Signup />} />
         <Route path="/reset" element={<ForgotPwd />}/>
+        <Route path="/logout" element={<Logout />}/>
         <Route path="*" element={<PagaeNotFound />} /> 
 
 
@@ -57,7 +61,7 @@ function App() {
 
        
         <Route path="/User" element={
-          <ProtectedRoute>
+          <ProtectedRoute  allowedRoles={['user']}>
           <UserLayout />
           </ProtectedRoute>}>
           {/* Default route for Admin with Sidebar, Navbar, and Dashbord */}
@@ -67,13 +71,13 @@ function App() {
           {/* <Route path="MyTickets" element={<MyTickets />} /> */}
           <Route path="RaiseTicket" element={<RaiseTicket />} />
           <Route path="UserProfile" element={<UserProfile />} />
-          <Route path="UserProfile" element={<UserProfile />} />
+          {/* <Route path="UserProfile" element={<UserProfile />} /> */}
 
 
         </Route>
 
         <Route path="/admin" element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['admin']}>
             <AdminLayout />
           </ProtectedRoute>}>
           {/* Default route for Admin with Sidebar, Navbar, and Dashbord */}
@@ -86,24 +90,21 @@ function App() {
           <Route path="completed-tasks" element={<AdminCompletedTasks />} /> 
           <Route path="deferred" element={<AdminDeferredTasks />} />
           <Route path="engineer/:id" element={<AdminEngineerTasks />} />
+          <Route path="search" element={<Search />} />
        
         </Route>
-
-        <Route path="/engineer" element={
-          <ProtectedRoute>
-            <EngineerDashboard />
-          </ProtectedRoute>
-          }>
+      
+        <Route path="/engineer" element={<EngineerDashboard />}>
           {/* Nested Routes (these will be rendered inside EngineerDashboard) */}
           <Route index element={<AssignedTasks />} />  {/* Default route inside EngineerDashboard */}
           <Route path="AssignedTasks" element={<AssignedTasks />} />
           <Route path="Hazards" element={<Hazards />} />
-          <Route path="Profile" element={<EngineersProfile />} />
-        </Route>
-
+          <Route path="Profile" element={<EngineerProfile />} />
+          <Route path="RiseTickets" element={<RaiseEngineerTickes />} />
+        </Route> 
       </Routes>
     </BrowserRouter>
-  );
+  );      
 }
 
 export default App;

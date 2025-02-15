@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import apiClient from '../../utils/apiClient';
 
 // Create AsyncThunk for fetching tickets
 export const fetchTickets = createAsyncThunk(
   'tickets/fetchTickets',
-  async (userId) => {
-    console.log(`userId inside fetchTickets ticketSlice: ${userId}`);
-    const response = await axios.get(`https://localhost:8000/api/tickets/user/${userId}`);
+  async ({userEmail,role}) => {
+    console.log(`userId inside fetchTickets ticketSlice: ${userEmail}`);
+    const response = await apiClient.get(`/tickets/${role}/${userEmail}`);
     console.log(`response.data inside ticketSlice: ${response.data}`);
     return response.data;
   }
@@ -15,11 +16,11 @@ export const fetchTickets = createAsyncThunk(
 // AsyncThunk for updating profile
 export const fetchUpdateProfile = createAsyncThunk(
   'UpdateProfile/fetchTickets', // The action type should be descriptive (UpdateProfile instead of fetchTickets)
-  async (updatedata, { rejectWithValue }) => {
+  async (userEmail, role, updatedata, { rejectWithValue }) => {
     console.log(`updatedata inside fetchUpdateProfile ticketSlice: ${updatedata}`);
     try {
       console.log("data is comeing update data")
-      const response = await axios.patch(`https://localhost:8000/api/updateProfile/user/2`, updatedata, {
+      const response = await apiClient.patch(`/updateProfile/${role}/${userEmail}`, updatedata, {
         headers: {
           'Content-Type': 'application/json'
         }

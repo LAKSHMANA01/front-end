@@ -8,13 +8,13 @@
     User
   } from "lucide-react";
   import { useState } from "react";
-  import { useNavigate  } from 'react-router-dom';
-  import { useSelector } from "react-redux";
+  import { useNavigate } from 'react-router-dom';
+  import { useSelector } from 'react-redux';
   
   const Sidebar = ({ activePath = '/'}) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const navigate = useNavigate()
-   const {updateProfile}=useSelector((state) => state.tickets)
+    const { tasks, updateProfile, loading, error } = useSelector((state) => state.tickets);
   
     const menuItems = [
       { path: '/User', icon: LayoutDashboard, label: 'MyTicket' },
@@ -108,8 +108,8 @@
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
               {isExpanded && (
                 <div>
-                  <p className="text-sm font-medium dark:text-white">welcome</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{updateProfile.name}</p>
+                  <p className="text-sm font-medium dark:text-white">{ updateProfile.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">User</p>
                 </div>
               )}
             </div>
