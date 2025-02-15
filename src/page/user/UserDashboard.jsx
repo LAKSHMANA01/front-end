@@ -3,22 +3,24 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useParams } from 'react-router-dom';
 import { fetchTickets } from '../../redux/Slice/UserSlice';
+import { setUser } from '../../redux/Slice/authSlice';
 import TaskCard from './Taskcard';
 import Loading from "../../compoents/Loadingpage"
 
 
 
 const UserTicketList = () => {
-  const  userId  = 2
+  //const  userId  = 2
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
   const { tasks, loading, error } = useSelector((state) => state.tickets);
 
   useEffect(() => {
-    console.log(`userId inside userEffect userDashboard: ${userId}`)
-    if (userId) {
-      dispatch(fetchTickets(userId));
+    //console.log(`inside userEffect userDashboard: ${email}, role: ${role}`);
+    if (user?.email && user?.role) {
+      dispatch(fetchTickets({userEmail: user.email, role: user.role}));
     }
-  }, [userId, dispatch]);
+  }, [user, dispatch]);
 
 
 

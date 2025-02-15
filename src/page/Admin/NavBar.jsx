@@ -110,7 +110,7 @@ const AdminNavbar = ({ onToggleTheme, isDarkMode = false, userName = "Admin", on
 
       {/* Right side - Notifications, Theme Toggle, Profile */}
       <div className="flex items-center space-x-4">
-        <Link to="/">
+        <Link to="/logout">
           <LogOut />
         </Link>
 

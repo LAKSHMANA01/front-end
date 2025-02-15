@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import apiClient from '../../utils/apiClient';
 
 export const submitTicket = createAsyncThunk(
   'tickets/submitTicket',
   async (ticketData, { rejectWithValue }) => {
     try {
       console.log("inside data")
-      const response = await axios.post(
-        ' https://localhost:8000/api/users/raiseTicket/2',
+      const response = await apiClient.post(
+        `/users/raiseTicket/2`, 
         ticketData,
         {
           headers: {

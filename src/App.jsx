@@ -14,6 +14,7 @@ import Homepage from "./page/Home/Homepage";
 
 import Login from "./page/login/Login";
 import Signup from "./page/login/Signup";
+import ForgotPwd from "./page/login/ForgotPwd";
 import Tickets from "./page/Admin/Tickets"; // Your task management page
 import AdminLayout from "./page/Admin/AdminLayout";
 import UserDashboard from "./page/user/UserDashboard"
@@ -37,7 +38,8 @@ import AdminEngineerTasks from "./page/Admin/AdminEngineerTasks";
 import  Search from "./compoents/Searchbar"
 import RaiseEngineerTickes from "./page/Engineer/HazardsTicket"
 
-
+import ProtectedRoute from "./utils/protectedRoute";
+import Logout from "./utils/logout";
 
 
 function App() {
@@ -50,13 +52,18 @@ function App() {
         {/* Login Page */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Signup />} />
+        <Route path="/reset" element={<ForgotPwd />}/>
+        <Route path="/logout" element={<Logout />}/>
         <Route path="*" element={<PagaeNotFound />} /> 
 
 
 
 
-        
-        <Route path="/User" element={<UserLayout />}>
+       
+        <Route path="/User" element={
+          <ProtectedRoute  allowedRoles={['user']}>
+          <UserLayout />
+          </ProtectedRoute>}>
           {/* Default route for Admin with Sidebar, Navbar, and Dashbord */}
           <Route index element={<UserDashboard />} />
 
@@ -69,8 +76,10 @@ function App() {
 
         </Route>
 
-
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin" element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminLayout />
+          </ProtectedRoute>}>
           {/* Default route for Admin with Sidebar, Navbar, and Dashbord */}
           <Route index element={<Dashbord />} />
           <Route path="tasks" element={<AdminTaskList />} />

@@ -64,7 +64,7 @@ const Navbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) =>
           <Bell size={24} />
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </button> */}
-        <Link to="/"><LogOut/></Link>
+        <Link to="/logout"><LogOut/></Link>
         {/* Theme Toggle */}
         <button
           onClick={onToggleTheme}

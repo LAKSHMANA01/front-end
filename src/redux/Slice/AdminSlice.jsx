@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import apiClient from "../../utils/apiClient";
 
 // Fetch all tasks
 export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get('https://localhost:8000/api/admin/tasks'); // Replace with your API
+    const response = await apiClient.get('/admin/tasks'); // Replace with your API
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch tasks");
@@ -14,7 +15,7 @@ export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, 
 // Fetch all users
 export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get('https://localhost:8000/api/admin/users'); // Replace with your API
+    const response = await apiClient.get('/admin/users'); // Replace with your API
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch users");
@@ -78,7 +79,7 @@ export const fetchEngineerTasks = createAsyncThunk(
   async (engineerId, { rejectWithValue }) => {
     try {
       console.log("engineerId", engineerId);
-      const response = await axios.get(`https://localhost:8000/api/tasks/engineer/${engineerId}`); // ✅ API call
+      const response = await axios.get(`https://localhost:8000/api/tasks/engineer/${engineerId}`); 
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Error fetching tasks");

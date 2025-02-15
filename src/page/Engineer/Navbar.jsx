@@ -53,10 +53,13 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
 
       {/* Right side - Notifications, Theme Toggle, Profile */}
       <div className="flex items-center space-x-4">
-        {/* Logout */}
-        <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-          <LogOut size={24} />
-        </Link>
+        {/* Notifications */}
+        {/* <button className="relative p-2 text-gray-600 dark:text-gray-300 
+          hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+          <Bell size={24} />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button> */}
+         <Link to="/logout"><LogOut/></Link>
 
         {/* Theme Toggle */}
         <button
