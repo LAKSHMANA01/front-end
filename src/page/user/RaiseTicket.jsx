@@ -7,16 +7,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const email = sessionStorage.getItem('email');
+const token = sessionStorage.getItem('token');
+console.log(email, token);
 const TicketForm = () => {
-  const userId = 2;
   const [ticketForm, setTicketForm] = useState({
     serviceType: "installation",
     address: "",
     description: "",
-    priority: "medium",
+    pincode: "",
   });
   const dispatch = useDispatch();
   const Raisetickets = useSelector((state) => state.Raisetickets);
+  const user = useSelector((state) => state.auth.user);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,14 +30,19 @@ const TicketForm = () => {
       ...ticketForm,
       //  userId: userId // Add userId to the submitted data
     };
+    
     try {
-      await dispatch(submitTicket({ ...ticketForm }));
+      if (email) {
+        console.log('venu')
+        dispatch(submitTicket({ ...ticketForm, email }));
+        console.log('harshith')
+      }
       // Reset form on success
       setTicketForm({
         serviceType: "installation",
         address: "",
         description: "",
-        priority: "medium",
+        pincode: "",
       });
     } catch (err) {
       console.error("Failed to submit ticket:", err);
@@ -55,7 +64,7 @@ const TicketForm = () => {
             onChange={(e) =>
               setTicketForm({ ...ticketForm, serviceType: e.target.value })
             }
-            required99
+            required
           >
             <option value="installation">New Installation</option>
             <option value="fault">Fault Report</option>
@@ -124,33 +133,18 @@ const TicketForm = () => {
         </div>
 
         <div>
-          <label className={labelStyles}>Priority Level</label>
-          <select
-            className={inputStyles}
-            value={ticketForm.priority}
-            onChange={(e) =>
-              setTicketForm({ ...ticketForm, priority: e.target.value })
-            }
-          >
-            <option value="low">Low - Not Urgent</option>
-            <option value="medium">Medium - Needs Attention</option>
-            <option value="high">High - Urgent Issue</option>
-          </select>
-        </div>
-
-        {/* <div>
-          <label className={labelStyles}>Contact Phone</label>
+          <label className={labelStyles}>Pincode</label>
           <input
             type="tel"
             className={inputStyles}
-            placeholder="Enter contact number"
-            value={ticketForm.contactPhone}
+            placeholder="Enter pincode"
+            value={ticketForm.pincode}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm, contactPhone: e.target.value })
+              setTicketForm({ ...ticketForm, pincode: e.target.value })
             }
             required
           />
-        </div> */}
+        </div>
 
         {/* <div>
           <label className={labelStyles}>

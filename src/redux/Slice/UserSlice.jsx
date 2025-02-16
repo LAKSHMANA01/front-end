@@ -57,7 +57,7 @@ const ticketSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchTickets.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.error = action.payload;
         state.loading = false;
       })
       

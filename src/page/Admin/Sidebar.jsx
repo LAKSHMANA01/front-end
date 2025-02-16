@@ -22,6 +22,7 @@ const AdminSidebar = () => {
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/tasks', icon: ClipboardList, label: 'Tasks' },
     { path: '/admin/engineers', icon: Wrench, label: 'Engineers' },
+    { path: '/admin/engineer-approval',icon:UserCog,  label: 'EngineersApproval'},
     { path: '/admin/users', icon: Users, label: 'Users' },
     { path: '/admin/settings', icon: Settings, label: 'Settings' }
   ];

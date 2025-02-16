@@ -4,12 +4,14 @@ import apiClient from '../../utils/apiClient';
 
 export const submitTicket = createAsyncThunk(
   'tickets/submitTicket',
-  async (ticketData, { rejectWithValue }) => {
+  async (ticketData) => { // Only accept one argument
+    const { email, ...rest } = ticketData; // Extract email separately
+    console.log("ticketData inside submitTicket", rest);
+    
     try {
-      console.log("inside data")
       const response = await apiClient.post(
-        `/users/raiseTicket/2`, 
-        ticketData,
+        `/users/raiseTicket/${email}`, 
+        rest, // Send the rest of the ticket data
         {
           headers: {
             'Content-Type': 'application/json',
@@ -20,12 +22,11 @@ export const submitTicket = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.error("Error submitting ticket:", error);
-      return rejectWithValue(
-        error.response?.data || 'Failed to submit ticket'
-      );
+      return error;
     }
   }
 );
+
 
 export const HazardsTicket = createAsyncThunk(
   'tickets/HazardsTicket',
