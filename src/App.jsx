@@ -40,7 +40,7 @@ import RaiseEngineerTickes from "./page/Engineer/HazardsTicket"
 
 import ProtectedRoute from "./utils/protectedRoute";
 import Logout from "./utils/logout";
-
+import Footer from "./compoents/footers";
 
 function App() {
   return (
@@ -102,7 +102,9 @@ function App() {
           <Route path="Profile" element={<EngineerProfile />} />
           <Route path="RiseTickets" element={<RaiseEngineerTickes />} />
         </Route> 
+       
       </Routes>
+
     </BrowserRouter>
   );      
 }

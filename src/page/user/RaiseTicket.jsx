@@ -42,7 +42,7 @@ const TicketForm = () => {
 
   const inputStyles =
     "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
-  const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
+  const labelStyles = "block text-sm font-medium text-gray-700 mb-1 ";
 
   return (
     <CustomCard title="Raise New Ticket" icon={AlertTriangle}>

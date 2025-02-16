@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { User, Mail, Phone, MapPin, Camera, CheckCircle } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { fetchUpdateProfile } from "../../redux/Slice/UserSlice";
 
 const UserProfile = () => {
-  const userId = 2;
   const dispatch = useDispatch();
 
   const [user, setUser] = useState({
@@ -16,12 +15,11 @@ const UserProfile = () => {
 
   const [activeTab, setActiveTab] = useState("personal");
   const [success, setSuccess] = useState(false);
-  const [editProfile, setEditProfile] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess(false);
-  
+
     try {
       await dispatch(fetchUpdateProfile(user)); // Dispatch updated profile
       setSuccess(true);
@@ -34,7 +32,7 @@ const UserProfile = () => {
 
   const tabs = [
     { id: "personal", label: "Personal Info" },
-    { id: "Update", label: "Update Profile" },
+    { id: "update", label: "Update Profile" },
   ];
 
   return (
@@ -76,69 +74,41 @@ const UserProfile = () => {
           <div className="p-6">
             {activeTab === "personal" && (
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="gap-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <User className="w-12" /> Full Name
-                  </label>
-                  <h3 className="w-f20 h-10 px-4 py-3 rounded-lg border bg-white/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                    {user.name}
-                  </h3>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <Mail className="w-12" /> Email
-                  </label>
-                  <h3 className="w-f20 px-4 py-3 rounded-lg border bg-white/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                    {user.email}
-                  </h3>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-4">
-                    <Phone className="w-12" /> Phone
-                  </label>
-                  <h3 className="w-f20 px-4 py-3 rounded-lg border bg-white/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                    {user.phone}
-                  </h3>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-4">
-                    <MapPin className="w-12" /> Address
-                  </label>
-                  <h3 className="w-f20 px-4 py-3 rounded-lg border bg-white/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
-                    {user.address}
-                  </h3>
-                </div>
+                <ProfileField label="Full Name" value={user.name} icon={<User className="w-5 h-5" />} />
+                <ProfileField label="Email" value={user.email} icon={<Mail className="w-5 h-5" />} />
+                <ProfileField label="Phone" value={user.phone} icon={<Phone className="w-5 h-5" />} />
+                <ProfileField label="Address" value={user.address} icon={<MapPin className="w-5 h-5" />} />
               </div>
             )}
 
-            {activeTab === "Update" && (
+            {activeTab === "update" && (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <InputField
                     label="Full Name"
                     value={user.name}
                     onChange={(e) => setUser({ ...user, name: e.target.value })}
-                    icon={<User className="w-4 h-4" />}
+                    icon={<User className="w-5 h-5" />}
                   />
                   <InputField
                     label="Email"
                     type="email"
                     value={user.email}
                     onChange={(e) => setUser({ ...user, email: e.target.value })}
-                    icon={<Mail className="w-4 h-4" />}
+                    icon={<Mail className="w-5 h-5" />}
                   />
                   <InputField
                     label="Phone"
                     type="tel"
                     value={user.phone}
                     onChange={(e) => setUser({ ...user, phone: e.target.value })}
-                    icon={<Phone className="w-4 h-4" />}
+                    icon={<Phone className="w-5 h-5" />}
                   />
                   <InputField
                     label="Address"
                     value={user.address}
                     onChange={(e) => setUser({ ...user, address: e.target.value })}
-                    icon={<MapPin className="w-4 h-4" />}
+                    icon={<MapPin className="w-5 h-5" />}
                   />
                 </div>
                 <SubmitButton success={success} />
@@ -150,6 +120,17 @@ const UserProfile = () => {
     </div>
   );
 };
+
+const ProfileField = ({ label, value, icon }) => (
+  <div className="space-y-2">
+    <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+      {icon} {label}
+    </label>
+    <div className="w-full px-4 py-3 rounded-lg border bg-white/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+      {value}
+    </div>
+  </div>
+);
 
 const InputField = ({ label, icon, ...props }) => (
   <div className="space-y-2">

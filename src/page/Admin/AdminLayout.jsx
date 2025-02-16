@@ -1,27 +1,24 @@
-// src/components/AdminLayout.jsx
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import ThemeContextProvider from '../../ContextAPI/ContextAPI';
-
-import Dashbord from '../../compoents/Dashbord';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import AdminSidebar from "./Sidebar";
+import AdminNavbar from "./NavBar";
+import Footer from "../../compoents/footers";
+// import ThemeContextProvider from "../../ContextAPI/ContextAPI";
 
 const AdminLayout = () => {
   return (
-    <ThemeContextProvider>
-      
-        <Sidebar />
-      <div className="flex">
-       
-        <div className="grow ml-16 md:ml-64 h-full lg:h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
-        {/* {window.location.pathname !== "/admin/Tickets" && <Navbar />}
-        {window.location.pathname !== "/admin/Tickets" && <Dashbord />} */}
-          {/* here router parence to child router display */}
+    // <ThemeContextProvider>
+      <div className="relative">
+        <AdminNavbar />
+        {/* Sidebar is fixed and should be placed below the navbar */}
+        <AdminSidebar />
+        {/* Main content area: add top margin to offset fixed navbar */}
+        <div className="mt-10 ml-50 md:ml-20 transition-all duration-300">
           <Outlet />
         </div>
-      
+        <Footer/>
       </div>
-    </ThemeContextProvider>
+  
   );
 };
 

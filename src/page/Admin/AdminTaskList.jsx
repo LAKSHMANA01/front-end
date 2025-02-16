@@ -31,7 +31,7 @@ const AdminTaskList = () => {
   return (
     <div className="space-y-6 p-4 ">
 
-        < AdminNavbar/>
+   
      
         <div className="flex flex-wrap gap-6"> 
       {tasks.map((task) => (
