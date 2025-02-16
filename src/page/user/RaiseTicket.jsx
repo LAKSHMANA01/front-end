@@ -8,6 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const email = sessionStorage.getItem('email');
+const token = sessionStorage.getItem('token');
+console.log(email, token);
 const TicketForm = () => {
   const [ticketForm, setTicketForm] = useState({
     serviceType: "installation",
@@ -32,7 +34,7 @@ const TicketForm = () => {
     try {
       if (email) {
         console.log('venu')
-        dispatch(submitTicket(email, { ...ticketForm }));
+        dispatch(submitTicket({ ...ticketForm, email }));
         console.log('harshith')
       }
       // Reset form on success

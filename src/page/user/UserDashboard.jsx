@@ -14,13 +14,12 @@ const UserTicketList = () => {
   //const  userId  = 2
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  console.log("User:",user);
   const { tasks, loading, error } = useSelector((state) => state.tickets);
   
   useEffect(() => {
     
-    if (user?.email && user?.role) {
-      dispatch(fetchTickets({userEmail: user.email, role: user.role}));
+    if (email && role) {
+      dispatch(fetchTickets({userEmail: email, role: role}));
     }
   }, [user, dispatch]);
 
