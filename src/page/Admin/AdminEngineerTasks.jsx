@@ -6,13 +6,15 @@ import AdminNavbar from "./NavBar";
 import AdminTaskCard from "./AdminTaskCard"; // ✅ Reuse Task Card Component
 
 const AdminEngineerTasks = () => {
-  const { id } = useParams(); // ✅ Get engineer ID from URL
+  const { email } = useParams(); // ✅ Get engineer email from URL
   const dispatch = useDispatch();
   const { tasks, loading, error } = useSelector((state) => state.admin);
 
   useEffect(() => {
-    dispatch(fetchEngineerTasks(id)); // ✅ Fetch tasks when component loads
-  }, [dispatch, id]);
+    if(email){
+      dispatch(fetchEngineerTasks(email)); // ✅ Fetch tasks when component loads
+    }
+  }, [dispatch, email]);
 
   if (loading) return <div className="text-center text-gray-500">Loading tasks...</div>;
   if (error) return <div className="text-center text-red-500">Error: {error}</div>;
