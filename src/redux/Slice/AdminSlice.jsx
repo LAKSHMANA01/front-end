@@ -22,15 +22,42 @@ export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, 
   }
 });
 
-export const fetchAllEngineers = createAsyncThunk("admin/engineers/fetchAll",async (_, { rejectWithValue }) => {
+export const fetchAllApprovedEngineers = createAsyncThunk("admin/fetchAllApprovedEngineers",async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("https://localhost:8000/api/admin/engineers"); // Replace with your API
+      const response = await apiClient.get("/admin/engineers"); // Replace with your API
+      //console.log("Approved Engineers Response:", response.data); // Debugging
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch engineers");
     }
   }
 );
+
+export const fetchAllEngineers = createAsyncThunk("admin/fetchAllEngineers", async(_, {rejectWithValue}) => {
+  try{
+    const response = await apiClient.get("/admin/approval/engineers");
+    // if (!Array.isArray(response.data.approvalEngineers)) {
+    //   throw new Error("Invalid data format");
+    // }
+    
+    return response.data.approvalEngineers; //this approvalEngineers is from backend API
+  }catch(error){
+    return rejectWithValue(error.response?.data || "Failed to fetch engineers");
+  }
+});
+
+export const approveEngineer = createAsyncThunk("admin/approveEngineer", async ({engineerEmail, approve},{rejectWithValue}) =>{
+  try{
+    const response = await apiClient.patch(`/admin/approve-engineer/${engineerEmail}`, 
+      {
+        email: engineerEmail,
+        approve
+      });
+    return response.data;
+  }catch(error){
+    return rejectWithValue(error.response?.data || "Failed to update engineer approval");
+  }
+})
 
 export const fetchDeferredTasks = createAsyncThunk(
   "admin/deferredTasks/fetchAll",
@@ -76,17 +103,16 @@ export const reassignTicket = createAsyncThunk(
 
 export const fetchEngineerTasks = createAsyncThunk(
   "admin/fetchEngineerTasks",
-  async (engineerId, { rejectWithValue }) => {
+  async (engineerEmail, { rejectWithValue }) => {
     try {
-      console.log("engineerId", engineerId);
-      const response = await axios.get(`https://localhost:8000/api/tasks/engineer/${engineerId}`); 
+      //console.log("engineerId", engineerId);
+      const response = await apiClient.get(`/tasks/engineer/${engineerEmail}`); 
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Error fetching tasks");
     }
   }
 );
-
 
 
 const adminSlice = createSlice({
@@ -97,6 +123,7 @@ const adminSlice = createSlice({
     deferredTasks: [],
     users: [],
     engineers: [],
+    approvedEngineers: [],
     loading: false,
     error: null,
   },
@@ -121,14 +148,14 @@ const adminSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
-      .addCase(fetchAllEngineers.pending, (state) => {
+      .addCase(fetchAllApprovedEngineers.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchAllEngineers.fulfilled, (state, action) => {
-        state.engineers = action.payload;
+      .addCase(fetchAllApprovedEngineers.fulfilled, (state, action) => {
+        state.approvedEngineers = action.payload;
         state.loading = false;
       })
-      .addCase(fetchAllEngineers.rejected, (state, action) => {
+      .addCase(fetchAllApprovedEngineers.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       })
@@ -166,7 +193,52 @@ const adminSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      .addCase(fetchAllEngineers.pending, (state) =>{
+        state.loading=true;
+        state.error = null;
+      })
+      .addCase(fetchAllEngineers.fulfilled, (state, action) =>{
+        state.engineers=Array.isArray(action.payload) ? action.payload : [];
+        state.loading=false;
+      })
+      .addCase(fetchAllEngineers.rejected, (state, action) =>{
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(approveEngineer.pending, (state) =>{
+        state.loading =true;
+        state.error = null;
+      })
+      .addCase(approveEngineer.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedEngineer = action.payload.engineer;
+    
+        if (!updatedEngineer) return; // Ensure there's an engineer to update
+    
+        // Update engineers list
+        state.engineers = state.engineers.map((engineer) =>
+            engineer.email === updatedEngineer.email ? updatedEngineer : engineer
+        );
+    
+        // Ensure approvedEngineers list exists
+        if (!state.approvedEngineers) {
+            state.approvedEngineers = [];
+        }
+    
+        // Add to approved list if not already there
+        const engineerExists = state.approvedEngineers.some(
+            (e) => e.email === updatedEngineer.email
+        );
+        if (!engineerExists) {
+            state.approvedEngineers.push(updatedEngineer);
+        }
+    })
+    
       
+      .addCase(approveEngineer.rejected, (state, action) =>{
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

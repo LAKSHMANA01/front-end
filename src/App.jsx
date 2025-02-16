@@ -37,7 +37,7 @@ import AdminDeferredTasks from "./page/Admin/AdminDeferredTasks";
 import AdminEngineerTasks from "./page/Admin/AdminEngineerTasks"; 
 import  Search from "./compoents/Searchbar"
 import RaiseEngineerTickes from "./page/Engineer/HazardsTicket"
-
+import AdminEngineerApproval from "./page/Admin/AdminEngineerApproval";
 import ProtectedRoute from "./utils/protectedRoute";
 import Logout from "./utils/logout";
 
@@ -87,9 +87,10 @@ function App() {
           {/* Tickets route (this will only render Sidebar and TicketsCreate) */}
           {/* <Route path="Tickets" element={<Tickets />} /> */}
           <Route path="/admin/engineers" element={<AdminEngineerList />} />
+          <Route path="engineer-approval" element={<AdminEngineerApproval />} />
           <Route path="completed-tasks" element={<AdminCompletedTasks />} /> 
           <Route path="deferred" element={<AdminDeferredTasks />} />
-          <Route path="engineer/:id" element={<AdminEngineerTasks />} />
+          <Route path="engineer/:email" element={<AdminEngineerTasks />} />
           <Route path="search" element={<Search />} />
        
         </Route>
