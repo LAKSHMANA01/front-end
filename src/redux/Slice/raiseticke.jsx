@@ -6,7 +6,6 @@ export const submitTicket = createAsyncThunk(
   'tickets/submitTicket',
   async (ticketData, { rejectWithValue }) => {
     try {
-      console.log("inside data")
       const response = await apiClient.post(
         `/users/raiseTicket/2`, 
         ticketData,
