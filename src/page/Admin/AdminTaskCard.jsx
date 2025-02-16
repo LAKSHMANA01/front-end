@@ -356,6 +356,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Clock, AlertTriangle, User } from 'lucide-react';
+import apiClient from '../../utils/apiClient';
 
 const AdminTaskCard = ({ task = {} }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -379,7 +380,7 @@ const AdminTaskCard = ({ task = {} }) => {
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const currentDay = days[new Date().getDay()];
       
-      const response = await fetch(`https://localhost:8000/api/admin/engineers/availability/Monday`);
+      const response = await apiClient.get(`/admin/engineers/availability/${currentDay}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch engineers');
@@ -410,7 +411,7 @@ const AdminTaskCard = ({ task = {} }) => {
     }
   };
 
-  const handleReassignEngineer = async (engineerId) => {
+  const handleReassignEngineer = async (email) => {
     setLoading(true);
     setError(null);
     console.log("task all",task)
@@ -421,18 +422,18 @@ const AdminTaskCard = ({ task = {} }) => {
         throw new Error('Invalid task information');
       }
       
-      if (!engineerId) {
+      if (!email) {
         throw new Error('Invalid engineer ID');
       }
 
       // Make the API call
-      const response = await fetch(`https://localhost:8000/api/admin/reassign/${task._id}/${engineerId}`, {
+      const response = await apiClient.patch(`/admin/reassign/${task._id}/${email}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          engineerId: engineerId
+          email: email
         })
       });
 
@@ -441,7 +442,7 @@ const AdminTaskCard = ({ task = {} }) => {
         throw new Error(errorData?.message || 'Failed to reassign engineer');
       }
       
-      const selectedEngineer = availableEngineers.find(eng => eng.id === engineerId);
+      const selectedEngineer = availableEngineers.find(eng => eng.email === email);
       
       if (!selectedEngineer) {
         throw new Error('Selected engineer not found in available engineers list');
