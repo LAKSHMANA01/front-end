@@ -1,18 +1,18 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEngineerTasks } from "../../redux/Slice/AdminSlice"; // ✅ Fetch tasks for engineer
+import { fetchEngineerTasks } from "../../redux/Slice/AdminSlice"; 
 import { useParams } from "react-router-dom";
 import AdminNavbar from "./NavBar";
-import AdminTaskCard from "./AdminTaskCard"; // ✅ Reuse Task Card Component
+import AdminTaskCard from "./AdminTaskCard"; 
 
 const AdminEngineerTasks = () => {
-  const { email } = useParams(); // ✅ Get engineer email from URL
+  const { email } = useParams(); 
   const dispatch = useDispatch();
   const { tasks, loading, error } = useSelector((state) => state.admin);
 
   useEffect(() => {
     if(email){
-      dispatch(fetchEngineerTasks(email)); // ✅ Fetch tasks when component loads
+      dispatch(fetchEngineerTasks(email)); 
     }
   }, [dispatch, email]);
 
