@@ -42,10 +42,10 @@ const Sidebar = ({ activePath = '/' }) => {
         {isExpanded ? (
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent">
-            User Name
+           
           </h1>
         ) : (
-          <h1 className="text-2xl font-bold text-blue-600">B</h1>
+          <h1 className="text-2xl font-bold text-blue-600"></h1>
         )}
       </div>
 
