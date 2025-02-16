@@ -1,17 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { User, Mail, Phone, MapPin, Camera, CheckCircle } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { fetchUpdateProfile } from "../../redux/Slice/UserSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUpdateProfile, fetchProfile } from "../../redux/Slice/UserSlice";
 
 const UserProfile = () => {
+  const userEmail = sessionStorage.getItem("email");
+  const role = sessionStorage.getItem("role"); // Replace with the actual user role/ID if needed
   const dispatch = useDispatch();
+  const { profile } = useSelector((state) => state.tickets);
 
+  // Fetch the profile if not already loaded
+  useEffect(() => {
+    if (!profile.email) {
+      dispatch(fetchProfile({ userEmail, role }));
+    }
+  }, [dispatch, profile.email, userEmail, role]);
+
+  // Local state for update form; update it when profile is fetched
   const [user, setUser] = useState({
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "+1 234 567 8900",
-    address: "123 Main St, City",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
   });
+
+  useEffect(() => {
+    if (profile.email) {
+      setUser({
+        name: profile.name || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        address: profile.address || "",
+      });
+    }
+  }, [profile]);
 
   const [activeTab, setActiveTab] = useState("personal");
   const [success, setSuccess] = useState(false);
@@ -21,7 +43,8 @@ const UserProfile = () => {
     setSuccess(false);
 
     try {
-      await dispatch(fetchUpdateProfile(user)); // Dispatch updated profile
+      // Dispatch updated profile with an object containing userEmail, role, and updatedata (user)
+      await dispatch(fetchUpdateProfile({ userEmail, role, updatedata: user }));
       setSuccess(true);
     } catch (error) {
       console.error("Profile update failed:", error.message);
@@ -74,10 +97,26 @@ const UserProfile = () => {
           <div className="p-6">
             {activeTab === "personal" && (
               <div className="grid md:grid-cols-2 gap-6">
-                <ProfileField label="Full Name" value={user.name} icon={<User className="w-5 h-5" />} />
-                <ProfileField label="Email" value={user.email} icon={<Mail className="w-5 h-5" />} />
-                <ProfileField label="Phone" value={user.phone} icon={<Phone className="w-5 h-5" />} />
-                <ProfileField label="Address" value={user.address} icon={<MapPin className="w-5 h-5" />} />
+                <ProfileField
+                  label="Full Name"
+                  value={user.name}
+                  icon={<User className="w-5 h-5" />}
+                />
+                <ProfileField
+                  label="Email"
+                  value={user.email}
+                  icon={<Mail className="w-5 h-5" />}
+                />
+                <ProfileField
+                  label="Phone"
+                  value={user.phone}
+                  icon={<Phone className="w-5 h-5" />}
+                />
+                <ProfileField
+                  label="Address"
+                  value={user.address}
+                  icon={<MapPin className="w-5 h-5" />}
+                />
               </div>
             )}
 
@@ -87,27 +126,35 @@ const UserProfile = () => {
                   <InputField
                     label="Full Name"
                     value={user.name}
-                    onChange={(e) => setUser({ ...user, name: e.target.value })}
+                    onChange={(e) =>
+                      setUser({ ...user, name: e.target.value })
+                    }
                     icon={<User className="w-5 h-5" />}
                   />
                   <InputField
                     label="Email"
                     type="email"
                     value={user.email}
-                    onChange={(e) => setUser({ ...user, email: e.target.value })}
+                    onChange={(e) =>
+                      setUser({ ...user, email: e.target.value })
+                    }
                     icon={<Mail className="w-5 h-5" />}
                   />
                   <InputField
                     label="Phone"
                     type="tel"
                     value={user.phone}
-                    onChange={(e) => setUser({ ...user, phone: e.target.value })}
+                    onChange={(e) =>
+                      setUser({ ...user, phone: e.target.value })
+                    }
                     icon={<Phone className="w-5 h-5" />}
                   />
                   <InputField
                     label="Address"
                     value={user.address}
-                    onChange={(e) => setUser({ ...user, address: e.target.value })}
+                    onChange={(e) =>
+                      setUser({ ...user, address: e.target.value })
+                    }
                     icon={<MapPin className="w-5 h-5" />}
                   />
                 </div>

@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 const email = sessionStorage.getItem('email');
 const token = sessionStorage.getItem('token');
 console.log(email, token);
-const TicketForm = () => {
+const TicketForm = () => {  
   const [ticketForm, setTicketForm] = useState({
     serviceType: "installation",
     address: "",
@@ -35,7 +35,8 @@ const TicketForm = () => {
       if (email) {
         console.log('venu')
         dispatch(submitTicket({ ...ticketForm, email }));
-        console.log('harshith')
+        toast.success("Ticket submitted successfully!");
+       
       }
       // Reset form on success
       setTicketForm({
@@ -46,6 +47,7 @@ const TicketForm = () => {
       });
     } catch (err) {
       console.error("Failed to submit ticket:", err);
+      toast.error("Failed to submit ticket!");
     }
   };
 
@@ -166,6 +168,17 @@ const TicketForm = () => {
           Submit Ticket
         </button>
       </form>
+      <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </CustomCard>
   );
 };
