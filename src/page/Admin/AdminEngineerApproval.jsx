@@ -3,10 +3,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllEngineers, fetchAllApprovedEngineers, approveEngineer } from "../../redux/Slice/AdminSlice";
 import AdminNavbar from "./NavBar";
 import Loading from "../../compoents/Loadingpage";
-
+import { useNavigate } from "react-router-dom";
 const AdminEngineerApproval = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); 
   const { engineers = [], loading, error } = useSelector((state) => state.admin);
+  const { role } = useSelector((state) => state.auth.user);
+
+  // Redirect if not an admin
+  // useEffect(() => {
+  //   if (role !== "admin") {
+  //     navigate("/"); // Redirect unauthorized users
+  //   }
+  // }, [role, navigate]);
+
 
   useEffect(() => {
     dispatch(fetchAllEngineers()); // Fetch engineers who need approval
