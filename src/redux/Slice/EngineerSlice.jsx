@@ -40,6 +40,29 @@ export const fetchUpdateEngineerProfile = createAsyncThunk(
   }
 );
 
+// AsyncThunk for updating engineer profile
+export const fetchEngineerProfiledata = createAsyncThunk(
+  'engineerfetchEngineerProfiledata',
+  async (updatedData, { rejectWithValue }) => {
+    console.log(`updatedData inside fetchUpdateEngineerProfile: ${updatedData}`);
+    try {
+      const response = await axios.patch(
+        `https://localhost:8000/api/updateProfile/engineer/3`, 
+        updatedData, 
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log(`response.data inside fetchUpdateEngineerProfile: ${response.data}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to update engineer profile');
+    }
+  }
+);
+
 export const updateTaskStatus = createAsyncThunk(
   'engineer/updateTaskStatus',
   async ({ taskId, status }, { rejectWithValue }) => {
@@ -114,6 +137,7 @@ const engineerSlice = createSlice({
   initialState: {
     tasks: [],
     updateProfile: [],
+    profiledata: {},
     Hazards:[],
     loading: false,
     error: null,
@@ -145,6 +169,20 @@ const engineerSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchUpdateEngineerProfile.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+       // For fetchEngineerProfiledata
+       .addCase(fetchEngineerProfiledata.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchEngineerProfiledata.fulfilled, (state, action) => {
+        state.updateProfile = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchEngineerProfiledata.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       })
