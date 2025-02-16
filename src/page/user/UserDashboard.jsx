@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useParams } from 'react-router-dom';
@@ -13,17 +13,21 @@ const UserTicketList = () => {
   //const  userId  = 2
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   console.log("User:",user);
   const { tasks, loading, error } = useSelector((state) => state.tickets);
   
   useEffect(() => {
     
-    if (user?.email && user?.role) {
+    if (user?.email && user?.role && !isDataLoaded)  {
       dispatch(fetchTickets({userEmail: user.email, role: user.role}));
+      setIsDataLoaded(true)
     }
-  }, [user, dispatch]);
+  }, [user, dispatch,isDataLoaded]);
 
-
+  if (!user?.email || !user?.role) {
+    return <div>Loading user data...</div>;
+  }
 
   if (loading) {
     return <div><Loading/></div>;
