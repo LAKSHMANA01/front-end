@@ -40,10 +40,13 @@ import RaiseEngineerTickes from "./page/Engineer/HazardsTicket"
 import AdminEngineerApproval from "./page/Admin/AdminEngineerApproval";
 import ProtectedRoute from "./utils/protectedRoute";
 import Logout from "./utils/logout";
-import Footer from "./compoents/footers";
+
+import HazardsAdmin from "././page/Admin/AdminHazards"
+import Hazardtickets from "././page/Admin/AdminHazardsTickets"
 
 function App() {
   return (
+    <div  className="flex flex-col min-h-screen">
     <BrowserRouter>
       <Routes>
         {/* Home Page */}
@@ -91,7 +94,8 @@ function App() {
           <Route path="completed-tasks" element={<AdminCompletedTasks />} /> 
           <Route path="deferred" element={<AdminDeferredTasks />} />
           <Route path="engineer/:email" element={<AdminEngineerTasks />} />
-          <Route path="search" element={<Search />} />
+          <Route path="hazards" element={<HazardsAdmin/>} />
+          <Route path="hazardsTickets" element={< Hazardtickets/>} />
        
         </Route>
       
@@ -105,8 +109,10 @@ function App() {
         </Route> 
        
       </Routes>
-
+   
     </BrowserRouter>
+  
+    </div>
   );      
 }
 

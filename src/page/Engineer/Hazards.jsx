@@ -17,6 +17,9 @@ const EngineerDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filteredTasks, setFilteredTasks] = useState([]);
+
   const [updateFormData, setUpdateFormData] = useState({
     hazardType: '',
     description: '',
@@ -25,9 +28,14 @@ const EngineerDashboard = () => {
     pincode: '',
   });
 
+
   useEffect(() => {
     dispatch(HazardsTickets({})); // Fetch hazard tickets on mount
   }, [dispatch]);
+  
+  useEffect(() => {
+    setFilteredTasks(Hazards.filter((task) => task.hazardType.toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [searchTerm,  Hazards]);
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
@@ -85,9 +93,18 @@ const EngineerDashboard = () => {
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-semibold mb-4">Assigned Tickets</h2>
+        <input
+          type="text"
+          placeholder="Search by hazard type"
+        
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Hazards.length > 0 ? (
-            Hazards.map((ticket) => (
+          {filteredTasks.length > 0 ? (
+            filteredTasks.map((ticket) => (
               <div
                 key={ticket._id}
                 onClick={() => handleTaskClick(ticket)}

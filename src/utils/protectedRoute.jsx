@@ -12,7 +12,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     if (!token) {
       navigate("/login"); // Redirect to login if no token
     } else if (!allowedRoles.includes(role)) {
-      navigate("/unauthorized"); // Redirect if role is not allowed
+      navigate("/unauthorized");
+       // Redirect if role is not allowed
     }
   }, [navigate, location, allowedRoles]);
 

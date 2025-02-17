@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 
 const AdminLayout = () => {
   const [scrollY, setScrollY] = useState(0);
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   // Handle scroll event
   const handleScroll = () => {
@@ -18,7 +18,7 @@ const AdminLayout = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const bodyBackgroundStyle = scrollY > 100 ? 'bg-blue-100' : 'bg-white';
+  // const bodyBackgroundStyle = scrollY > 100 ? 'bg-blue-white' : 'bg-white';
 
   return (
     <ThemeContextProvider>
@@ -38,9 +38,9 @@ const AdminLayout = () => {
           <div
             className={`
               flex-1 overflow-y-auto p-4 transition-all duration-300
-              ${bodyBackgroundStyle} dark:bg-gray-900
-              ${isSidebarExpanded ? 'ml-[50px]' : 'ml-[20px]'}  /* Adjust these values to match your Sidebar widths */
-              md:ml-10 /* On medium/small screens, remove the margin to overlay content */
+             dark:bg-gray-900
+              ${isSidebarExpanded ? 'ml-[50px]' : 'ml-[53px]'}  /* Adjust these values to match your Sidebar widths */
+              ms:ml-40   /* On medium/small screens, remove the margin to overlay content */
             `}
           > 
             <Outlet />

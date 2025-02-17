@@ -3,8 +3,8 @@ import { FaFacebook, FaTwitter, FaLinkedin, FaGithub } from "react-icons/fa";
 
 const Footer = ({ className }) => {
   return (
-    <footer className={`bg-white border-t border-gray-300 py-6 ${className}`}>
-      <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+    <footer className={`bg-white border-t mb-0 border-gray-300 py-6 mt-auto ${className}`}>
+      <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center mt-10">
         <div className="text-gray-700 text-center md:text-left">
           <h2 className="text-xl font-bold text-blue-600">SwiftLink Telecom Services</h2>
           <p className="mt-2">Connecting you to the world with reliable telecom solutions.</p>

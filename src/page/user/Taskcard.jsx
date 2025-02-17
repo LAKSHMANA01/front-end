@@ -1,7 +1,9 @@
 import React from "react";
+import Footer from "../../compoents/footers";
 
 const TaskCard = ({ task, showPriority }) => {
   return (
+    <div>
     <div className="group relative bg-gradient-to-br from-white to-blue-50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200 hover:border-blue-200">
       {/* Card Header */}
       <div className="flex items-start justify-between mb-4">
@@ -58,6 +60,8 @@ const TaskCard = ({ task, showPriority }) => {
           </svg>
         </button>
       </div>
+    </div>
+   
     </div>
   );
 };

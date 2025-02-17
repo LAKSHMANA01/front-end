@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Users,
   Wrench,
   ClipboardList,
   Settings,
+  AlertTriangle,
   ChevronRight,
   ChevronLeft,
   UserCog,
@@ -18,18 +19,32 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Retrieve the state from local storage when the component mounts
+  useEffect(() => {
+    const savedState = localStorage.getItem('isAdminSidebarExpanded');
+    if (savedState !== null) {
+      setIsExpanded(JSON.parse(savedState));
+    }
+  }, []);
+
   const menuItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/tasks', icon: ClipboardList, label: 'Tasks' },
     { path: '/admin/engineers', icon: Wrench, label: 'Engineers' },
-    { path: '/admin/engineer-approval',icon:UserCog,  label: 'EngineersApproval'},
+    { path: '/admin/engineer-approval', icon: UserCog, label: 'EngineersApproval' },
     { path: '/admin/users', icon: Users, label: 'Users' },
-    { path: '/admin/settings', icon: Settings, label: 'Settings' }
+    { path: '/admin/hazards', icon:AlertTriangle, label: 'Hazards' }
   ];
 
   // Determine active menu item
   const isActive = (path) => location.pathname === path;
   const handleNavigation = (path) => navigate(path);
+
+  const toggleSidebar = () => {
+    const newState = !isExpanded;
+    setIsExpanded(newState);
+    localStorage.setItem('isAdminSidebarExpanded', JSON.stringify(newState));
+  };
 
   return (
     <aside 
@@ -42,18 +57,17 @@ const AdminSidebar = () => {
         shadow-xl 
         flex flex-col 
         transition-all duration-300 ease-in-out 
-       
         ${isExpanded 
           ? 'w-64 translate-x-0' 
-          : 'w-20  md:translate-x-0 -translate-x-full'
+          : 'w-20 md:translate-x-0 -translate-x-full'
         }
       `}
     >
       {/* Toggle Button */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={toggleSidebar}
         className="absolute -right-3 top-8 bg-blue-500 text-white 
-          rounded-full p-2  hover:bg-blue-600 transition-colors 
+          rounded-full p-2 hover:bg-blue-600 transition-colors 
           shadow-lg"
       >
         {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
