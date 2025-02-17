@@ -42,7 +42,7 @@ const AdminLayout = () => {
               ${isSidebarExpanded ? 'ml-[50px]' : 'ml-[20px]'}  /* Adjust these values to match your Sidebar widths */
               md:ml-10 /* On medium/small screens, remove the margin to overlay content */
             `}
-          >
+          > 
             <Outlet />
           </div>
         </div>
@@ -52,3 +52,4 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+//mt-10 ml-50 md:ml-20 transition-all duration-300 change width transition here transition

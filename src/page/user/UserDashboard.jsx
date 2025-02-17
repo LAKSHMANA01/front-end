@@ -10,6 +10,7 @@ import Loading from "../../compoents/Loadingpage"
 
 const email = sessionStorage.getItem('email');
 const role = sessionStorage.getItem('role');
+
 const UserTicketList = () => {
   //const  userId  = 2
   const dispatch = useDispatch();
@@ -26,9 +27,7 @@ const UserTicketList = () => {
     }
   }, [user, dispatch,isDataLoaded]);
 
-  if (!user?.email || !user?.role) {
-    return <div>Loading user data...</div>;
-  }
+ 
 
   if (loading) {
     return <div><Loading/></div>;
@@ -44,6 +43,7 @@ const UserTicketList = () => {
       <div style={taskListStyles}>
         {tasks.map((task) => (
           <TaskCard key={task._id} task={task} showPriority={false} />
+        
         ))}
       </div>
    

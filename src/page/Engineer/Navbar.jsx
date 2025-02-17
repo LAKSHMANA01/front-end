@@ -26,7 +26,11 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
         <div className={`relative flex items-center ${isSearchOpen ? 'w-full md:w-96' : 'w-auto'}`}>
           <div className={`flex items-center w-full ${isSearchOpen ? 'block' : 'hidden md:flex'}`}>
             <div className="relative w-full">
-              <input
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
+            bg-clip-text text-transparent">
+            Telecom Services
+          </h1>
+              {/* <input
                 type="text"
                 placeholder="Search..."
                 className="w-full px-4 py-2 pl-10 pr-4 
@@ -34,12 +38,12 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
                   dark:border-gray-700 dark:bg-gray-800 
                   focus:outline-none focus:border-blue-500
                   dark:text-gray-300"
-              />
-              <Search 
+              /> */}
+              {/* <Search 
                 size={20} 
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 
                   text-gray-400 dark:text-gray-500"
-              />
+              /> */}
             </div>
           </div>
           <button

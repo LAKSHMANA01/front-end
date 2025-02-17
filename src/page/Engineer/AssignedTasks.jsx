@@ -5,11 +5,14 @@ import TaskCard from './TaskCard';
 import Loading from "../../compoents/Loadingpage";
 // import Navbar from '../user/Navbar';
 
+// const email = sessionStorage.getItem('email');
+// const role = sessionStorage.getItem('role');
+
+
 const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
-    const engineerId = 3;
-    console.log("Engineer ID:", engineerId);
 
     const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.user)
     const { tasks, loading, error } = useSelector((state) => state.engineer);
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,10 +21,11 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
     const [localTasks, setLocalTasks] = useState([]); // Local state to update UI instantly
 
     useEffect(() => {
-        if (engineerId) {
-            dispatch(fetchEngineerTasks(engineerId));
+        if (user.email) {
+            console.log('inside atjsx -', user.email);
+            dispatch(fetchEngineerTasks(user.email));
         }
-    }, [engineerId, dispatch]);
+    }, [user.email,user.role, dispatch]);
 
     useEffect(() => {
         setLocalTasks(tasks); // Sync local state when tasks update

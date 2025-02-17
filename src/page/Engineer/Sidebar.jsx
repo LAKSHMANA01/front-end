@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 const Sidebar = ({ activePath = '/' }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
 
@@ -47,8 +47,9 @@ const Sidebar = ({ activePath = '/' }) => {
   return (
     <div 
       className={`
-    top-0 left-0 
-        h-screen
+       fixed top-16 left-0 
+        z-50
+        h-[calc(100vh-4rem)] 
         bg-white
         transition-all duration-300 ease-in-out
         border-r border-wh
@@ -76,7 +77,7 @@ const Sidebar = ({ activePath = '/' }) => {
             Engineer
           </h1>
         ) : (
-          <h1 className="text-2xl font-bold text-blue-600">B</h1>
+          <h1 className="text-2xl font-bold text-blue-600"></h1>
         )}
       </div>
 
