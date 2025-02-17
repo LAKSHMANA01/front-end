@@ -5,7 +5,7 @@ import axios from 'axios';
 export const fetchEngineerTasks = createAsyncThunk(
   'engineer/fetchEngineerTasks',
   async (userId, { rejectWithValue }) => {
-    console.log(`userId inside fetchEngineerTasks: ${userId} 123`);
+    console.log(`userId inside fetchEngineerTasks: ${userId}`);
     try {
       const response = await axios.get(`https://localhost:8000/api/tasks/engineer/engineer3@example.com`);
       console.log(`response.data inside fetchEngineerTasks: ${response.data}`);
