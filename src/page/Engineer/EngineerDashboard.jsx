@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import ThemeContextProvider from '../../ContextAPI/ContextAPI';
 import Navbar from "../../page/Engineer/Navbar"; // Assuming Navbar is a top navigation bar.
 
-const AdminLayout = () => {
+const EngineerLayout = () => {
   return (
     <ThemeContextProvider>
       <div className="flex flex-col h-screen"> {/* This makes the layout take full screen */}
@@ -29,4 +29,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default EngineerLayout;

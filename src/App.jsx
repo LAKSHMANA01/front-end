@@ -24,6 +24,7 @@ import UserProfile from "./page/user/UserProfile"
 import UserLayout from "./page/user/UserLayout"
 import EngineerDashboard from "./page/Engineer/EngineerDashboard"
 import AssignedTasks from "./page/Engineer/AssignedTasks";
+import TaskAcceptance from "./page/Engineer/TaskAcceptance";
 import Hazards from "./page/Engineer/Hazards";
 import EngineerProfile from "./page/Engineer/EngineerProfile";
 // import Engineers from "./page/Admin/Engineers"
@@ -98,9 +99,10 @@ function App() {
         <Route path="/engineer" element={<EngineerDashboard />}>
           {/* Nested Routes (these will be rendered inside EngineerDashboard) */}
           <Route index element={<AssignedTasks />} />  {/* Default route inside EngineerDashboard */}
-          <Route path="AssignedTasks" element={<AssignedTasks />} />
-          <Route path="Hazards" element={<Hazards />} />
-          <Route path="Profile" element={<EngineerProfile />} />
+          <Route path="assignedTasks" element={<AssignedTasks />} />
+          <Route path ="task/acceptance" element={<TaskAcceptance />}></Route>
+          <Route path="hazards" element={<Hazards />} />
+          <Route path="profile" element={<EngineerProfile />} />
           <Route path="RiseTickets" element={<RaiseEngineerTickes />} />
         </Route> 
        

@@ -28,6 +28,7 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
     }, [user.email,user.role, dispatch]);
 
     useEffect(() => {
+        console.log("tasks:",tasks)
         setLocalTasks(tasks); // Sync local state when tasks update
     }, [tasks]);
 

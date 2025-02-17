@@ -36,10 +36,10 @@ const Sidebar = ({ activePath = '/' }) => {
 
   const menuItems = [
     { path: '/engineer', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/engineer/AssignedTasks', icon: ClipboardList, label: 'Tasks' },
+    { path: '/engineer/assignedTasks', icon: ClipboardList, label: 'Tasks' },
     { path: '/engineer/hazards', icon: AlertTriangle, label: 'Hazards' },
     { path: '/engineer/profile', icon: User, label: 'Profile' },
-    { path: '/engineer/settings', icon: Settings, label: 'Settings' }
+    { path: '/engineer/task/acceptance', icon: Settings, label: 'Task Acceptance' }
   ];
 
   const isActive = (path) => activePath === path;

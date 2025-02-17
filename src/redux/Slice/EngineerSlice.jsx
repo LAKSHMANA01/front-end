@@ -30,6 +30,30 @@ export const fetchEngineerTasks = createAsyncThunk(
   }
 );
 
+export const fetchAcceptTask = createAsyncThunk(
+  'engineer/fetchAcceptTask',
+  async ({ taskId, email }, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.post(`/tasks/${taskId}/accept/${email}`);
+      return { taskId, updatedTask: response.data.ticket };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to accept task');
+    }
+  }
+);
+
+export const fetchRejectTask = createAsyncThunk(
+  'engineer/fetchRejectTask',
+  async ({ taskId, email }, { rejectWithValue }) => {
+    try {
+      await apiClient.post(`/tasks/${taskId}/reject/${email}`);
+      return { taskId };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to reject task');
+    }
+  }
+);
+
 // AsyncThunk for updating engineer profile
 export const fetchUpdateEngineerProfile = createAsyncThunk(
   'engineer/fetchUpdateEngineerProfile',
@@ -168,6 +192,36 @@ const engineerSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchEngineerTasks.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      .addCase(fetchAcceptTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAcceptTask.fulfilled, (state, action) => {
+        const { taskId, updatedTask } = action.payload;
+        const taskIndex = state.tasks.findIndex(task => task._id === taskId);
+        if (taskIndex !== -1) {
+          state.tasks[taskIndex] = updatedTask;
+        }
+        state.loading = false;
+      })
+      .addCase(fetchAcceptTask.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      .addCase(fetchRejectTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRejectTask.fulfilled, (state, action) => {
+        state.tasks = state.tasks.filter(task => task._id !== action.payload.taskId);
+        state.loading = false;
+      })
+      .addCase(fetchRejectTask.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       })
