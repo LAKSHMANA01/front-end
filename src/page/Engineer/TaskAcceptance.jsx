@@ -20,7 +20,7 @@ const AssignedTasks = ({ isExpanded }) => {
     }, [user.email, user.role, dispatch]);
 
     useEffect(() => {
-        setLocalTasks(tasks);
+        setLocalTasks(Array.isArray(tasks) ? tasks :[]);
     }, [tasks]);
 
     const handleAcceptTask = (taskId) => {

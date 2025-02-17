@@ -29,7 +29,7 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
 
     useEffect(() => {
         console.log("tasks:",tasks)
-        setLocalTasks(tasks); // Sync local state when tasks update
+        setLocalTasks(Array.isArray(tasks) ? tasks: []); // Sync local state when tasks update
     }, [tasks]);
 
     const handleTaskClick = (task) => {
