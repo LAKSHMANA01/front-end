@@ -102,10 +102,16 @@ export const fetchEngineerProfiledata = createAsyncThunk(
 
 export const updateTaskStatus = createAsyncThunk(
   "engineer/updateTaskStatus",
-  async ({ taskId, status }, { rejectWithValue }) => {
+  async ({ taskId, status }, { rejectWithValue, dispatch }) => {
     try {
       const response = await apiClient.patch(`/tasks/updateTicketStatus/${taskId}`, { status });
-      return response.data; // Return only serializable data
+      
+      if (status === "deferred") {
+        const userEmail = response.data.engineerEmail; // Get engineer's email from response
+        dispatch(fetchEngineerTasks(userEmail)); // Dispatch fetchEngineerTasks if status is 'deferred'
+      }
+
+      return response.data; // Return updated task info
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }

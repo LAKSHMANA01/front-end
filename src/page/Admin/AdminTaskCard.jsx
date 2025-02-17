@@ -357,6 +357,9 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, AlertTriangle, User } from 'lucide-react';
 import apiClient from '../../utils/apiClient';
+import { fetchDeferredTasks } from '../../redux/Slice/AdminSlice';
+import { useDispatch } from 'react-redux';
+
 
 const AdminTaskCard = ({ task = {} }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -367,26 +370,26 @@ const AdminTaskCard = ({ task = {} }) => {
   const [error, setError] = useState(null);
   const [comments, setComments] = useState(task.comments || []);
   const [newComment, setNewComment] = useState('');
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (showAssigneeDropdown) {
       fetchAvailableEngineers();
     }
   }, [showAssigneeDropdown]);
+  
 
   const fetchAvailableEngineers = async () => {
     setLoading(true);
     try {
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const currentDay = days[new Date().getDay()];
-      
       const response = await apiClient.get(`/admin/engineers/availability/${currentDay}`);
-      console.log("response :",response)
-      if (!response || !response.data || !Array.isArray(response.data.engineers)) {
-        throw new Error('Failed to fetch engineers, Invalid API response');
+      if (!response) {
+        throw new Error('Failed to fetch engineers');
       }
 
-      //const data = await response.json();
+      const data = response.data;
 
       // if (data && Array.isArray(data.engineers)) {
       //   const formattedEngineers = data.engineers.map(engineer => ({
@@ -427,16 +430,23 @@ const AdminTaskCard = ({ task = {} }) => {
       }
       
       if (!email) {
-        throw new Error('Invalid engineer email');
+        throw new Error('Invalid engineer ID');
       }
+
 
       // Make the API call
-      const response = await apiClient.patch(`/admin/reassign/${task._id}/${email}`);
-
-      if (!response.ok) {
-        //const errorData = await response.json().catch(() => null);
-        throw new Error(response.data?.message || 'Failed to reassign engineer');
+      const response = await apiClient.patch(`/admin/reassign/${task._id}/${email}`,
+        {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('response: ', response);
+      if (!response) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to reassign engineer');
       }
+      console.log(`email: ${email}`);
       
       const selectedEngineer = availableEngineers.find(eng => eng.email === email);
       
@@ -461,9 +471,9 @@ const AdminTaskCard = ({ task = {} }) => {
       
       // Close the dropdown
       setShowAssigneeDropdown(false);
-      
       // Show success message if needed
       // You could add a success state here if desired
+      dispatch(fetchDeferredTasks()); // update diferred tasks list
       
     } catch (err) {
       console.error('Error reassigning engineer:', err);
@@ -526,7 +536,7 @@ const AdminTaskCard = ({ task = {} }) => {
                 ) : (
                   availableEngineers.map((engineer) => (
                     <div
-                      key={engineer.email}
+                      key={engineer._id}
                       onClick={() => !loading && handleReassignEngineer(engineer.email)}
                       className={`p-3 hover:bg-gray-50 cursor-pointer border-b flex items-center justify-between ${
                         loading ? 'opacity-50 cursor-not-allowed' : ''
@@ -543,6 +553,15 @@ const AdminTaskCard = ({ task = {} }) => {
                           </div>
                           <div className="text-sm text-gray-500">
                             Specialization: {engineer.specialization}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Address: {engineer.address}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Pincode: {engineer.pincode}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Email: {engineer.email}
                           </div>
                         </div>
                       </div>
