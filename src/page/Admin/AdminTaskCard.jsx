@@ -381,28 +381,32 @@ const AdminTaskCard = ({ task = {} }) => {
       const currentDay = days[new Date().getDay()];
       
       const response = await apiClient.get(`/admin/engineers/availability/${currentDay}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch engineers');
+      console.log("response :",response)
+      if (!response || !response.data || !Array.isArray(response.data.engineers)) {
+        throw new Error('Failed to fetch engineers, Invalid API response');
       }
 
-      const data = await response.json();
+      //const data = await response.json();
 
-      if (data && Array.isArray(data.engineers)) {
-        const formattedEngineers = data.engineers.map(engineer => ({
-          id: engineer._id,
-          name: engineer.name,
-          email: engineer.email,
-          currentTasks: engineer.currentTasks,
-          availability: engineer.availability,
-          specialization: engineer.specialization,
-          location: engineer.location
-        }));
-        setAvailableEngineers(formattedEngineers);
+      // if (data && Array.isArray(data.engineers)) {
+      //   const formattedEngineers = data.engineers.map(engineer => ({
+      //     id: engineer._id,
+      //     name: engineer.name,
+      //     email: engineer.email,t
+      
+      //     currentTasks: engineer.currentTasks,
+      //     availability: engineer.availability,
+      //     specialization: engineer.specialization,
+      //     location: engineer.location
+      //   }));
+
+      const approvedEngineers =response.data.engineers.filter(engineer => engineer.isEngineer)
+        setAvailableEngineers(approvedEngineers);
         setError(null);
-      } else {
-        throw new Error('Invalid data format received from server');
-      }
+      
+      // else {
+      //   throw new Error('Invalid data format received from server');
+      // }
     } catch (err) {
       setError(err.message || 'Failed to fetch available engineers');
       console.error('Error fetching engineers:', err);
@@ -423,23 +427,15 @@ const AdminTaskCard = ({ task = {} }) => {
       }
       
       if (!email) {
-        throw new Error('Invalid engineer ID');
+        throw new Error('Invalid engineer email');
       }
 
       // Make the API call
-      const response = await apiClient.patch(`/admin/reassign/${task._id}/${email}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: email
-        })
-      });
+      const response = await apiClient.patch(`/admin/reassign/${task._id}/${email}`);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || 'Failed to reassign engineer');
+        //const errorData = await response.json().catch(() => null);
+        throw new Error(response.data?.message || 'Failed to reassign engineer');
       }
       
       const selectedEngineer = availableEngineers.find(eng => eng.email === email);
@@ -530,8 +526,8 @@ const AdminTaskCard = ({ task = {} }) => {
                 ) : (
                   availableEngineers.map((engineer) => (
                     <div
-                      key={engineer.id}
-                      onClick={() => !loading && handleReassignEngineer(engineer.id)}
+                      key={engineer.email}
+                      onClick={() => !loading && handleReassignEngineer(engineer.email)}
                       className={`p-3 hover:bg-gray-50 cursor-pointer border-b flex items-center justify-between ${
                         loading ? 'opacity-50 cursor-not-allowed' : ''
                       }`}

@@ -36,11 +36,14 @@ function Login() {
                 sessionStorage.setItem("role", role);
 
                 // Redirect to role-based dashboard
-                navigate(`/${role}`);
+                if(token){
+                    navigate(`/${role}`);
+                }
             } else {
                 console.error(response.data.error);
                 setError(response.data.error); // Store error message in state
                 alert(response.data.error); // Show alert message
+                
             }
         } catch (err) {
             console.error("Login error:", err);

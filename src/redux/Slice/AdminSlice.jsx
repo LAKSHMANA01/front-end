@@ -105,7 +105,7 @@ export const fetchEngineerTasks = createAsyncThunk(
   "admin/fetchEngineerTasks",
   async (engineerEmail, { rejectWithValue }) => {
     try {
-      //console.log("engineerId", engineerId);
+      console.log("engineerEmail", engineerEmail);
       const response = await apiClient.get(`/tasks/engineer/${engineerEmail}`); 
       return response.data;
     } catch (error) {
@@ -119,6 +119,7 @@ const adminSlice = createSlice({
   name: 'admin',
   initialState: {
     tasks: [],
+    engineerTasks:[],
     completedTasks: [],
     deferredTasks: [],
     users: [],
@@ -176,11 +177,11 @@ const adminSlice = createSlice({
       })
       .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = action.payload;
+        state.engineerTasks = action.payload;
       })
       .addCase(fetchEngineerTasks.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload?.message || "Error fetching tasks.";
       })
       .addCase(fetchAvailableEngineers.pending, (state) => {
         state.loading = true;

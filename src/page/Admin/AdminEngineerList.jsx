@@ -13,6 +13,7 @@ const AdminEngineerList = () => {
 
   useEffect(() => {
     dispatch(fetchAllApprovedEngineers());
+    //dispatch(fetchEngineerTasks()); // Fetch tasks for each engineer on mount
   }, [dispatch]);
 
   if (loading) return <div className="text-center text-gray-500"><Loading/></div>;
@@ -26,7 +27,7 @@ const AdminEngineerList = () => {
         <div
           key={engineer._id}
           className="bg-white p-4 shadow-md rounded-lg cursor-pointer hover:shadow-lg"
-          onClick={() => navigate(`/admin/engineer/${engineer.email}`)} // ✅ Navigate on click
+          onClick={() => navigate(`/admin/engineer/${engineer.email}`)} 
         >
           <h2 className="text-lg font-semibold">{engineer.name}</h2>
           <p className="text-gray-500">Email: {engineer.email}</p>

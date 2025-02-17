@@ -15,7 +15,7 @@ const UserTicketList = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  console.log("User:",user);
+  //console.log("User:",user);
   const { tasks, loading, error } = useSelector((state) => state.tickets);
   
   useEffect(() => {

@@ -7,7 +7,7 @@ export const fetchTickets = createAsyncThunk(
   async ({ userEmail, role }) => {
     console.log(`userId inside fetchTickets ticketSlice: ${userEmail}`);
     const response = await apiClient.get(`/tickets/${role}/${userEmail}`);
-    console.log(`response.data inside ticketSlice: ${response.data}`);
+    //console.log(`response.data inside ticketSlice: ${response.data}`);
     return response.data;
   }
 );
@@ -32,9 +32,6 @@ export const fetchUpdateProfile = createAsyncThunk(
       const response = await apiClient.patch(
         `/updateProfile/${role}/${userEmail}`,
         updatedata,
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
       );
       console.log(`response.data inside fetchUpdateProfile ticketSlice: ${response.data}`);
       return response.data;
