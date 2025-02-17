@@ -63,7 +63,7 @@ export const fetchDeferredTasks = createAsyncThunk(
   "admin/deferredTasks/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("https://localhost:8000/api/admin/status/deferred"); // Replace with your API
+      const response = await apiClient.get("/admin/status/deferred"); // Replace with your API
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch deferred tasks");
@@ -76,7 +76,7 @@ export const fetchAvailableEngineers = createAsyncThunk(
   'tasks/fetchAvailableEngineers',
   async () => {
     try {
-      const response = await axios.get('/api/engineers/available');
+      const response = await apiClient.get('/api/engineers/available');
       return response.data.engineers; // Assuming API returns an array of engineers
     } catch (error) {
       throw new Error(error.response?.data?.message || error.message); // Handle error
@@ -89,7 +89,7 @@ export const reassignTicket = createAsyncThunk(
   'tasks/reassignTicket',
   async ({ ticketId, engineerId }) => {
     try {
-      const response = await axios.patch(`/api/reassign/${ticketId}/${engineerId}`, {}, {
+      const response = await apiClient.patch(`/api/reassign/${ticketId}/${engineerId}`, {}, {
         headers: {
           'Content-Type': 'application/json',
         },
