@@ -1,13 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import apiClient from '../../utils/apiClient';
 
 // AsyncThunk for fetching engineer tasks
+
+export const fetchProfile = createAsyncThunk(
+  'tickets/fetchProfile',
+  async ({ userEmail, role }) => {
+    console.log(`Fetching ${userEmail}`);
+    console.log(`userId inside fetchProfile ticketSlice: ${userEmail}`);
+    const response = await apiClient.get(`/profile/${role}/${userEmail}`);
+    console.log(`response.data inside profile: ${response.data}`);
+    return response.data;
+  }
+);
+
 export const fetchEngineerTasks = createAsyncThunk(
   'engineer/fetchEngineerTasks',
-  async (userId, { rejectWithValue }) => {
-    console.log(`userId inside fetchEngineerTasks: ${userId}`);
+  async (email, { rejectWithValue }) => {
+    console.log(`email inside fetchEngineerTasks: ${email}`);
     try {
-      const response = await axios.get(`https://localhost:8000/api/tasks/engineer/engineer3@example.com`);
+      const response = await apiClient.get(`/tasks/engineer/${email}`);
       console.log(`response.data inside fetchEngineerTasks: ${response.data}`);
       return response.data;
       
@@ -20,11 +33,11 @@ export const fetchEngineerTasks = createAsyncThunk(
 // AsyncThunk for updating engineer profile
 export const fetchUpdateEngineerProfile = createAsyncThunk(
   'engineer/fetchUpdateEngineerProfile',
-  async (updatedData, { rejectWithValue }) => {
-    console.log(`updatedData inside fetchUpdateEngineerProfile: ${updatedData}`);
+  async ({ email, updatedData }, { rejectWithValue }) => {
+    console.log('updatedData inside fetchUpdateEngineerProfile: ',updatedData);
     try {
-      const response = await axios.patch(
-        `https://localhost:8000/api/updateProfile/engineer/3`, 
+      const response = await apiClient.patch(
+        `/updateProfile/engineer/${email}`, 
         updatedData, 
         {
           headers: {
@@ -64,11 +77,11 @@ export const fetchEngineerProfiledata = createAsyncThunk(
 );
 
 export const updateTaskStatus = createAsyncThunk(
-  'engineer/updateTaskStatus',
+  "engineer/updateTaskStatus",
   async ({ taskId, status }, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`https://localhost:8000/api/tasks/updateTicketStatus/${taskId}/status/${status}`);
-      return { response };  // Return updated task info
+      const response = await apiClient.patch(`/tasks/updateTicketStatus/${taskId}`, { status });
+      return response.data; // Return only serializable data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }

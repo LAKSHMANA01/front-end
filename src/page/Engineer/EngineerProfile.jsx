@@ -1,32 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { User, Mail, Phone, MapPin, Camera, CheckCircle } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEngineerTasks, fetchUpdateEngineerProfile } from '../../redux/Slice/EngineerSlice';
+import { fetchEngineerTasks, fetchUpdateEngineerProfile, fetchProfile} from '../../redux/Slice/EngineerSlice';
 import EngineerNavbar from "./Navbar";
 
+const userEmail = sessionStorage.getItem("email");
+const role = sessionStorage.getItem("role");
 const EngineerProfile = () => {
-  const engineerId = sessionStorage.getItem("email");
-  const role = sessionStorage.getItem("role");
-  console.log("engineerId: " + engineerId + " role: " + role);
   const dispatch = useDispatch();
-  const { profile } = useSelector((state) => state.tickets); //
+  const { profile } = useSelector((state) => state.tickets);
 
+  // Initialize engineer state
   const [engineer, setEngineer] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    availability: {
-      Monday: false,
-      Tuesday: false,
-      Wednesday: false,
-      Thursday: false,
-      Friday: false,
-      Saturday: false,
-      Sunday: false,
-    },
-    specialization: "Software",
-  });
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+  availability: {
+    Monday: false,
+    Tuesday: false,
+    Wednesday: false,
+    Thursday: false,
+    Friday: false,
+    Saturday: false,
+    Sunday: false,
+  },
+  specialization: "Installation",
+});
+
+  useEffect(() => {
+    if (!profile.email) {
+      dispatch(fetchProfile({ userEmail, role }));
+    }
+  }, [dispatch, profile.email, userEmail, role]);
+
+  const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+useEffect(() => {
+  if (profile?.email) {
+    setEngineer((prev) => ({
+      ...prev,
+      name: profile.name || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+      address: profile.address || "",
+      availability: Array.isArray(profile.availability)
+        ? Object.fromEntries(profile.availability.map((val, idx) => [DAYS[idx], val]))
+        : profile.availability || prev.availability,
+      specialization: profile.specialization || "Installation",
+    }));
+  }
+}, [profile]);
 
   const [activeTab, setActiveTab] = useState("personal");
   const [success, setSuccess] = useState(false);
@@ -36,7 +60,7 @@ const EngineerProfile = () => {
     setSuccess(false);
 
     try {
-      await dispatch(fetchUpdateEngineerProfile(engineer));
+      await dispatch(fetchUpdateEngineerProfile({ email: userEmail, updatedData: engineer }));
       setSuccess(true);
     } catch (error) {
       console.error("Profile update failed:", error.message);
@@ -64,14 +88,14 @@ const EngineerProfile = () => {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-blue-900 mb-6">Engineer Profile</h1>
           <div className="relative inline-block group">
-            <img
+            {/* <img
               src={engineer?.avatar || "/path/to/default-avatar.jpg"}
               className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
               alt="Profile"
-            />
-            <button className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full hover:bg-blue-600">
+            /> */}
+            {/* <button className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full hover:bg-blue-600">
               <Camera className="w-5 h-5 text-white" />
-            </button>
+            </button> */}
           </div>
         </div>
 
