@@ -6,6 +6,7 @@ import { fetchTickets } from '../../redux/Slice/UserSlice';
 import { setUser } from '../../redux/Slice/authSlice';
 import TaskCard from './Taskcard';
 import Loading from "../../compoents/Loadingpage"
+import Footer from '../../compoents/footers';
 
 
 const email = sessionStorage.getItem('email');
@@ -38,7 +39,7 @@ const UserTicketList = () => {
   }
 
   return (
-    <div>
+    <div className=''> 
    
       <div style={taskListStyles}>
         {tasks.map((task) => (
@@ -46,11 +47,15 @@ const UserTicketList = () => {
         
         ))}
       </div>
-   
+      <div className="mt-40">
+      <Footer />
+      </div>
+      
     </div>
   );
 };
 
+   
 const taskListStyles = {
   display: 'flex',
   flexWrap: 'wrap',

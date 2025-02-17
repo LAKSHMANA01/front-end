@@ -1,64 +1,66 @@
 // TicketForm.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { MapPin, AlertTriangle, Send } from "lucide-react";
 import CustomCard from "./CustomCard";
-import { submitTicket } from "../../redux/Slice/raiseticke";
-import { useDispatch, useSelector } from "react-redux";
+import { HazardsTicket } from "../../redux/Slice/raiseticke";
+import { useDispatch, useSelector, } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Footer from "./../../compoents/footers";
-const email = sessionStorage.getItem('email');
-const token = sessionStorage.getItem('token');
-console.log(email, token);
-const TicketForm = () => {  
+
+const TicketForm = () => {
+  const userId = 2;
   const [ticketForm, setTicketForm] = useState({
-    serviceType: "installation",
-    address: "",
-    description: "",
-    pincode: "",
+   hazardType: "installation",
+   description: "",
+   riskLevel: "medium",
+   address: "",
+   pincode:""
   });
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const Raisetickets = useSelector((state) => state.Raisetickets);
-  const user = useSelector((state) => state.auth.user);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     console.log("Ticket submitted:", ticketForm);
-
-    const formDatawithUserId = {
-      ...ticketForm,
-      //  userId: userId // Add userId to the submitted data
+  
+    // Make sure the data matches the backend's expected format
+    const formData = {
+      hazardType: ticketForm.hazardType, // "laksmana"
+      description: ticketForm.description, // "Hazard Description"
+      riskLevel: ticketForm.riskLevel, // Ensure you're passing the correct risk level from ticketForm
+      address: ticketForm.address, // "satyam, vizag"
+      pincode: ticketForm.pincode, // "530013"
     };
-    
+  
     try {
-      if (email) {
-        console.log('venu')
-        dispatch(submitTicket({ ...ticketForm, email }));
-        toast.success("Ticket submitted successfully!");
-       
-      }
+      const response = await dispatch(HazardsTicket(formData));
+      toast.success("Ticket submitted successfully!");
+      console.log("Ticket submitted successfully:", response);
       // Reset form on success
       setTicketForm({
-        serviceType: "installation",
-        address: "",
+        hazardType: "installation", // Default value, can be changed by the user
         description: "",
+        riskLevel: "medium", // Default, can be changed by the user
+        address: "",
         pincode: "",
       });
+      // navigate("/engineer/Hazards")
     } catch (err) {
       console.error("Failed to submit ticket:", err);
-      toast.error("Failed to submit ticket!");
     }
   };
+  
 
   const inputStyles =
     "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
-  const labelStyles = "block text-sm font-medium text-gray-700 mb-1 ";
+  const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
-    <div className="">
-   <div className="mb-20">
-   <CustomCard title="Raise New Ticket" icon={AlertTriangle}>
+    <CustomCard title="Raise New Ticket" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className={labelStyles}>Service Type</label>
@@ -66,9 +68,9 @@ const TicketForm = () => {
             className={inputStyles}
             value={ticketForm.serviceType}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm, serviceType: e.target.value })
+              setTicketForm({ ...ticketForm,hazardType: e.target.value })
             }
-            required
+            required99
           >
             <option value="installation">New Installation</option>
             <option value="fault">Fault Report</option>
@@ -137,30 +139,45 @@ const TicketForm = () => {
         </div>
 
         <div>
-          <label className={labelStyles}>Pincode</label>
-          <input
-            type="tel"
+          <label className={labelStyles}>Priority Level</label>
+          <select
             className={inputStyles}
-            placeholder="Enter pincode"
-            value={ticketForm.pincode}
+            value={ticketForm.riskLevel}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm, pincode: e.target.value })
+              setTicketForm({ ...ticketForm, riskLevel: e.target.value })
             }
-            required
-          />
+          >
+            <option value="low">Low - Not Urgent</option>
+            <option value="medium">Medium - Needs Attention</option>
+            <option value="high">High - Urgent Issue</option>
+          </select>
         </div>
 
         {/* <div>
-          <label className={labelStyles}>
-            Preferred Service Date
-          </label>
+          <label className={labelStyles}>Contact Phone</label>
           <input
-            type="date"
+            type="tel"
             className={inputStyles}
-            value={ticketForm.preferredDate}
-            onChange={(e) => setTicketForm({...ticketForm, preferredDate: e.target.value})}
+            placeholder="Enter contact number"
+            value={ticketForm.contactPhone}
+            onChange={(e) =>
+              setTicketForm({ ...ticketForm, contactPhone: e.target.value })
+            }
+            required
           />
         </div> */}
+
+        <div>
+          <label className={labelStyles}>
+           Enter pin Code
+          </label>
+          <input
+            type="text"
+            className={inputStyles}
+            value={ticketForm.pincode}
+            onChange={(e) => setTicketForm({...ticketForm,  pincode: e.target.value})}
+          />
+        </div>
 
         <button
           type="submit"
@@ -170,25 +187,8 @@ const TicketForm = () => {
           Submit Ticket
         </button>
       </form>
-      <ToastContainer 
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </CustomCard>
-   </div>
-   <dv className="mt-6">
-      <Footer />
-      </dv>
-    </div>
-     
   );
 };
 

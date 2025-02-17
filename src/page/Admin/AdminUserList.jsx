@@ -88,9 +88,10 @@ const AdminUserList = () => {
                         {user.status || "Active"}
                       </span>
                     </div>
-                    <button className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors duration-300">
-                      View Profile
-                    </button>
+                    <span className=" w-full py-2 bg-gray hover:bg-white-200 text-black-900 rounded-md transition-colors duration-300">
+                    Address: {user.address
+} <br/> Phone: {user.phone}
+                    </span>
                   </div>
                 </div>
               </div>

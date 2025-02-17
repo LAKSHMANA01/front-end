@@ -1,10 +1,18 @@
 import { LayoutDashboard, ClipboardList, AlertTriangle, Settings, ChevronRight, ChevronLeft, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ activePath = '/' }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
+
+  // Retrieve the state from local storage when the component mounts
+  useEffect(() => {
+    const savedState = localStorage.getItem('isSidebarExpanded');
+    if (savedState !== null) {
+      setIsExpanded(JSON.parse(savedState));
+    }
+  }, []);
 
   const menuItems = [
     { path: '/User', icon: LayoutDashboard, label: 'MyTicket' },
@@ -19,17 +27,23 @@ const Sidebar = ({ activePath = '/' }) => {
     navigate(path);
   };
 
+  const toggleSidebar = () => {
+    const newState = !isExpanded;
+    setIsExpanded(newState);
+    localStorage.setItem('isSidebarExpanded', JSON.stringify(newState));
+  };
+
   return (
     <div
       className={`
         fixed min-h-screen top-16 left-0 z-40 bg-white dark:bg-gray-900
         transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-800
-        ${isExpanded ? 'w-30' : '  w-20'} shadow-lg 
+        ${isExpanded ? 'w-30' : 'w-20'} shadow-lg 
       `}
     >
       {/* Toggle Button */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={toggleSidebar}
         className="absolute -right-3 top-8 bg-blue-600 text-white
           rounded-full p-1 hover:bg-blue-700 transition-colors
           shadow-lg md:block sm:ml-[100px]"
@@ -42,7 +56,7 @@ const Sidebar = ({ activePath = '/' }) => {
         {isExpanded ? (
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent">
-           
+         
           </h1>
         ) : (
           <h1 className="text-2xl font-bold text-blue-600"></h1>
