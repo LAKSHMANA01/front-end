@@ -13,10 +13,10 @@ const AdminLayout = () => {
         {/* Sidebar is fixed and should be placed below the navbar */}
         <AdminSidebar />
         {/* Main content area: add top margin to offset fixed navbar */}
-        <div className="mt-10 ml-50 md:ml-20 transition-all duration-300">
+        <div className="mt-7 ml-200 md:ml-20 transition-all duration-300">
           <Outlet />
         </div>
-        <Footer/>
+        {/* <Footer/> */}
       </div>
   
   );

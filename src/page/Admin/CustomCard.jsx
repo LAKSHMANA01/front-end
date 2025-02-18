@@ -9,7 +9,7 @@ const CustomCard = ({ title, icon: Icon, children }) => {
           {title}
         </h2>
       </div>
-      <div className="p-6 space-y-4"> {/* Added space-y-4 for vertical spacing */}
+      <div className="p-6">
         {children}
       </div>
     </div>

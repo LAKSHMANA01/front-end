@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,  useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,6 +6,7 @@ import { HazardsTickets ,HazardsUpdateTickets, HazardsDeleteTickets} from '../..
 import { Link, useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { debounce } from 'lodash';  // Lodash is a utility library that provides a debounce function
 
 
 
@@ -17,6 +18,10 @@ const EngineerDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [debouncedUpdate, setDebouncedUpdate] = useState([])
+
   const [updateFormData, setUpdateFormData] = useState({
     hazardType: '',
     description: '',
@@ -25,10 +30,30 @@ const EngineerDashboard = () => {
     pincode: '',
   });
 
+
   useEffect(() => {
     dispatch(HazardsTickets({})); // Fetch hazard tickets on mount
   }, [dispatch]);
+  
+  useEffect(() => {
+    setFilteredTasks(Hazards);  // Show all hazards initially
+  }, [Hazards]);
 
+  const handleDebouncedUpdate = useCallback(
+    debounce((value) => {
+      setFilteredTasks(
+        Hazards.filter((task) =>
+          task.pincode.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+    }, 500),
+    [Hazards]
+  );
+  
+  const handleSearchChange = (e)=>{
+    setSearchTerm(e.target.value);
+    handleDebouncedUpdate(e.target.value);
+  }
   const handleTaskClick = (task) => {
     setSelectedTask(task);
     setIsModalOpen(true);
@@ -84,10 +109,19 @@ const EngineerDashboard = () => {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-4">Assigned Tickets</h2>
+       
+        <input
+          type="text"
+          placeholder="Search by hazard type"
+        
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-20"
+          />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Hazards.length > 0 ? (
-            Hazards.map((ticket) => (
+          {filteredTasks.length > 0 ? (
+            filteredTasks.map((ticket) => (
               <div
                 key={ticket._id}
                 onClick={() => handleTaskClick(ticket)}
@@ -100,7 +134,7 @@ const EngineerDashboard = () => {
               </div>
             ))
           ) : (
-            <p>Loading hazards...</p>
+            <p> Hazards not founds </p>
           )}
         </div>
       </div>
@@ -179,3 +213,36 @@ const EngineerDashboard = () => {
 };
 
 export default EngineerDashboard;
+
+
+
+
+// Sure! Implementing a debounce method for your search bar can help improve performance by limiting the number of times the search function is called. Here's a step-by-step guide to implement debounce in your search bar:
+
+// Install lodash (optional): Lodash is a utility library that provides a debounce function. If you don't have it installed, you can install it using:
+
+// npm install lodash
+// Import debounce from lodash: Import the debounce function in your component file:
+
+// import { debounce } from 'lodash';
+// Create a debounced function: Create a debounced version of your search function. You can do this inside your component:
+
+// const debouncedSearch = debounce((value) => {
+//   setFilteredTasks(Hazards.filter((task) => task.pincode.toLowerCase().includes(value.toLowerCase())));
+// }, 300); // Adjust the delay as needed
+// Update the search input handler: Update your search input handler to use the debounced function:
+
+// const handleSearchChange = (e) => {
+//   const value = e.target.value;
+//   setSearchTerm(value);
+//   debouncedSearch(value);
+// };
+// Modify the input element: Update the onChange event of your search input to use the new handler:
+
+// <input
+//   type="text"
+//   placeholder="Search by hazard type"
+//   value={searchTerm}
+//   onChange={handleSearchChange}
+//   className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-20"
+// />

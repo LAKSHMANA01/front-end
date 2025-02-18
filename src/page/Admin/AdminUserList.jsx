@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllUsers } from "../../redux/Slice/AdminSlice";
 import AdminNavbar from "./NavBar";
+import { debounce } from "lodash";
 
 const AdminUserList = () => {
   const dispatch = useDispatch();
@@ -13,13 +14,30 @@ const AdminUserList = () => {
     dispatch(fetchAllUsers());
   }, [dispatch]);
 
-  useEffect(() => {
+   useEffect(() => (setFilteredUsers(users)),[users])
+   
+  
+  const debouncedSearch = useCallback(debounce((searchTerm) => {
     setFilteredUsers(
       users.filter((user) =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-  }, [searchTerm, users]);
+  }, 900), [users]);
+  const handledebounce = (e) => {
+    debouncedSearch(e.target.value);
+    setSearchTerm(e.target.value);
+  }
+
+  
+
+  // useEffect(() => {
+  //   setFilteredUsers(
+  //     users.filter((user) =>
+  //       user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  //     )
+  //   );
+  // }, [searchTerm, users]);
 
   if (loading) {
     return (
@@ -49,7 +67,7 @@ const AdminUserList = () => {
             type="text"
             placeholder="Search by name..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handledebounce}
             className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -88,9 +106,10 @@ const AdminUserList = () => {
                         {user.status || "Active"}
                       </span>
                     </div>
-                    <button className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors duration-300">
-                      View Profile
-                    </button>
+                    <span className=" w-full py-2 bg-gray hover:bg-white-200 text-black-900 rounded-md transition-colors duration-300">
+                    Address: {user.address
+} <br/> Phone: {user.phone}
+                    </span>
                   </div>
                 </div>
               </div>

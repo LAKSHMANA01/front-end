@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { User, Mail, Phone, MapPin, Camera, CheckCircle } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUpdateProfile, fetchProfile } from "../../redux/Slice/UserSlice";
+import Footer from "./../../compoents/footers";
 
 const UserProfile = () => {
   const userEmail = sessionStorage.getItem("email");
@@ -59,7 +60,8 @@ const UserProfile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white p-8">
+  <div>
+    <div className="min-h-screen bg-gradient-to-br  from-blue-50 to-white p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-blue-900 mb-6">Your Profile</h1>
@@ -165,6 +167,10 @@ const UserProfile = () => {
         </div>
       </div>
     </div>
+    <dv className="mt-6">
+      <Footer />
+      </dv>
+    </div>
   );
 };
 
@@ -204,6 +210,8 @@ const SubmitButton = ({ success }) => (
         {success ? "Profile Updated!" : "Save Changes"}
       </span>
     </button>
+
+    
   </div>
 );
 

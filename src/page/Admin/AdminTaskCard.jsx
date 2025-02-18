@@ -484,14 +484,15 @@ const AdminTaskCard = ({ task = {} }) => {
       {/* Card Header */}
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">{task.title}</h3>
+          <h3 className="text-lg font-semibold">{task.serviceType}</h3>
           <span className={getStatusStyle(task.status)}>{task.status}</span>
+          <span className={getStatusStyle(task.status)}>{task.priority}</span>
         </div>
       </div>
 
       {/* Card Content */}
       <div className="p-4 space-y-4">
-        <p className="text-gray-600">{task.description}</p>
+        <p className="text-gray-600 ">{task.description}</p>
         
         {/* Current Assignee */}
         <div className="flex items-center justify-between">
@@ -571,7 +572,7 @@ const AdminTaskCard = ({ task = {} }) => {
         )}
 
         {/* Comments Section */}
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <h4 className="font-medium mb-2">Comments</h4>
           <div className="space-y-2">
             {comments.map((comment) => (
@@ -586,7 +587,7 @@ const AdminTaskCard = ({ task = {} }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
