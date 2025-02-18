@@ -23,9 +23,7 @@ function Signup() {
     // Validation functions
     const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const validatePassword = (password) => /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(password);
-    const validatePincode = (pincode) => /^[1-9][0-9]{5}$/.test(pincode); // Basic Indian pincode validation
-
-
+    const validatePincode = (pincode) => /^[0-9]{6}$/.test(pincode);
     // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -53,9 +51,8 @@ function Signup() {
             newErrors.password = "Password must be 8-15 characters long, include a capital letter, a number, and a special character.";
         if (formData.role === "engineer" && (!formData.specialization || formData.availability.length === 0))
             newErrors.engineerFields = "Please provide specialization and availability.";
-
-        if (!validatePincode(formData.pincode)) newErrors.pincode = "Invalid pincode format.";
-
+        if (!validatePincode(formData.pincode)) newErrors.pincode = "Pincode must be a 6-digit number.";
+        
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
@@ -118,7 +115,7 @@ function Signup() {
                         <div>
                             {["password", "securityQuestion", "securityAnswer"].map((field) => (
                                 <div className="mb-4" key={field}>
-                                    <label className="block text-lg font-medium mb-2">{field.replace(/([A-Z])/g, " $1")}</label>
+                                    <label className="block text-lg font-medium mb-2">{field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}</label>
                                     <input
                                         type={field === "password" ? "password" : "text"}
                                         placeholder={`Enter ${field}`}
