@@ -22,6 +22,9 @@ export const fetchEngineerTasks = createAsyncThunk(
     try {
       const response = await apiClient.get(`/tasks/engineer/${email}`);
       console.log(`response.data inside fetchEngineerTasks: ${response.data}`);
+      if(!response.data){
+        return {message : "No tasks available you."}
+      }
       return response.data;
       
     } catch (error) {
@@ -34,7 +37,9 @@ export const fetchAcceptTask = createAsyncThunk(
   'engineer/fetchAcceptTask',
   async ({ taskId, email }, { rejectWithValue }) => {
     try {
-      const response = await apiClient.post(`/tasks/${taskId}/accept/${email}`);
+      console.log(`fetchAcceptTask: ${taskId}`);
+      const response = await apiClient.patch(`/engineer/tasks/${taskId}/accept/${email}`);
+      console.log("response.data.ticket", response.data.ticket)
       return { taskId, updatedTask: response.data.ticket };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to accept task');
@@ -46,7 +51,7 @@ export const fetchRejectTask = createAsyncThunk(
   'engineer/fetchRejectTask',
   async ({ taskId, email }, { rejectWithValue }) => {
     try {
-      await apiClient.post(`/tasks/${taskId}/reject/${email}`);
+      await apiClient.patch(`/engineer/tasks/${taskId}/reject/${email}`);
       return { taskId };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to reject task');
@@ -193,12 +198,22 @@ const engineerSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      // .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
+      //   state.tasks = Array.isArray(action.payload) ? action.payload : [];
+      //   state.loading = false;
+      // })
       .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
-        state.tasks = action.payload;
+        if (Array.isArray(action.payload)) {
+          state.tasks = action.payload;
+        } else if (action.payload.message) {
+          state.tasks = []; // Set empty if no tasks are found
+          state.error = action.payload.message;
+        }
         state.loading = false;
       })
+      
       .addCase(fetchEngineerTasks.rejected, (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload || 'Error fetching tasks';
         state.loading = false;
       })
 
@@ -208,10 +223,11 @@ const engineerSlice = createSlice({
       })
       .addCase(fetchAcceptTask.fulfilled, (state, action) => {
         const { taskId, updatedTask } = action.payload;
-        const taskIndex = state.tasks.findIndex(task => task._id === taskId);
-        if (taskIndex !== -1) {
-          state.tasks[taskIndex] = updatedTask;
-        }
+        state.tasks =state.tasks.map(task => task._id === taskId ? updatedTask :task);
+        // const taskIndex = state.tasks.findIndex(task => task._id === taskId);
+        // if (taskIndex !== -1) {
+        //   state.tasks[taskIndex] = updatedTask;
+        // }
         state.loading = false;
       })
       .addCase(fetchAcceptTask.rejected, (state, action) => {
