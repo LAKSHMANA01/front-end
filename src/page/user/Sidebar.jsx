@@ -15,10 +15,10 @@ const Sidebar = ({ activePath = '/' }) => {
   }, []);
 
   const menuItems = [
-    { path: '/User', icon: LayoutDashboard, label: 'MyTicket' },
+    { path: '/User', icon: User, label: 'Dashbord' },
+    { path: '/User/tickets', icon: LayoutDashboard, label: 'MyTicket' },
     { path: '/User/RaiseTicket', icon: AlertTriangle, label: 'RaiseTickets' },
     { path: '/User/UserProfile', icon: User, label: 'Profile' },
-    { path: '/User/settings', icon: Settings, label: 'Settings' }
   ];
 
   const isActive = (path) => activePath === path;

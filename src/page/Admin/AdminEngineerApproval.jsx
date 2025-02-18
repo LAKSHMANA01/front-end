@@ -4,6 +4,7 @@ import { fetchAllEngineers, fetchAllApprovedEngineers, approveEngineer } from ".
 import AdminNavbar from "./NavBar";
 import Loading from "../../compoents/Loadingpage";
 import { useNavigate } from "react-router-dom";
+
 const AdminEngineerApproval = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); 
@@ -16,7 +17,6 @@ const AdminEngineerApproval = () => {
   //     navigate("/"); // Redirect unauthorized users
   //   }
   // }, [role, navigate]);
-
 
   useEffect(() => {
     dispatch(fetchAllEngineers()); // Fetch engineers who need approval
@@ -36,8 +36,8 @@ const AdminEngineerApproval = () => {
   if (!Array.isArray(engineers) || engineers.length === 0) return <p className="text-center text-gray-500">No engineers available.</p>;
 
   return (
-    <div className="space-y-6 p-4">
-      <AdminNavbar />
+    <div className="p-4 mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {/* <AdminNavbar /> */}
       {engineers.map((engineer) => (
         <div
           key={engineer._id}

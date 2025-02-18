@@ -57,7 +57,7 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
     };
 
     if (loading) return <Loading />;
-    if (error) return <div>Error: {error}</div>;
+    if (error) return <div>Error: {error.message}</div>;
 
 
     

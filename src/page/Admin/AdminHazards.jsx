@@ -6,7 +6,6 @@ import { HazardsTickets ,HazardsUpdateTickets, HazardsDeleteTickets} from '../..
 import { Link, useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loading from "./../../compoents/Loadingpage"
 
 
 
@@ -18,6 +17,9 @@ const AdminHazards = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filteredTasks, setFilteredTasks] = useState([]);
+
   const [updateFormData, setUpdateFormData] = useState({
     hazardType: '',
     description: '',
@@ -26,9 +28,14 @@ const AdminHazards = () => {
     pincode: '',
   });
 
+
   useEffect(() => {
     dispatch(HazardsTickets({})); // Fetch hazard tickets on mount
   }, [dispatch]);
+  
+  useEffect(() => {
+    setFilteredTasks(Hazards.filter((task) => task.pincode.toLowerCase().includes(searchTerm.toLowerCase())));
+  }, [searchTerm,  Hazards]);
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
@@ -77,18 +84,27 @@ const AdminHazards = () => {
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="bg-white shadow-md p-6 mb-6">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-800">Hazards </h1>
+          <h1 className="text-3xl font-bold text-gray-800">Hazards Tasks</h1>
           <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-all">
-            <Link to="/admin/hazardsTickets">Add Hazards</Link>
+            <Link to="/engineer/RiseTickets">Add Hazards</Link>
           </button>
         </div>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+       
+        <input
+          type="text"
+          placeholder="Search by hazard type"
         
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-20"
+          />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Hazards.length > 0 ? (
-            Hazards.map((ticket) => (
+          {filteredTasks.length > 0 ? (
+            filteredTasks.map((ticket) => (
               <div
                 key={ticket._id}
                 onClick={() => handleTaskClick(ticket)}
@@ -101,7 +117,7 @@ const AdminHazards = () => {
               </div>
             ))
           ) : (
-            <p><Loading/></p>
+            <p> Hazards not founds </p>
           )}
         </div>
       </div>
