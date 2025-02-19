@@ -81,12 +81,12 @@ const AdminHazards = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-100 min-h-screen mt-16">
       <div className="bg-white shadow-md p-6 mb-6">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-800">Hazards Tasks</h1>
           <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-all">
-            <Link to="/engineer/RiseTickets">Add Hazards</Link>
+            <Link to="/admin/hazardsTickets">Add Hazards</Link>
           </button>
         </div>
       </div>
