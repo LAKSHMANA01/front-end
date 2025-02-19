@@ -193,3 +193,19 @@ const TicketForm = () => {
 };
 
 export default TicketForm;
+
+// import "react-toastify/dist/ReactToastify.css";
+// import Footer from "./../../compoents/footers";
+// toast.success("Ticket submitted successfully!");
+// toast.success("Ticket submitted successfully!");
+// <ToastContainer 
+// position="top-right"
+// autoClose={5000}
+// hideProgressBar={false}
+// newestOnTop={false}
+// closeOnClick
+// rtl={false}
+// pauseOnFocusLoss
+// draggable
+// pauseOnHover
+// />
