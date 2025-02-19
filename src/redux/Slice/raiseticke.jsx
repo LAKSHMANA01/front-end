@@ -4,7 +4,7 @@ import apiClient from '../../utils/apiClient';
 
 export const submitTicket = createAsyncThunk(
   'tickets/submitTicket',
-  async (ticketData) => { // Only accept one argument
+  async (ticketData) => { 
     const { email, ...rest } = ticketData; // Extract email separately
     //console.log("ticketData inside submitTicket", ticketData);
     

@@ -5,7 +5,7 @@ import apiClient from "../../utils/apiClient";
 // Fetch all tasks
 export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await apiClient.get('/admin/tasks'); // Replace with your API
+    const response = await apiClient.get('/admin/tasks'); 
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch tasks");
@@ -15,7 +15,7 @@ export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, 
 // Fetch all users
 export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await apiClient.get('/admin/users'); // Replace with your API
+    const response = await apiClient.get('/admin/users'); 
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch users");
@@ -24,8 +24,9 @@ export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, 
 
 export const fetchAllApprovedEngineers = createAsyncThunk("admin/fetchAllApprovedEngineers",async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get("/admin/engineers"); // Replace with your API
-      //console.log("Approved Engineers Response:", response.data); // Debugging
+      const response = await apiClient.get("/admin/engineers"); 
+
+      //console.log("Approved Engineers Response:", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch engineers");
@@ -63,7 +64,7 @@ export const fetchDeferredTasks = createAsyncThunk(
   "admin/deferredTasks/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get("/admin/status/deferred"); // Replace with your API
+      const response = await apiClient.get("/admin/status/deferred"); 
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch deferred tasks");
@@ -77,9 +78,9 @@ export const fetchAvailableEngineers = createAsyncThunk(
   async () => {
     try {
       const response = await apiClient.get('/api/engineers/available');
-      return response.data.engineers; // Assuming API returns an array of engineers
+      return response.data.engineers; // array of engineers
     } catch (error) {
-      throw new Error(error.response?.data?.message || error.message); // Handle error
+      throw new Error(error.response?.data?.message || error.message); 
     }
   }
 );
@@ -94,7 +95,7 @@ export const reassignTicket = createAsyncThunk(
           'Content-Type': 'application/json',
         },
       });
-      return response.data; // Assuming the response has details of reassigned ticket
+      return response.data; // reassigned ticket
     } catch (error) {
       throw new Error(error.response?.data?.message || error.message); // Handle error
     }
