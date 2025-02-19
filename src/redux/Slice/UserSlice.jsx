@@ -32,9 +32,6 @@ export const fetchUpdateProfile = createAsyncThunk(
       const response = await apiClient.patch(
         `/updateProfile/${role}/${userEmail}`,
         updatedata,
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
       );
       console.log(`response.data inside fetchUpdateProfile ticketSlice: ${response.data}`);
       return response.data;

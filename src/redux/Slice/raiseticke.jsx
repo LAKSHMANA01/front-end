@@ -4,19 +4,15 @@ import apiClient from '../../utils/apiClient';
 
 export const submitTicket = createAsyncThunk(
   'tickets/submitTicket',
-  async (ticketData) => { // Only accept one argument
+  async (ticketData) => { 
     const { email, ...rest } = ticketData; // Extract email separately
-    console.log("ticketData inside submitTicket", rest);
+    //console.log("ticketData inside submitTicket", ticketData);
     
     try {
       const response = await apiClient.post(
         `/users/raiseTicket/${email}`, 
         rest, // Send the rest of the ticket data
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+    
       );
       console.log("Response data:", response.data);
       return response.data;

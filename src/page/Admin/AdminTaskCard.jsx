@@ -391,21 +391,25 @@ const AdminTaskCard = ({ task = {} }) => {
 
       const data = response.data;
 
-      if (data && Array.isArray(data.engineers)) {
-        const formattedEngineers = data.engineers.map(engineer => ({
-          id: engineer._id,
-          name: engineer.name,
-          email: engineer.email,
-          currentTasks: engineer.currentTasks,
-          availability: engineer.availability,
-          specialization: engineer.specialization,
-          location: engineer.location
-        }));
-        setAvailableEngineers(formattedEngineers);
+      // if (data && Array.isArray(data.engineers)) {
+      //   const formattedEngineers = data.engineers.map(engineer => ({
+      //     id: engineer._id,
+      //     name: engineer.name,
+      //     email: engineer.email,t
+      
+      //     currentTasks: engineer.currentTasks,
+      //     availability: engineer.availability,
+      //     specialization: engineer.specialization,
+      //     location: engineer.location
+      //   }));
+
+      const approvedEngineers =response.data.engineers.filter(engineer => engineer.isEngineer)
+        setAvailableEngineers(approvedEngineers);
         setError(null);
-      } else {
-        throw new Error('Invalid data format received from server');
-      }
+      
+      // else {
+      //   throw new Error('Invalid data format received from server');
+      // }
     } catch (err) {
       setError(err.message || 'Failed to fetch available engineers');
       console.error('Error fetching engineers:', err);

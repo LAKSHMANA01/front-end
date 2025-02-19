@@ -185,9 +185,9 @@ const TicketForm = () => {
       
     </CustomCard>
    </div>
-   <dv className="mt-6">
+   <div className="mt-6">
       <Footer />
-      </dv>
+      </div>
     </div>
      
   );
