@@ -357,6 +357,9 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, AlertTriangle, User } from 'lucide-react';
 import apiClient from '../../utils/apiClient';
+import { fetchDeferredTasks } from '../../redux/Slice/AdminSlice';
+import { useDispatch } from 'react-redux';
+
 
 const AdminTaskCard = ({ task = {} }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -367,6 +370,7 @@ const AdminTaskCard = ({ task = {} }) => {
   const [error, setError] = useState(null);
   const [comments, setComments] = useState(task.comments || []);
   const [newComment, setNewComment] = useState('');
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (showAssigneeDropdown) {
@@ -374,37 +378,38 @@ const AdminTaskCard = ({ task = {} }) => {
     }
   }, [showAssigneeDropdown]);
   
-  const email = sessionStorage.getItem('email');
 
   const fetchAvailableEngineers = async () => {
     setLoading(true);
     try {
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const currentDay = days[new Date().getDay()];
-      console.log("currentDay", currentDay);
       const response = await apiClient.get(`/admin/engineers/availability/${currentDay}`);
-      console.log("response", response);
       if (!response) {
         throw new Error('Failed to fetch engineers');
       }
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (data && Array.isArray(data.engineers)) {
-        const formattedEngineers = data.engineers.map(engineer => ({
-          id: engineer._id,
-          name: engineer.name,
-          email: engineer.email,
-          currentTasks: engineer.currentTasks,
-          availability: engineer.availability,
-          specialization: engineer.specialization,
-          location: engineer.location
-        }));
-        setAvailableEngineers(formattedEngineers);
+      // if (data && Array.isArray(data.engineers)) {
+      //   const formattedEngineers = data.engineers.map(engineer => ({
+      //     id: engineer._id,
+      //     name: engineer.name,
+      //     email: engineer.email,t
+      
+      //     currentTasks: engineer.currentTasks,
+      //     availability: engineer.availability,
+      //     specialization: engineer.specialization,
+      //     location: engineer.location
+      //   }));
+
+      const approvedEngineers =response.data.engineers.filter(engineer => engineer.isEngineer)
+        setAvailableEngineers(approvedEngineers);
         setError(null);
-      } else {
-        throw new Error('Invalid data format received from server');
-      }
+      
+      // else {
+      //   throw new Error('Invalid data format received from server');
+      // }
     } catch (err) {
       setError(err.message || 'Failed to fetch available engineers');
       console.error('Error fetching engineers:', err);
@@ -428,6 +433,7 @@ const AdminTaskCard = ({ task = {} }) => {
         throw new Error('Invalid engineer ID');
       }
 
+
       // Make the API call
       const response = await apiClient.patch(`/admin/reassign/${task._id}/${email}`,
         {
@@ -435,11 +441,12 @@ const AdminTaskCard = ({ task = {} }) => {
           'Content-Type': 'application/json'
         }
       });
-
-      if (!response.ok) {
+      console.log('response: ', response);
+      if (!response) {
         const errorData = await response.json().catch(() => null);
         throw new Error(errorData?.message || 'Failed to reassign engineer');
       }
+      console.log(`email: ${email}`);
       
       const selectedEngineer = availableEngineers.find(eng => eng.email === email);
       
@@ -464,9 +471,9 @@ const AdminTaskCard = ({ task = {} }) => {
       
       // Close the dropdown
       setShowAssigneeDropdown(false);
-      
       // Show success message if needed
       // You could add a success state here if desired
+      dispatch(fetchDeferredTasks()); // update diferred tasks list
       
     } catch (err) {
       console.error('Error reassigning engineer:', err);
@@ -530,8 +537,8 @@ const AdminTaskCard = ({ task = {} }) => {
                 ) : (
                   availableEngineers.map((engineer) => (
                     <div
-                      key={engineer.id}
-                      onClick={() => !loading && handleReassignEngineer(engineer.id)}
+                      key={engineer._id}
+                      onClick={() => !loading && handleReassignEngineer(engineer.email)}
                       className={`p-3 hover:bg-gray-50 cursor-pointer border-b flex items-center justify-between ${
                         loading ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
@@ -547,6 +554,15 @@ const AdminTaskCard = ({ task = {} }) => {
                           </div>
                           <div className="text-sm text-gray-500">
                             Specialization: {engineer.specialization}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Address: {engineer.address}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Pincode: {engineer.pincode}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Email: {engineer.email}
                           </div>
                         </div>
                       </div>

@@ -101,7 +101,7 @@ const getStatusStyle = (status) => {
 };
 
 const getPriorityColor = (priority) => {
-  switch(priority.toLowerCase()) {
+  switch(priority) {
     case 'high': return 'bg-red-500';
     case 'medium': return 'bg-yellow-500';
     default: return 'bg-gray-400';
