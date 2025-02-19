@@ -102,6 +102,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route element={<AssignedTasks />} />{" "}
             {/* Default route inside EngineerDashboard */}
+            <Route path="task/acceptance" element={<TaskAcceptance />} ></Route>
             <Route path="AssignedTasks" element={<AssignedTasks />} />
             <Route path="Hazards" element={<Hazards />} />
             <Route path="Profile" element={<EngineerProfile />} />
