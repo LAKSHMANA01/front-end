@@ -12,8 +12,9 @@ import { useSelector } from 'react-redux';
 
 const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { tasks,  profiledata, loading, error } = useSelector((state) => state.engineer );
-
+  const { tasks,  profiledata,  updateProfile, error } = useSelector((state) => state.engineer );
+ console.log( "Engineer", profiledata)
+ console.log( "Engineerupdatedat", updateProfile)
   return (
     <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50">
       {/* Left side - Mobile menu */}
@@ -32,10 +33,10 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
         <div className={`relative flex items-center ${isSearchOpen ? 'w-full md:w-96' : 'w-auto'}`}>
           <div className={`flex items-center w-full ${isSearchOpen ? 'block' : 'hidden md:flex'}`}>
             <div className="relative w-full">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
+            {/* <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent justify-start  md:hidden">
             Telecom Services
-          </h1>
+          </h1> */}
               {/* <input
                 type="text"
                 placeholder="Search..."
@@ -52,12 +53,7 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
               /> */}
             </div>
           </div>
-          <button
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="md:hidden ml-2 text-gray-600 dark:text-gray-300"
-          >
-            <Search size={24} />
-          </button>
+          
         </div>
       </div>
 

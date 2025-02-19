@@ -21,6 +21,7 @@ import { Line, Bar } from "react-chartjs-2";
 import { dataBar, dataLine } from "./../assets/chartData";
 import Card from "./Card";
 
+
 // Register ChartJS components
 ChartJS.register(
   LineElement,

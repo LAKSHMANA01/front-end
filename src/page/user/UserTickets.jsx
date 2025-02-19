@@ -7,6 +7,7 @@ import { setUser } from '../../redux/Slice/authSlice';
 import TaskCard from './Taskcard';
 import Loading from "../../compoents/Loadingpage"
 import Footer from '../../compoents/footers';
+import Notasksimage from '../../assets/NoTasks.png';
 
 
 const email = sessionStorage.getItem('email');
@@ -39,7 +40,10 @@ const UserTicketList = () => {
   }
 
   if(tasks.length === 0) {
-    return <div className=' top-24 justify-center'> No Tickets rasie yet!</div>
+    return  <div className='top-24 justify-center  flex flex-col items-center'>
+    <img src={Notasksimage} alt="No Tasks" className="w-72 h-30 " />
+    {/* <p>No Tickets raised yet!</p> */}
+  </div>
   }
 
 

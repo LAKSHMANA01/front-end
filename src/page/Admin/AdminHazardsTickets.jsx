@@ -18,7 +18,7 @@ const TicketForm = () => {
    address: "",
    pincode:""
   });
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const dispatch = useDispatch();
   const Raisetickets = useSelector((state) => state.Raisetickets);
 
@@ -48,7 +48,7 @@ const TicketForm = () => {
         address: "",
         pincode: "",
       });
-      // navigate("/engineer/Hazards")
+      //  navigate("/admin/hazards")
     } catch (err) {
       console.error("Failed to submit ticket:", err);
     }
@@ -60,10 +60,10 @@ const TicketForm = () => {
   const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
-    <CustomCard title="Raise New Ticket" icon={AlertTriangle}>
+    <CustomCard  className=""title="Add New Hazards" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className={labelStyles}>Service Type</label>
+          <label className={labelStyles}>Hazards Title</label>
           <select
             className={inputStyles}
             value={ticketForm.serviceType}

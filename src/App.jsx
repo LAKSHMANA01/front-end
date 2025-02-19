@@ -34,6 +34,7 @@ import HazardsAdmin from "././page/Admin/AdminHazards";
 import Hazardtickets from "././page/Admin/AdminHazardsTickets";
 import Dashboard from "././page/user/Dashbord";
 
+
 function App() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -105,6 +106,7 @@ function App() {
             <Route path="Profile" element={<EngineerProfile />} />
             <Route path="RiseTickets" element={<RaiseEngineerTickes />} />
           </Route>
+
         </Routes>
       </BrowserRouter>
     </div>
@@ -112,3 +114,4 @@ function App() {
 }
 
 export default App;
+

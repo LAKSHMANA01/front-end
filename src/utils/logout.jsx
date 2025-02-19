@@ -17,8 +17,8 @@ const Logout = () => {
         localStorage.removeItem(item);
       });
 
-      toast.success("Logged out successfully!");
       setTimeout(() => navigate("/login"), 1000); // Small delay to show toast
+      toast.success("Logged out successfully!");
     } catch (error) {
       console.error("Logout failed:", error.response?.data || error.message);
       toast.error("Failed to logout. Please try again.");
