@@ -37,9 +37,8 @@ const Dashbord = () => {
 
   
   return (
-    <>
       <div className=" grow p-8  dark:bg-gray-900 dark:text-white dark:border-gray-600">
-        <h1 className="text-2xl mb-4 font-bold">DashBord</h1>
+        <h1 className="text-2xl mb-4 font-bold">DashBoard</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* <Card icon={< FaUserCog/>} title="Active Engineers" value="140" /> */}
           <Card icon={<FaBox />} title="Completed Task" value="02" />
@@ -57,7 +56,6 @@ const Dashbord = () => {
           </div>
         </div>
       </div>
-    </>
   );
 };
 export default Dashbord;
