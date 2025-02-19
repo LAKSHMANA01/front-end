@@ -7,7 +7,8 @@ import {
   ChevronRight,
   ChevronLeft,
   User, 
-  LogOut 
+  LogOut,
+  Search
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -25,7 +26,7 @@ const Sidebar = ({ activePath = '/' }) => {
         setIsExpanded(false);
       } else {
         setIsMobile(false);
-        setIsExpanded(true);
+        setIsExpanded(false); // Initially closed on larger screens as well
       }
     };
 
@@ -39,10 +40,14 @@ const Sidebar = ({ activePath = '/' }) => {
     { path: '/engineer/assignedTasks', icon: ClipboardList, label: 'Tasks' },
     { path: '/engineer/hazards', icon: AlertTriangle, label: 'Hazards' },
     { path: '/engineer/profile', icon: User, label: 'Profile' },
-    { path: '/engineer/task/acceptance', icon: Settings, label: 'Task Acceptance' }
+    // { path: '/engineer/settings', icon: Settings, label: 'Settings' }
   ];
 
   const isActive = (path) => activePath === path;
+
+  // Methods to open and close the sidebar
+  const openSidebar = () => setIsExpanded(true);
+  const closeSidebar = () => setIsExpanded(false);
 
   return (
     <div 
@@ -80,6 +85,28 @@ const Sidebar = ({ activePath = '/' }) => {
           <h1 className="text-2xl font-bold text-blue-600"></h1>
         )}
       </div>
+
+      {/* Search Bar (only when expanded) */}
+      {isExpanded && (
+        <div className="p-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full px-4 py-2 pl-10 pr-4 
+                rounded-lg border border-gray-200 
+                dark:border-gray-700 dark:bg-gray-800 
+                focus:outline-none focus:border-blue-500
+                dark:text-gray-300"
+            />
+            <Search
+              size={20}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 
+                text-gray-400 dark:text-gray-500"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Menu Items */}
       <nav className="mt-6 px-2">

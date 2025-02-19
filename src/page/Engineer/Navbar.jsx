@@ -8,13 +8,20 @@ import {
   LogOut
 } from "lucide-react";
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
+  const { tasks,  profiledata,  updateProfile, error } = useSelector((state) => state.engineer );
+ console.log( "Engineer", profiledata)
+ console.log( "Engineerupdatedat", updateProfile)
   return (
     <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50">
       {/* Left side - Mobile menu */}
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
+              bg-clip-text text-transparent hidden sm:block md:block">
+              Telecom Services
+        </h1>
       <div className="flex items-center space-x-4">
         <button className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
           <Menu size={24} />
@@ -26,10 +33,10 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
         <div className={`relative flex items-center ${isSearchOpen ? 'w-full md:w-96' : 'w-auto'}`}>
           <div className={`flex items-center w-full ${isSearchOpen ? 'block' : 'hidden md:flex'}`}>
             <div className="relative w-full">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
-            bg-clip-text text-transparent">
+            {/* <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
+            bg-clip-text text-transparent justify-start  md:hidden">
             Telecom Services
-          </h1>
+          </h1> */}
               {/* <input
                 type="text"
                 placeholder="Search..."
@@ -46,12 +53,7 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
               /> */}
             </div>
           </div>
-          <button
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className="md:hidden ml-2 text-gray-600 dark:text-gray-300"
-          >
-            <Search size={24} />
-          </button>
+          
         </div>
       </div>
 
@@ -77,7 +79,7 @@ const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Do
         {/* Profile Section */}
         <div className="flex items-center space-x-3">
           <div className="hidden md:block text-right">
-            <p className="text-sm font-medium dark:text-white">{userName}</p>
+            <p className="text-sm font-medium dark:text-white">{ profiledata?.name}</p>
             <p className="text-xs text-gray-500 dark:text-gray-400">Engineer</p>
           </div>
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></div>

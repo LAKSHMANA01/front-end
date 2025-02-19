@@ -1,8 +1,10 @@
 import React from 'react';
 
 const TaskCard = ({ task }) => {
+  console.log(task);
   return (
     <div className="group relative bg-gradient-to-br from-white to-blue-50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200 hover:border-blue-200">
+      
       {/* Card Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
@@ -21,6 +23,7 @@ const TaskCard = ({ task }) => {
       {/* Card Body */}
       <div className="space-y-4">
         <p className="text-gray-600 text-sm">Description: {task.description}</p>
+      
         
         {/* Priority Indicator */}
         <div className="flex items-center gap-2">
@@ -81,7 +84,9 @@ const TaskCard = ({ task }) => {
           </svg>
         </button>
       </div>
+      
     </div>
+
   );
 };
 

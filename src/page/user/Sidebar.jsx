@@ -15,10 +15,10 @@ const Sidebar = ({ activePath = '/' }) => {
   }, []);
 
   const menuItems = [
-    { path: '/User', icon: LayoutDashboard, label: 'MyTicket' },
+    { path: '/User', icon: User, label: 'Dashboard' },
+    { path: '/User/tickets', icon: LayoutDashboard, label: 'MyTicket' },
     { path: '/User/RaiseTicket', icon: AlertTriangle, label: 'RaiseTickets' },
     { path: '/User/UserProfile', icon: User, label: 'Profile' },
-    { path: '/User/settings', icon: Settings, label: 'Settings' }
   ];
 
   const isActive = (path) => activePath === path;
@@ -38,7 +38,7 @@ const Sidebar = ({ activePath = '/' }) => {
       className={`
         fixed min-h-screen top-16 left-0 z-40 bg-white dark:bg-gray-900
         transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-800
-        ${isExpanded ? 'w-30' : 'w-20'} shadow-lg 
+        ${isExpanded ? 'w-64' : 'w-20'} shadow-lg 
       `}
     >
       {/* Toggle Button */}
@@ -56,7 +56,7 @@ const Sidebar = ({ activePath = '/' }) => {
         {isExpanded ? (
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent">
-         
+         Hi !
           </h1>
         ) : (
           <h1 className="text-2xl font-bold text-blue-600"></h1>
@@ -89,6 +89,9 @@ const Sidebar = ({ activePath = '/' }) => {
                   {item.label}
                 </span>
               )}
+              <div className="absolute left-1/3 transform -translate-x-1/4 mt-2 w-20 bg-white dark:bg-gray-800 text-center text-sm font-medium text-gray-700 dark:text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity sm:hidden">
+                {item.label}
+              </div>
             </button>
           );
         })}

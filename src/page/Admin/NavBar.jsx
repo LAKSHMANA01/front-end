@@ -7,13 +7,17 @@ const AdminNavbar = ({ onToggleTheme, isDarkMode = false, userName = "Admin", on
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 w-full h-16 justify-end bg-white border-b border-gray-300 px-4 flex items-center z-50">
+    <nav className="fixed top-0 left-0 w-full h-16   sm:justify-between justify-end bg-white border-b border-gray-300 px-4 flex items-center z-50">
+       <h1 className="text-2xl font-bold bg-gradient-to-r justify-start from-blue-600 to-blue-400 
+              bg-clip-text text-transparent hidden sm:block md:block">
+              Telecom Services
+        </h1>
       {/* Left side - Logout, Theme Toggle, Profile */}
       <div className="flex items-center space-x-4">
         <Link to="/logout">
           <LogOut className="text-gray-700 hover:text-blue-500 transition-colors" />
         </Link>
-
+      
         <button
           onClick={onToggleTheme}
           className="p-2 text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
