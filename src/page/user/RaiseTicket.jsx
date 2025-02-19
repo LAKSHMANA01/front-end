@@ -109,10 +109,11 @@ const TicketForm = () => {
           }
           required
         /> */}
-
+          <label className={labelStyles}>Address</label>
           <input
             type="text"
             className={inputStyles}
+            
             placeholder="Address"
             value={ticketForm.address}
             onChange={(e) =>

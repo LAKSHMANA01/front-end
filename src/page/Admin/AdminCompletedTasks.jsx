@@ -16,7 +16,6 @@ const AdminCompletedTasks = () => {
   if (loading) return <div className="text-center text-gray-500">Loading tasks...</div>;
   if (error) return <div className="text-center text-red-500">Error: {error}</div>;
 
-  // ✅ Filter only completed tasks
   const completedTasks = tasks.filter(task => task.status === "completed");
 
   if (completedTasks.length === 0) return <p className="text-center text-gray-500">No completed tasks available.</p>;

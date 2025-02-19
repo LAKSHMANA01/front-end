@@ -6,7 +6,7 @@ export const fetchTickets = createAsyncThunk(
   'tickets/fetchTickets',
   async ({ userEmail, role }) => {
     console.log(`userId inside fetchTickets ticketSlice: ${userEmail}`);
-    const response = await apiClient.get(`/tickets/${role}/${userEmail}`);
+    const response = await apiClient.get(`/tasks/${role}/${userEmail}`);
     console.log(`response.data inside ticketSlice: ${response.data}`);
     return response.data;
   }
