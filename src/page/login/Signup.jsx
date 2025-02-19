@@ -92,10 +92,10 @@ function Signup() {
         availability: formData.role === "engineer" ? formData.availability : [],
       });
 
-      alert("Registration successful! Please log in.");
+    //   alert("Registration successful! Please log in.");
       toast.success("Registration successful! Please log in.");
       
-      setTimeout(() => navigate("/login"), 4000); // Small delay to show toast
+      setTimeout(() => navigate("/login"), 5000); // Small delay to show toast
     
       navigate("/login");
     } catch (error) {

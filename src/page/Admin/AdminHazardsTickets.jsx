@@ -1,11 +1,11 @@
 // TicketForm.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 
 import { MapPin, AlertTriangle, Send } from "lucide-react";
 import CustomCard from "./CustomCard";
 import { HazardsTicket } from "../../redux/Slice/raiseticke";
-import { useDispatch, useSelector, } from "react-redux";
+import { useDispatch,  } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -20,7 +20,7 @@ const TicketForm = () => {
   });
   // const navigate = useNavigate()
   const dispatch = useDispatch();
-  const Raisetickets = useSelector((state) => state.Raisetickets);
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +39,7 @@ const TicketForm = () => {
     try {
       const response = await dispatch(HazardsTicket(formData));
       toast.success("Ticket submitted successfully!");
-      console.log("Ticket submitted successfully:", response);
+      // console.log("Ticket submitted successfully:", response);
       // Reset form on success
       setTicketForm({
         hazardType: "installation", // Default value, can be changed by the user
@@ -70,7 +70,7 @@ const TicketForm = () => {
             onChange={(e) =>
               setTicketForm({ ...ticketForm,hazardType: e.target.value })
             }
-            required99
+            
           >
             <option value="installation">New Installation</option>
             <option value="fault">Fault Report</option>
