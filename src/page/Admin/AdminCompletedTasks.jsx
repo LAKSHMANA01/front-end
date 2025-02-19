@@ -10,7 +10,7 @@ const AdminCompletedTasks = () => {
   const { tasks, loading, error } = useSelector((state) => state.admin);
 
   useEffect(() => {
-    dispatch(fetchAllTasks()); // ✅ Fetch tasks on mount
+    dispatch(fetchAllTasks()); // Fetch tasks on mount
   }, [dispatch]);
 
   if (loading) return <div className="text-center text-gray-500">Loading tasks...</div>;

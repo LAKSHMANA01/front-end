@@ -38,6 +38,11 @@ const UserTicketList = () => {
     return <div>Error: {error}</div>;
   }
 
+  if(tasks.length === 0) {
+    return <div className=' top-24 justify-center'> No Tickets rasie yet!</div>
+  }
+
+
   return (
     <div className=''> 
    

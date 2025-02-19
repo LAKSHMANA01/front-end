@@ -133,14 +133,7 @@ const AdminSidebar = () => {
             </div>
             {isExpanded && (
               <div>
-                <Link 
-                  to="/" 
-                  className="text-gray-700 hover:text-blue-500 transition-colors 
-                    flex items-center"
-                >
-                  <LogOut className="inline-block mr-2" size={16} />
-                  <span className="text-sm">Logout</span>
-                </Link>
+               
                 <p className="text-sm font-medium text-gray-700">Admin Name</p>
                 <p className="text-xs text-gray-500">Administrator</p>
               </div>

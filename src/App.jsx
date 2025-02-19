@@ -1,13 +1,7 @@
 import "./App.css";
-// In App.jsx
-// import Sidebar from "./components/Sidebar";
-// import Navbar from "./components/Navbar";
-// import Dashbord from "./components/Dashbord";
 import Dashbord from "./page/Admin/Dashbord";
-// import ThemeContextProvider from "./ContextAPI/ContextAPI";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Homepage from "./page/Home/Homepage";
-
 import Login from "./page/login/Login";
 import Signup from "./page/login/Signup";
 import ForgotPwd from "./page/login/ForgotPwd";
@@ -36,7 +30,6 @@ import RaiseEngineerTickes from "./page/Engineer/HazardsTicket";
 import AdminEngineerApproval from "./page/Admin/AdminEngineerApproval";
 import ProtectedRoute from "./utils/protectedRoute";
 import Logout from "./utils/logout";
-
 import HazardsAdmin from "././page/Admin/AdminHazards";
 import Hazardtickets from "././page/Admin/AdminHazardsTickets";
 import Dashboard from "././page/user/Dashbord";
@@ -105,7 +98,7 @@ function App() {
           <Route path="/engineer" element={<EngineerDashboard />}>
             {/* Nested Routes (these will be rendered inside EngineerDashboard) */}
             <Route index element={<Dashboard />} />
-            <Route  element={<AssignedTasks />} />{" "}
+            <Route element={<AssignedTasks />} />{" "}
             {/* Default route inside EngineerDashboard */}
             <Route path="AssignedTasks" element={<AssignedTasks />} />
             <Route path="Hazards" element={<Hazards />} />

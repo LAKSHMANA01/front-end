@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../../utils/apiClient";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -27,6 +29,7 @@ function Login() {
                 if (!token) {
                     console.error("Token is missing in response");
                     setError("Login failed. Please try again.");
+                    toast.error(" login failed. Please try again");
                     return;
                 }
 
@@ -34,18 +37,23 @@ function Login() {
                 sessionStorage.setItem("token", token);
                 sessionStorage.setItem("email", userEmail);
                 sessionStorage.setItem("role", role);
-
+            
                 // Redirect to role-based dashboard
-                navigate(`/${role}`);
+                toast.success("Login successfully!");
+                setTimeout(() =>  navigate(`/${role}`), 1000); 
+               ;
             } else {
                 console.error(response.data.error);
                 setError(response.data.error); // Store error message in state
-                alert(response.data.error); // Show alert message
+                // alert(response.data.error); // Show alert message
+                toast.error(response.data.error);
             }
         } catch (err) {
             console.error("Login error:", err);
-            setError("Something went wrong. Please try again.");
-            alert("Something went wrong. Please try again.");
+            // setError("Something went wrong. Please try again.");
+            // alert("Something went wrong. Please try again.");
+            toast.error("Something went wrong. Please try again");
+            
         }
     };
 
@@ -102,8 +110,26 @@ function Login() {
                     </Link>
                 </p>
             </div>
+            <ToastContainer
+position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+/>
         </div>
     );
 }
 
 export default Login;
+
+
+// import "react-toastify/dist/ReactToastify.css";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// toast.success("Ticket submitted successfully!");
+// toast.success("Ticket submitted successfully!");
