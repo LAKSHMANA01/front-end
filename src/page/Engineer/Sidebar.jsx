@@ -41,6 +41,7 @@ const Sidebar = ({ activePath = '/' }) => {
     { path: '/engineer/hazards', icon: AlertTriangle, label: 'Hazards' },
     { path: '/engineer/profile', icon: User, label: 'Profile' },
     // { path: '/engineer/settings', icon: Settings, label: 'Settings' }
+    { path: '/engineer/task/acceptance', icon: Settings, label: 'Task Acceptance' }
   ];
 
   const isActive = (path) => activePath === path;
