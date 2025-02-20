@@ -113,6 +113,7 @@ function Signup() {
   };
 
   return (
+    //use react Fragment to wrap the all the div's or <>
     <div className="flex justify-center items-center bg-gray-100 min-h-screen">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
         <h2 className="text-3xl font-semibold mb-6 text-center">Register</h2>
@@ -147,7 +148,7 @@ function Signup() {
                 (field) => (
                   <div className="mb-4" key={field}>
                     <label className="block text-lg font-medium mb-2">
-                      {field.replace(/([A-Z])/g, " $1")}
+                    {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
                     </label>
                     <input
                       type={field === "password" ? "password" : "text"}
@@ -187,7 +188,7 @@ function Signup() {
 
               {/* Engineer Fields */}
               {formData.role === "engineer" && (
-                <>
+                <React.Fragment>
                   <div className="mb-4">
                     <label className="block text-lg font-medium mb-2">
                       Specialization
@@ -239,7 +240,7 @@ function Signup() {
                       {errors.engineerFields}
                     </p>
                   )}
-                </>
+                </React.Fragment>
               )}
             </div>
           </div>
