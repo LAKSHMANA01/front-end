@@ -484,7 +484,7 @@ const AdminTaskCard = ({ task = {} }) => {
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-lg shadow">
+    <div className="w-full max-w-md bg-white rounded-lg shadow ml-16 mt-10">
       {/* Card Header */}
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
@@ -502,7 +502,7 @@ const AdminTaskCard = ({ task = {} }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <User className="w-5 h-5 text-gray-500" />
-            <span>Current Engineer: {currentAssignee?.name || "Unassigned"}</span>
+            <span>Current Engineer: {task.engineerEmail || "Unassigned"}</span>
           </div>
           <button 
             onClick={() => setShowAssigneeDropdown(!showAssigneeDropdown)}
