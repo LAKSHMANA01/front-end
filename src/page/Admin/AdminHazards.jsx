@@ -80,6 +80,15 @@ const AdminHazards = () => {
     }));
   };
 
+  const getHazardStyles = (level) =>{
+    const styles = {
+      low: 'bg-green-200',
+      medium : 'bg-blue-200',
+      high : 'bg-red-200'
+    }
+    return styles[level] || "bg-gray-200";
+  }
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen mt-16">
       <div className="bg-white shadow-md p-6 mb-6">
@@ -107,13 +116,15 @@ const AdminHazards = () => {
             filteredTasks.map((ticket) => (
               <div
                 key={ticket._id}
+                //style={{backgroundColor : getHazardStyles(ticket.riskLevel)}}
+                className={`border p-4 rounded-lg cursor-pointer hover:shadow-md transition ${getHazardStyles(ticket.riskLevel)}`}
                 onClick={() => handleTaskClick(ticket)}
-                className="border p-4 rounded-lg cursor-pointer hover:shadow-md transition"
+                //className="border p-4 rounded-lg cursor-pointer hover:shadow-md transition"
               >
-                <h3 className="font-bold">{ticket.hazardType}</h3>
-                <p>{ticket.description}</p>
-                <p className="text-sm text-gray-500">{ticket.riskLevel}</p>
-                <p className="text-sm text-gray-500">{ticket.pincode}</p>
+                <h3 className="font-bold">Harzard : {ticket.hazardType}</h3>
+                <p>Description : {ticket.description}</p>
+                <p className="text-sm text-gray-500">Risk level : {ticket.riskLevel}</p>
+                <p className="text-sm text-gray-500">Pincode : {ticket.pincode}</p>
               </div>
             ))
           ) : (
@@ -193,6 +204,7 @@ const AdminHazards = () => {
        <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </div>
   );
+
 };
 
 export default AdminHazards;
