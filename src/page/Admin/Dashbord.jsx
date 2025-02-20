@@ -33,7 +33,7 @@ const Dashboard = () => {
 
   return (
     <>  
-      <AdminNavbar/>
+    
       <div className="grow p-8 dark:bg-gray-900 dark:text-white dark:border-gray-600">
         <h1 className="text-2xl mb-4 font-bold">Dashboard</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

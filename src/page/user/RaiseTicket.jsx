@@ -4,17 +4,23 @@ import { MapPin, AlertTriangle, Send } from "lucide-react";
 import CustomCard from "./CustomCard";
 import { submitTicket } from "../../redux/Slice/raiseticke";
 import { useDispatch, useSelector } from "react-redux";
-
-const TicketForm = () => {
-  const userId = 2;
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Footer from "./../../compoents/footers";
+const email = sessionStorage.getItem('email');
+const token = sessionStorage.getItem('token');
+console.log(email, token);
+const TicketForm = () => {  
   const [ticketForm, setTicketForm] = useState({
     serviceType: "installation",
     address: "",
     description: "",
-    priority: "medium",
+    pincode: "",
   });
   const dispatch = useDispatch();
   const Raisetickets = useSelector((state) => state.Raisetickets);
+  const user = useSelector((state) => state.auth.user);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,26 +30,35 @@ const TicketForm = () => {
       ...ticketForm,
       //  userId: userId // Add userId to the submitted data
     };
+    
     try {
-      await dispatch(submitTicket({ ...ticketForm }));
+      if (email) {
+        console.log('venu')
+        dispatch(submitTicket({ ...ticketForm, email }));
+        toast.success("Ticket submitted successfully!");
+       
+      }
       // Reset form on success
       setTicketForm({
         serviceType: "installation",
         address: "",
         description: "",
-        priority: "medium",
+        pincode: "",
       });
     } catch (err) {
       console.error("Failed to submit ticket:", err);
+      toast.error("Failed to submit ticket!");
     }
   };
 
   const inputStyles =
     "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
-  const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
+  const labelStyles = "block text-sm font-medium text-gray-700 mb-1 ";
 
   return (
-    <CustomCard title="Raise New Ticket" icon={AlertTriangle}>
+    <div className="">
+   <div className="mb-20">
+   <CustomCard title="Raise New Ticket" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className={labelStyles}>Service Type</label>
@@ -53,7 +68,7 @@ const TicketForm = () => {
             onChange={(e) =>
               setTicketForm({ ...ticketForm, serviceType: e.target.value })
             }
-            required99
+            required
           >
             <option value="installation">New Installation</option>
             <option value="fault">Fault Report</option>
@@ -122,33 +137,18 @@ const TicketForm = () => {
         </div>
 
         <div>
-          <label className={labelStyles}>Priority Level</label>
-          <select
-            className={inputStyles}
-            value={ticketForm.priority}
-            onChange={(e) =>
-              setTicketForm({ ...ticketForm, priority: e.target.value })
-            }
-          >
-            <option value="low">Low - Not Urgent</option>
-            <option value="medium">Medium - Needs Attention</option>
-            <option value="high">High - Urgent Issue</option>
-          </select>
-        </div>
-
-        {/* <div>
-          <label className={labelStyles}>Contact Phone</label>
+          <label className={labelStyles}>Pincode</label>
           <input
             type="tel"
             className={inputStyles}
-            placeholder="Enter contact number"
-            value={ticketForm.contactPhone}
+            placeholder="Enter pincode"
+            value={ticketForm.pincode}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm, contactPhone: e.target.value })
+              setTicketForm({ ...ticketForm, pincode: e.target.value })
             }
             required
           />
-        </div> */}
+        </div>
 
         {/* <div>
           <label className={labelStyles}>
@@ -170,8 +170,42 @@ const TicketForm = () => {
           Submit Ticket
         </button>
       </form>
+      <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      
     </CustomCard>
+   </div>
+   <dv className="mt-6">
+      <Footer />
+      </dv>
+    </div>
+     
   );
 };
 
 export default TicketForm;
+
+// import "react-toastify/dist/ReactToastify.css";
+// import Footer from "./../../compoents/footers";
+// toast.success("Ticket submitted successfully!");
+// toast.success("Ticket submitted successfully!");
+// <ToastContainer 
+// position="top-right"
+// autoClose={5000}
+// hideProgressBar={false}
+// newestOnTop={false}
+// closeOnClick
+// rtl={false}
+// pauseOnFocusLoss
+// draggable
+// pauseOnHover
+// />

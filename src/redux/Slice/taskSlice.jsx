@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import apiClient from '../../utils/apiClient';
 
 // Create AsyncThunk for fetching tasks
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
-  const response = await axios.get('https://localhost:8000/api/admin/tasks');
+  const response = await apiClient.get('/admin/tasks');
   return response.data;
 });
 

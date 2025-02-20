@@ -1,15 +1,29 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import apiClient from '../../utils/apiClient';
 
 // AsyncThunk for fetching engineer tasks
+
+export const fetchProfile = createAsyncThunk(
+  'tickets/fetchProfile',
+  async ({ userEmail, role }) => {
+    console.log(`Fetching ${userEmail}`);
+    console.log(`userId inside fetchProfile ticketSlice: ${userEmail}`);
+    const response = await apiClient.get(`/profile/${role}/${userEmail}`);
+    console.log(`response.data inside profile: ${response.data}`);
+    return response.data;
+  }
+);
+
 export const fetchEngineerTasks = createAsyncThunk(
   'engineer/fetchEngineerTasks',
-  async (userId, { rejectWithValue }) => {
-    console.log(`userId inside fetchEngineerTasks: ${userId}`);
+  async (email, { rejectWithValue }) => {
+    console.log(`email inside fetchEngineerTasks: ${email}`);
     try {
-      const response = await axios.get(`https://localhost:8000/api/tickets/engineer/${userId}`);
+      const response = await apiClient.get(`/tasks/engineer/${email}`);
       console.log(`response.data inside fetchEngineerTasks: ${response.data}`);
       return response.data;
+      
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch engineer tasks');
     }
@@ -19,6 +33,29 @@ export const fetchEngineerTasks = createAsyncThunk(
 // AsyncThunk for updating engineer profile
 export const fetchUpdateEngineerProfile = createAsyncThunk(
   'engineer/fetchUpdateEngineerProfile',
+  async ({ email, updatedData }, { rejectWithValue }) => {
+    console.log('updatedData inside fetchUpdateEngineerProfile: ',updatedData);
+    try {
+      const response = await apiClient.patch(
+        `/updateProfile/engineer/${email}`, 
+        updatedData, 
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log(`response.data inside fetchUpdateEngineerProfile: ${response.data}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to update engineer profile');
+    }
+  }
+);
+
+// AsyncThunk for updating engineer profile
+export const fetchEngineerProfiledata = createAsyncThunk(
+  'engineerfetchEngineerProfiledata',
   async (updatedData, { rejectWithValue }) => {
     console.log(`updatedData inside fetchUpdateEngineerProfile: ${updatedData}`);
     try {
@@ -38,23 +75,83 @@ export const fetchUpdateEngineerProfile = createAsyncThunk(
     }
   }
 );
+
 export const updateTaskStatus = createAsyncThunk(
-  'engineer/updateTaskStatus',
+  "engineer/updateTaskStatus",
   async ({ taskId, status }, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`https://localhost:8000/api/tasks/updateTicketStatus/${taskId}/status/${status}`);
-      return { response };  // Return updated task info
+      const response = await apiClient.patch(`/tasks/updateTicketStatus/${taskId}`, { status });
+      return response.data; // Return only serializable data
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
+export const HazardsTickets = createAsyncThunk(
+   'engineer/fetchHazardsTickets',
+  async ({ rejectWithValue }) => {
+    try {
+      console.log("data comeing in axio")
+      const response =  await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      console.log("response.data inside fetchEngineerTasks:",response.data);
+      return response.data; // Return updated task info
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// AsyncThunk for Harzards engineer updateing
+export const HazardsUpdateTickets = createAsyncThunk(
+  'engineer/HazardsUpdateTickets',
+  async (updatedData, { rejectWithValue }) => {
+    console.log("updatedData inside fetchUpdateHazardsUpdateTickets:", updatedData);
+    try {
+      const response = await axios.patch(
+        `https://localhost:8000/api/hazards/updateHazard/${updatedData._id}`, 
+        updatedData, 
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      const res = await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      console.log("response.data inside  Hazards :", response.data);
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to HazardsUpdateTickets');
+    }
+  }
+);
+// AsyncThunk for Harzards engineer updateing
+export const HazardsDeleteTickets = createAsyncThunk(
+  'engineer/HazardsDeleteTickets',
+  async (updatedData, { rejectWithValue }) => {
+    console.log("deletedData inside fetchUpdateHazardsUpdateTickets:", updatedData);
+    try {
+      const response = await axios.delete(
+        `https://localhost:8000/api/hazards/deleteHazard/${updatedData}`, 
+       
+      );
+      const res = await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      console.log("response.data inside  Hazards :", response.data);
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to HazardsUpdateTickets');
+    }
+  }
+);
+
+
 const engineerSlice = createSlice({
   name: 'engineer',
   initialState: {
     tasks: [],
     updateProfile: [],
+    profiledata: {},
+    Hazards:[],
     loading: false,
     error: null,
   },
@@ -88,6 +185,20 @@ const engineerSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
       })
+
+       // For fetchEngineerProfiledata
+       .addCase(fetchEngineerProfiledata.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchEngineerProfiledata.fulfilled, (state, action) => {
+        state.updateProfile = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchEngineerProfiledata.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
       .addCase(updateTaskStatus.fulfilled, (state, action) => {
         const { taskId, status } = action.payload;
         const taskIndex = state.tasks.findIndex(task => task._id === taskId);
@@ -97,7 +208,52 @@ const engineerSlice = createSlice({
       })
       .addCase(updateTaskStatus.rejected, (state, action) => {
         state.error = action.payload;
-      });
+      })
+      // Hazards data setting here 
+      .addCase( HazardsTickets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase( HazardsTickets.fulfilled, (state, action) => {
+        state.Hazards = action.payload;
+        console.log("data comeing in fulfilled")
+        state.loading = false;
+      })
+      .addCase( HazardsTickets.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      // Hazards  update dat patch to engineer
+      .addCase( HazardsUpdateTickets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(HazardsUpdateTickets.fulfilled, (state, action) => {
+        state.Hazards = action.payload;
+        console.log("data comeing inside udpate Hazards patch")
+        state.loading = false;
+      })
+      .addCase( HazardsUpdateTickets.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+     // Hazards delete tasks
+      .addCase( HazardsDeleteTickets.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(HazardsDeleteTickets.fulfilled, (state, action) => {
+        state.Hazards = action.payload;
+         
+        
+        console.log("data comeing inside deleting data delete")
+        state.loading = false;
+      })
+      .addCase( HazardsDeleteTickets.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
   },
 });
 

@@ -1,16 +1,18 @@
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEngineerTasks, updateTaskStatus } from '../../redux/Slice/EngineerSlice';
 import TaskCard from './TaskCard';
 import Loading from "../../compoents/Loadingpage";
-import Navbar from '../user/Navbar';
+// import Navbar from '../user/Navbar';
 
-const AssignedTasks = () => {
-    const engineerId = 3;
-    console.log("Engineer ID:", engineerId);
+// const email = sessionStorage.getItem('email');
+// const role = sessionStorage.getItem('role');
+
+
+const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
 
     const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.user)
     const { tasks, loading, error } = useSelector((state) => state.engineer);
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,10 +21,11 @@ const AssignedTasks = () => {
     const [localTasks, setLocalTasks] = useState([]); // Local state to update UI instantly
 
     useEffect(() => {
-        if (engineerId) {
-            dispatch(fetchEngineerTasks(engineerId));
+        if (user.email) {
+            console.log('inside atjsx -', user.email);
+            dispatch(fetchEngineerTasks(user.email));
         }
-    }, [engineerId, dispatch]);
+    }, [user.email,user.role, dispatch]);
 
     useEffect(() => {
         setLocalTasks(tasks); // Sync local state when tasks update
@@ -54,15 +57,28 @@ const AssignedTasks = () => {
     };
 
     if (loading) return <Loading />;
-    if (error) return <div>Error: {error}</div>;
+    if (error) return <div>Error: {error.message}</div>;
+
+
+    
 
     return (
-        <div className="container mx-auto p-4">
-            <Navbar />
+        <div 
+        className={`transition-all duration-300 ease-in-out p-4
+            ${isExpanded ? 'ml-[100x] lg:ml-[100px] xl:ml-[100px]' : 'ml-[10x] lg:ml-[40px]'}
+        `}
+        >
+            {/* <Navbar /> */}
+
+            {/* Responsive Grid Layout */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {localTasks.map((task) => (
-                    <div key={task._id} className="w-full max-w-md bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer border"
-                        onClick={() => handleTaskClick(task)}>
+                    <div 
+                        key={task._id} 
+                        className="w-full max-w-md bg-white rounded-lg shadow hover:shadow-lg 
+                        transition-shadow cursor-pointer border"
+                        onClick={() => handleTaskClick(task)}
+                    >
                         <TaskCard task={task} />
                     </div>
                 ))}
@@ -70,17 +86,30 @@ const AssignedTasks = () => {
 
             {/* Modal */}
             {isModalOpen && selectedTask && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsModalOpen(false)} />
-                    <div className="relative bg-white rounded-lg w-full max-w-2xl m-4 p-6 max-h-[90vh] overflow-y-auto">
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center"
+                    style={{ cursor: 'grab' }} // Makes modal draggable
+                    draggable // Enables dragging
+                >
+                    <div 
+                        className="absolute inset-0 bg-black bg-opacity-50"
+                        onClick={() => setIsModalOpen(false)}
+                    />
+                    <div 
+                        className="relative bg-white rounded-lg w-full max-w-2xl m-4 p-6 max-h-[90vh] overflow-y-auto"
+                    >
                         <h2 className="text-2xl font-bold text-center mb-4">
                             {selectedTask.serviceType}
                         </h2>
 
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="text-xl font-semibold">{selectedTask.title}</h2>
-                            <button onClick={() => setIsModalOpen(false)}
-                                className="text-gray-500 hover:text-gray-700">✕</button>
+                            <button 
+                                onClick={() => setIsModalOpen(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </button>
                         </div>
 
                         <p className="text-gray-500 text-sm mb-2">
@@ -107,8 +136,11 @@ const AssignedTasks = () => {
 
                         <div className="mb-4">
                             <label className="font-medium">Change Task Status:</label>
-                            <select value={newStatus} onChange={handleStatusChange}
-                                className="block w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select 
+                                value={newStatus} 
+                                onChange={handleStatusChange}
+                                className="block w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
                                 <option value="open">Open</option>
                                 <option value="in-progress">In Progress</option>
                                 <option value="deferred">Deferred</option>
@@ -117,8 +149,10 @@ const AssignedTasks = () => {
                             </select>
                         </div>
 
-                        <button onClick={handleUpdateStatus}
-                            className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        <button 
+                            onClick={handleUpdateStatus}
+                            className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        >
                             Update Status
                         </button>
                     </div>
@@ -149,4 +183,3 @@ const getPriorityStyle = (priority) => {
 };
 
 export default AssignedTasks;
-

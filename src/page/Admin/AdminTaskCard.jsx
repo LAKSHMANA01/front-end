@@ -356,6 +356,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Clock, AlertTriangle, User } from 'lucide-react';
+import apiClient from '../../utils/apiClient';
 
 const AdminTaskCard = ({ task = {} }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -372,16 +373,18 @@ const AdminTaskCard = ({ task = {} }) => {
       fetchAvailableEngineers();
     }
   }, [showAssigneeDropdown]);
+  
+  const email = sessionStorage.getItem('email');
 
   const fetchAvailableEngineers = async () => {
     setLoading(true);
     try {
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const currentDay = days[new Date().getDay()];
-      
-      const response = await fetch(`https://localhost:8000/api/admin/engineers/availability/Monday`);
-
-      if (!response.ok) {
+      console.log("currentDay", currentDay);
+      const response = await apiClient.get(`/admin/engineers/availability/${currentDay}`);
+      console.log("response", response);
+      if (!response) {
         throw new Error('Failed to fetch engineers');
       }
 
@@ -410,7 +413,7 @@ const AdminTaskCard = ({ task = {} }) => {
     }
   };
 
-  const handleReassignEngineer = async (engineerId) => {
+  const handleReassignEngineer = async (email) => {
     setLoading(true);
     setError(null);
     console.log("task all",task)
@@ -421,19 +424,16 @@ const AdminTaskCard = ({ task = {} }) => {
         throw new Error('Invalid task information');
       }
       
-      if (!engineerId) {
+      if (!email) {
         throw new Error('Invalid engineer ID');
       }
 
       // Make the API call
-      const response = await fetch(`https://localhost:8000/api/admin/reassign/${task._id}/${engineerId}`, {
-        method: 'PATCH',
+      const response = await apiClient.patch(`/admin/reassign/${task._id}/${email}`,
+        {
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          engineerId: engineerId
-        })
+        }
       });
 
       if (!response.ok) {
@@ -441,7 +441,7 @@ const AdminTaskCard = ({ task = {} }) => {
         throw new Error(errorData?.message || 'Failed to reassign engineer');
       }
       
-      const selectedEngineer = availableEngineers.find(eng => eng.id === engineerId);
+      const selectedEngineer = availableEngineers.find(eng => eng.email === email);
       
       if (!selectedEngineer) {
         throw new Error('Selected engineer not found in available engineers list');
@@ -481,14 +481,15 @@ const AdminTaskCard = ({ task = {} }) => {
       {/* Card Header */}
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">{task.title}</h3>
+          <h3 className="text-lg font-semibold">{task.serviceType}</h3>
           <span className={getStatusStyle(task.status)}>{task.status}</span>
+          <span className={getStatusStyle(task.status)}>{task.priority}</span>
         </div>
       </div>
 
       {/* Card Content */}
       <div className="p-4 space-y-4">
-        <p className="text-gray-600">{task.description}</p>
+        <p className="text-gray-600 ">{task.description}</p>
         
         {/* Current Assignee */}
         <div className="flex items-center justify-between">
@@ -559,7 +560,7 @@ const AdminTaskCard = ({ task = {} }) => {
         )}
 
         {/* Comments Section */}
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <h4 className="font-medium mb-2">Comments</h4>
           <div className="space-y-2">
             {comments.map((comment) => (
@@ -574,7 +575,7 @@ const AdminTaskCard = ({ task = {} }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

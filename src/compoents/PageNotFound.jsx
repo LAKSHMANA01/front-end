@@ -4,7 +4,7 @@ import pagenot404 from './../assets/PageNot404.jpg'
 
 const PageNotFound = () => {
   const [countdown, setCountdown] = useState(10);
-  const [searchQuery, setSearchQuery] = useState('');
+ 
   const [isAnimating, setIsAnimating] = useState(true);
 
   useEffect(() => {

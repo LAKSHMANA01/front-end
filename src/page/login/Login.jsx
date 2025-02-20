@@ -1,36 +1,68 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import apiClient from "../../utils/apiClient";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [role, setRole] = useState('user'); // Default role
-    
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState(""); // State for error message
+
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        axios
-            .post('http://localhost:3001/login', { email, password })
-            .then((role)=>{
+        setError(""); // Clear previous errors
 
-            })
-            .catch((err) => console.log(err));
+        try {
+            const response = await apiClient.post(`/users/checkUser`, {
+                email,
+                password,
+            });
+
+            console.log("Response:", response.data);
+
+            if (response.data.success) {
+                const { token, email: userEmail, role } = response.data;
+
+                if (!token) {
+                    console.error("Token is missing in response");
+                    setError("Login failed. Please try again.");
+                    toast.error(" login failed. Please try again");
+                    return;
+                }
+
+                // Store in sessionStorage
+                sessionStorage.setItem("token", token);
+                sessionStorage.setItem("email", userEmail);
+                sessionStorage.setItem("role", role);
             
-            if (role === 'user') {
-                navigate('/User');
-              } else if (role === 'engineer') {
-                navigate('/engineer');
-              } else if (role === 'admin') {
-                navigate('/admin');
-              }
+                // Redirect to role-based dashboard
+                toast.success("Login successfully!");
+                setTimeout(() =>  navigate(`/${role}`), 1000); 
+               ;
+            } else {
+                console.error(response.data.error);
+                setError(response.data.error); // Store error message in state
+                // alert(response.data.error); // Show alert message
+                toast.error(response.data.error);
+            }
+        } catch (err) {
+            console.error("Login error:", err);
+            // setError("Something went wrong. Please try again.");
+            // alert("Something went wrong. Please try again.");
+            toast.error("Something went wrong. Please try again");
+            
+        }
     };
 
     return (
         <div className="flex justify-center items-center bg-gray-100 h-screen">
             <div className="bg-white p-8 rounded-lg shadow-md w-96">
                 <h2 className="text-3xl font-semibold mb-6 text-center">Login</h2>
+                {error && <p className="text-red-500 text-center mb-4">{error}</p>} {/* Show error message */}
+
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-lg font-medium mb-2">
@@ -59,18 +91,6 @@ function Login() {
                             required
                         />
                     </div>
-                    <div>
-                    <label htmlFor="password" className="block text-lg font-medium mb-2">
-                            Role
-                        </label>
-
-
-                    <select className='w-60 mb-5' value={role} onChange={(e) => setRole(e.target.value)}>
-                         <option value="user">User</option>
-                         <option value="engineer">Engineer</option>
-                         <option value="admin">Admin</option>
-                     </select>
-                    </div>
                     <button
                         type="submit"
                         className="w-full py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -78,18 +98,38 @@ function Login() {
                         Login
                     </button>
                 </form>
+                <div className="mt-4 text-center">
+                    <Link to="/reset" className="text-blue-500 hover:underline text-sm">
+                        Forgot Password?
+                    </Link>
+                </div>
                 <p className="mt-4 text-center text-sm">
-                    Don't have an account?{' '}
-                    <Link
-                        to="/register"
-                        className="text-blue-500 hover:underline"
-                    >
+                    Don't have an account?{" "}
+                    <Link to="/register" className="text-blue-500 hover:underline">
                         Sign Up
                     </Link>
                 </p>
             </div>
+            <ToastContainer
+position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+/>
         </div>
     );
 }
 
 export default Login;
+
+
+// import "react-toastify/dist/ReactToastify.css";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// toast.success("Ticket submitted successfully!");
+// toast.success("Ticket submitted successfully!");

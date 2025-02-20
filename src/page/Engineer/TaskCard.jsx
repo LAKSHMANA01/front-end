@@ -1,8 +1,10 @@
 import React from 'react';
 
 const TaskCard = ({ task }) => {
+  console.log(task);
   return (
     <div className="group relative bg-gradient-to-br from-white to-blue-50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200 hover:border-blue-200">
+      
       {/* Card Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
@@ -20,7 +22,8 @@ const TaskCard = ({ task }) => {
 
       {/* Card Body */}
       <div className="space-y-4">
-        <p className="text-gray-600 text-sm">{task.description}</p>
+        <p className="text-gray-600 text-sm">Description: {task.description}</p>
+      
         
         {/* Priority Indicator */}
         <div className="flex items-center gap-2">
@@ -44,6 +47,14 @@ const TaskCard = ({ task }) => {
 
         {/* Due Date and Assignee */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          {/* <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+              <span className="text-xs text-blue-600">{task.assignee?.initials || 'N/A'}</span>
+            </div>
+            <span className="text-sm text-gray-500">
+              Assigned to: {task.engineerEmail || 'Not assigned'}
+            </span>
+          </div> */}
           <div className="flex items-center gap-2">
             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -53,13 +64,15 @@ const TaskCard = ({ task }) => {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-xs text-blue-600">{task.assignee?.initials || 'N/A'}</span>
-            </div>
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
             <span className="text-sm text-gray-500">
-              Assigned to: {task.assignee?.name || 'Not assigned'}
+              Updated: {new Date(task.updatedAt).toLocaleDateString()}
             </span>
           </div>
+          
+          
         </div>
       </div>
 
@@ -71,7 +84,9 @@ const TaskCard = ({ task }) => {
           </svg>
         </button>
       </div>
+      
     </div>
+
   );
 };
 
