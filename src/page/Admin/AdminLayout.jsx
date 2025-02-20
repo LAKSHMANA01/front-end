@@ -19,7 +19,6 @@ const AdminLayout = () => {
           {/* here router parence to child router display */}
           <Outlet />
         </div>
-      
       </div>
     </ThemeContextProvider>
   );

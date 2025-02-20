@@ -42,6 +42,7 @@ import AdminTaskList from "../../compoents/AdminTaskList"; // Import AdminTaskLi
 import Navbar from './NavBar';
 import AdminNavbar from "./NavBar";
 import AdminSearch from "./AdminSearch";
+import Footer from "../../compoents/Footer"
 
 function AdminDashboard() {
   const location = useLocation();

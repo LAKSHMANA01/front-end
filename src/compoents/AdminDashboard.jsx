@@ -2,6 +2,7 @@ import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import Dashbord from "./Dashbord";
 import ThemeContextProvider from "../ContextAPI/ContextAPI";
+import Footer from "./Footer"
 // import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function AdminDashboard() {
