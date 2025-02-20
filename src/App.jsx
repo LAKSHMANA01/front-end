@@ -97,7 +97,10 @@ function App() {
           </Route>
 
           {/* Engineer Dashboard */}
-          <Route path="/engineer" element={<EngineerDashboard />}>
+          <Route path="/engineer" element={
+            <ProtectedRoute allowedRoles={['engineer']}>
+              <EngineerDashboard />
+              </ProtectedRoute>}>
             {/* Nested Routes (these will be rendered inside EngineerDashboard) */}
             <Route index element={<Dashboard />} />
             <Route element={<AssignedTasks />} />{" "}

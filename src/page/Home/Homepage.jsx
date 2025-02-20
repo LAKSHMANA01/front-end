@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRight, CheckCircle, MapPin, Shield, Server, Wifi, Users, Clipboard, AlertTriangle, Mail, Smartphone, Calendar, Clock } from 'lucide-react';
 import { Link,useNavigate } from 'react-router-dom';
-
+import { ToastContainer, toast } from 'react-toastify';
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -39,10 +39,11 @@ const LandingPage = () => {
       navigate("/login");
     } else if (role === "user") {
       // If logged in and role is "user", go to raise ticket page
-      navigate("/raise-ticket");
+      navigate("/User/RaiseTicket");
     } else {
       // If logged in but role is not "user" (admin or engineer)
-      alert("Only users can raise tickets.");
+      toast.error("Only Uses can Raise Tickets");
+      //alert("Only users can raise tickets.");
     }
   };
 
@@ -204,6 +205,17 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };
