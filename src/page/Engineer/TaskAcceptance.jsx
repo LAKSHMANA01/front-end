@@ -47,21 +47,6 @@ const TaskAcceptance = ({ isExpanded }) => {
     }
     };
 
-    // const handleRejectTask = (taskId) => {
-    //     console.log("Accepting taskId:", taskId, "Type:", typeof taskId);
-    //     console.log("User email:", user.email);
-
-    //     const taskIdString = String(taskId);
-    //     dispatch(fetchRejectTask({ taskId:taskIdString, email: user.email }))
-    //         .then(() => {
-    //             setLocalTasks(prevTasks =>
-    //                 prevTasks.filter(task => task._id !== taskId)
-    //             );
-    //         })
-    //         .catch((error) => {
-    //             console.error('Error rejecting task:', error);
-    //         });
-    // };
     const handleRejectTask = async (taskId) => {
         try {
             const taskIdString = String(taskId);

@@ -18,12 +18,14 @@ const AdminUserList = () => {
    
   
   const debouncedSearch = useCallback(debounce((searchTerm) => {
+    console.log(users, " User information: " )
     setFilteredUsers(
       users.filter((user) =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        user?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
       )
     );
   }, 900), [users]);
+
   const handledebounce = (e) => {
     debouncedSearch(e.target.value);
     setSearchTerm(e.target.value);

@@ -1,5 +1,12 @@
 import React from "react";
-import { TrendingUp, TrendingDown, Users, ShoppingCart, DollarSign, Activity } from "lucide-react"; // Add the necessary icons
+import {
+  TrendingUp,
+  TrendingDown,
+  Users,
+  ShoppingCart,
+  DollarSign,
+  Activity,
+} from "lucide-react"; // Add the necessary icons
 
 const DashboardCard = ({
   icon,
@@ -35,12 +42,13 @@ const DashboardCard = ({
     >
       {/* Icon and trend section */}
       <div className="flex items-center justify-between mb-4">
-        <div
-          className={`p-4 rounded-lg ${getStatusColor()} bg-opacity-20`}
-        >
+        <div className={`p-4 rounded-lg ${getStatusColor()} bg-opacity-20`}>
           {/* Display large icons */}
           <div className="flex justify-center">
-            {React.cloneElement(icon, { size: iconSize, className: `${getStatusColor()}` })}
+            {React.cloneElement(icon, {
+              size: iconSize,
+              className: `${getStatusColor()}`,
+            })}
           </div>
         </div>
         {/* {percentage !== null && (
@@ -64,7 +72,9 @@ const DashboardCard = ({
           {title}
         </h3>
         <div className="flex items-end space-x-2">
-          <p className="text-3xl font-bold text-gray-800 dark:text-white">{value}</p>
+          <p className="text-3xl font-bold text-gray-800 dark:text-white">
+            {value}
+          </p>
           {trend !== 0 && (
             <span
               className={`text-sm pb-1 ${
@@ -76,7 +86,6 @@ const DashboardCard = ({
             </span>
           )}
         </div>
-      
       </div>
     </div>
   );

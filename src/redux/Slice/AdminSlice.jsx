@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiClient from "../../utils/apiClient";
 
+
 // Fetch all tasks
 export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, { rejectWithValue }) => {
   try {
@@ -130,6 +131,7 @@ const adminSlice = createSlice({
     error: null,
   },
   reducers: {},
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllTasks.pending, (state) => { state.loading = true; })

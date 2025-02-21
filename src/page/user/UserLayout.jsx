@@ -4,6 +4,8 @@ import Sidebar from './Sidebar';
 import ThemeContextProvider from '../../ContextAPI/ContextAPI';
 import Navbar from './Navbar';
 
+
+
 const AdminLayout = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
@@ -25,6 +27,7 @@ const AdminLayout = () => {
       <div className="flex flex-col h-screen">
         {/* Fixed Navbar */}
         <Navbar />
+       
 
         {/* Main Content Area */}
         <div className="flex flex-1 mt-16 relative">
