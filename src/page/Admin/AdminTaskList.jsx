@@ -42,10 +42,11 @@ const AdminTaskList = () => {
 
   // Filter tasks based on debounced search term
   const filteredTasks = tasks.filter(task => {
-    console.log(task.priority)
+    //console.log("task priority:",task.priority)
     const matchesSearchTerm = task.serviceType.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
     const matchesStatusFilter = statusFilter ? task.status.toLowerCase() === statusFilter.toLowerCase() : true;
-    const matchesPriorityusFilter = priorityFilter ? task.priority.toLowerCase() === priorityFilter.toLowerCase() : true;
+    //console.log("before priority:",task.priority)
+    const matchesPriorityusFilter = priorityFilter ? task.priority === priorityFilter.toLowerCase() : true;
     return matchesSearchTerm && matchesStatusFilter && matchesPriorityusFilter;
   });
 

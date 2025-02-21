@@ -31,7 +31,19 @@ const TaskCard = ({ task, showPriority }) => {
             <span className={`w-3 h-3 rounded-full ${getPriorityColor(task.priority)}`}></span>
             <span className="text-sm text-gray-500 capitalize">{task.priority} priority</span>
           </div>
-        )}
+          )}
+          
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="text-sm text-gray-500">
+                Assigned Engineer: {task.engineerEmail}
+            </span>
+            </div>
+          </div>
+        </div>
 
         {/* Due Date and Assignee */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
@@ -40,17 +52,15 @@ const TaskCard = ({ task, showPriority }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span className="text-sm text-gray-500">
-              Due {new Date(task.dueDate).toLocaleDateString()}
+              Created At: {new Date(task.createdAt).toLocaleDateString()}
+            </span>
+            <span className="text-sm text-gray-500">
+              Updated At: {new Date(task.updatedAt).toLocaleDateString()}
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-xs text-blue-600">{task.assignee?.initials}</span>
-            </div>
-            <span className="text-sm text-gray-500">{task.assignee?.name}</span>
-          </div>
         </div>
-      </div>
+          
+        
 
       {/* Hover Actions */}
       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -67,10 +67,13 @@ const UserTicketList = () => {
    
 const taskListStyles = {
   display: 'flex',
-  flexWrap: 'wrap',
+  // flexWrap: 'wrap',
   justifyContent: 'center',
   gap: '20px',
-  padding: '2rem',
+  width: '80%',
+  flexDirection: 'column',
+  margin: '0 auto',
+  
 };
 
 export default UserTicketList;

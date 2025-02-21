@@ -12,11 +12,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     const role = sessionStorage.getItem("role");
 
     if (!token) {
-      navigate("/login"); // Redirect to login if no token
       toast.error("Please log in to access this page."); // Display error toast message
+      setTimeout(() => navigate("/login"),1000 );
+      //navigate("/login"); // Redirect to login if no token
     } else if (!allowedRoles.includes(role)) {
-      navigate("/unauthorized");
       toast.error("Please log in to access this page."); // Display
+      setTimeout(() => navigate("/unauthorized"),1000 );
 
       // Redirect if role is not allowed
     }
