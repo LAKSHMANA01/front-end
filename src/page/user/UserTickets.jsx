@@ -52,7 +52,7 @@ const UserTicketList = () => {
    
       <div style={taskListStyles}>
         {tasks.map((task) => (
-          <TaskCard key={task._id} task={task} showPriority={false} />
+          <TaskCard key={task._id} task={task} showPriority={false} assignEngineer={true}/>
         
         ))}
       </div>
@@ -69,6 +69,7 @@ const taskListStyles = {
   display: 'flex',
   // flexWrap: 'wrap',
   justifyContent: 'center',
+  //alignItems: 'center',
   gap: '20px',
   width: '80%',
   flexDirection: 'column',

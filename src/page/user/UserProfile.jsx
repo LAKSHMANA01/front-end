@@ -3,6 +3,7 @@ import { User, Mail, Phone, MapPin, Camera, CheckCircle } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUpdateProfile, fetchProfile } from "../../redux/Slice/UserSlice";
 import Footer from "./../../compoents/footers";
+import { validateEmail,validatePhoneNumber } from "../../utils/validation";
 
 const UserProfile = () => {
   const userEmail = sessionStorage.getItem("email");
@@ -25,6 +26,7 @@ const UserProfile = () => {
     address: "",
   });
 
+  const [errors, setErrors] = useState({ email: "", phone: "" }); // **Added state for errors**
   useEffect(() => {
     if (profile.email) {
       setUser({
@@ -42,6 +44,13 @@ const UserProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess(false);
+
+    const emailError = validateEmail(user.email) ? "" : "Invalid email format"; // **Validate email**
+    const phoneError = validatePhoneNumber(user.phone) ? "" : "Invalid phone number"; // **Validate phone**
+
+    setErrors({ email: emailError, phone: phoneError });
+
+    if (emailError || phoneError) return; // **Prevent submission if errors exist**
 
     try {
       // Dispatch updated profile with an object containing userEmail, role, and updatedata (user)
@@ -142,6 +151,7 @@ const UserProfile = () => {
                     }
                     icon={<Mail className="w-5 h-5" />}
                   />
+                  {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>} {/* **Show email error** */}
                   <InputField
                     label="Phone"
                     type="tel"
@@ -151,6 +161,7 @@ const UserProfile = () => {
                     }
                     icon={<Phone className="w-5 h-5" />}
                   />
+                   {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>} {/* **Show phone error** */}
                   <InputField
                     label="Address"
                     value={user.address}
