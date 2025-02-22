@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEngineerTasks, updateTaskStatus } from '../../redux/Slice/EngineerSlice';
-import TaskCard from './TaskCard';
+import TaskCard from '../user/Taskcard';
 import Loading from "../../compoents/Loadingpage";
 // import Navbar from '../user/Navbar';
 
@@ -83,7 +83,7 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
                         transition-shadow cursor-pointer border"
                         onClick={() => handleTaskClick(task)}
                     >
-                        <TaskCard task={task} />
+                        <TaskCard task={task} showPriority={true} assignEngineer={false}/>
                     </div>
                 ))}
             </div>
@@ -186,5 +186,17 @@ const getPriorityStyle = (priority) => {
         default: return 'bg-gray-500';
     }
 };
+
+// const taskListStyles = {
+//     display: 'flex',
+//     // flexWrap: 'wrap',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     gap: '20px',
+//     width: '80%',
+//     flexDirection: 'column',
+//     margin: '0 auto',
+    
+//   };
 
 export default AssignedTasks;
