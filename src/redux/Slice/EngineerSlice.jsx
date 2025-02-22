@@ -128,7 +128,7 @@ export const HazardsTickets = createAsyncThunk(
   async ({ rejectWithValue }) => {
     try {
       console.log("data comeing in axio")
-      const response =  await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      const response =  await apiClient.get(`/hazards/getAllHazards`);
       console.log("response.data inside fetchEngineerTasks:",response.data);
       return response.data; // Return updated task info
     } catch (error) {
@@ -143,8 +143,8 @@ export const HazardsUpdateTickets = createAsyncThunk(
   async (updatedData, { rejectWithValue }) => {
     console.log("updatedData inside fetchUpdateHazardsUpdateTickets:", updatedData);
     try {
-      const response = await axios.patch(
-        `https://localhost:8000/api/hazards/updateHazard/${updatedData._id}`, 
+      const response = await apiClient.patch(
+        `/hazards/updateHazard/${updatedData._id}`, 
         updatedData, 
         {
           headers: {
@@ -152,7 +152,7 @@ export const HazardsUpdateTickets = createAsyncThunk(
           }
         }
       );
-      const res = await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      const res = await apiClient.get(`/hazards/getAllHazards`);
       console.log("response.data inside  Hazards :", response.data);
       return res.data;
     } catch (error) {
@@ -166,11 +166,11 @@ export const HazardsDeleteTickets = createAsyncThunk(
   async (updatedData, { rejectWithValue }) => {
     console.log("deletedData inside fetchUpdateHazardsUpdateTickets:", updatedData);
     try {
-      const response = await axios.delete(
-        `https://localhost:8000/api/hazards/deleteHazard/${updatedData}`, 
+      const response = await apiClient.delete(
+        `/hazards/deleteHazard/${updatedData}`, 
        
       );
-      const res = await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      const res = await apiClient.get(`/hazards/getAllHazards`);
       console.log("response.data inside  Hazards :", response.data);
       return res.data;
     } catch (error) {
