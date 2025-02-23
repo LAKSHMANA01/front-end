@@ -67,24 +67,11 @@ const TicketForm = () => {
           <input
             type="text"
             className={inputStyles}
-<<<<<<< HEAD
-            placeholder="Address"
-            value={ticketForm.address}
+            placeholder="Hazard Title"
+            value={ticketForm.hazardType}
             required
           />
 
-=======
-            value={ticketForm.serviceType}
-            onChange={(e) =>
-              setTicketForm({ ...ticketForm,hazardType: e.target.value })
-            }
-            
-          >
-            <option value="installation">New Installation</option>
-            <option value="fault">Fault Report</option>
-            {/* <option value="maintenance">Maintenance Request</option> */}
-          </select>
->>>>>>> ab8fe80f67ac7467229d3c0b627af2ee0e13ba33
         </div>
         <div>
 
