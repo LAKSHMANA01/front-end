@@ -1,8 +1,7 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Login from "./Login";
-import apiClient from "../../config/apiConfig";
+import apiClient from "../../utils/apiClient";
 import { ToastContainer } from "react-toastify";
 
 jest.mock("../../utils/apiClient", () => ({
@@ -20,7 +19,8 @@ describe("Login Component", () => {
     });
 
     test("renders login form correctly", () => {
-        expect(screen.getByText(/Login/i)).toBeInTheDocument();
+        // More specific queries to avoid duplicate matches
+        expect(screen.getByRole("heading", { level: 2, name: /Login/i })).toBeInTheDocument();
         expect(screen.getByPlaceholderText(/Enter Email/i)).toBeInTheDocument();
         expect(screen.getByPlaceholderText(/Enter Password/i)).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument();

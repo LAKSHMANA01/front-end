@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import AssignedTasks from '../AssignedTasks'; // Adjust the path as needed
+import AssignedTasks from './AssignedTasks'; // Adjust the path as needed
 import { fetchEngineerTasks, updateTaskStatus } from '../../redux/Slice/EngineerSlice';
 import { sendNotification } from '../../redux/Slice/notificationSlice';
 

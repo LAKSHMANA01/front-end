@@ -21,35 +21,31 @@ const TicketForm = () => {
   const Raisetickets = useSelector((state) => state.Raisetickets);
   const user = useSelector((state) => state.auth.user);
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Ticket submitted:", ticketForm);
+  if (!email) {
+    toast.error("User email not found!");
+    return;
+  }
 
-    const formDatawithUserId = {
-      ...ticketForm,
-      //  userId: userId // Add userId to the submitted data
-    };
+  try {
+    await dispatch(submitTicket({ ...ticketForm, email })); 
+    toast.success("Ticket submitted successfully!");
     
-    try {
-      if (email) {
-        console.log('venu')
-        dispatch(submitTicket({ ...ticketForm, email }));
-        toast.success("Ticket submitted successfully!");
-       
-      }
-      // Reset form on success
-      setTicketForm({
-        serviceType: "installation",
-        address: "",
-        description: "",
-        pincode: "",
-      });
-    } catch (err) {
-      console.error("Failed to submit ticket:", err);
-      toast.error("Failed to submit ticket!");
-    }
-  };
+    // Reset form on success
+    setTicketForm({
+      serviceType: "installation",
+      address: "",
+      description: "",
+      pincode: "",
+    });
+  } catch (err) {
+    console.error("Failed to submit ticket:", err);
+    toast.error("Failed to submit ticket!");
+  }
+};
+
 
   const inputStyles =
     "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";

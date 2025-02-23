@@ -1,5 +1,3 @@
-
-// src/page/user/Navbar.test.jsx
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
@@ -18,29 +16,29 @@ jest.mock('lucide-react', () => ({
 }));
 
 const mockStore = configureStore([]);
+let store; // Define store globally
 
-describe('Navbar Component', () => {
-  let store;
-
-  beforeEach(() => {
-    store = mockStore({
-      auth: {
-        user: { email: 'test@example.com' }
-      }
-    });
+beforeEach(() => {
+  store = mockStore({
+    auth: {
+      user: { email: "test@example.com" }
+    }
   });
 
-  test('renders navbar with all icons', () => {
-    render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <Navbar />
-        </BrowserRouter>
-      </Provider>
-    );
+  // Mock sessionStorage
+  Storage.prototype.getItem = jest.fn(() => "test@example.com");
+});
 
-    expect(screen.getByTestId('menu-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('search-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('bell-icon')).toBeInTheDocument();
-  });
+test('renders navbar with all icons', () => {
+  render(
+    <Provider store={store}>
+      <BrowserRouter>
+        <Navbar />
+      </BrowserRouter>
+    </Provider>
+  );
+
+  expect(screen.getByTestId('menu-icon')).toBeInTheDocument();
+  expect(screen.getByTestId('search-icon')).toBeInTheDocument();
+  expect(screen.getByTestId('bell-icon')).toBeInTheDocument();
 });

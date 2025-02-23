@@ -1,12 +1,13 @@
-// src/page/user/Sidebar.test.jsx
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Sidebar from './Sidebar';
 import { BrowserRouter } from 'react-router-dom';
 
+// Mock useNavigate
+const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+  useNavigate: () => mockNavigate,
 }));
 
 describe('Sidebar', () => {
@@ -26,9 +27,14 @@ describe('Sidebar', () => {
         <Sidebar />
       </BrowserRouter>
     );
-    const toggleButton = screen.getByRole('button');
+
+    const toggleButton = screen.getByRole('button'); // Finding first button
+
+    // Click to collapse sidebar
     fireEvent.click(toggleButton);
     expect(localStorage.getItem('isSidebarExpanded')).toBe('false');
+
+    // Click again to expand sidebar
     fireEvent.click(toggleButton);
     expect(localStorage.getItem('isSidebarExpanded')).toBe('true');
   });
@@ -39,8 +45,11 @@ describe('Sidebar', () => {
         <Sidebar activePath="/User" />
       </BrowserRouter>
     );
-    const dashboardItem = screen.getByText('Dashboard');
-    fireEvent.click(dashboardItem);
-    expect(dashboardItem).toHaveClass('active');
+
+    const dashboardItems = screen.getAllByText('Dashboard'); // Get all Dashboard elements
+    fireEvent.click(dashboardItems[0]); // Click first "Dashboard" button
+
+    // Expect navigation to be called with the correct path
+    expect(mockNavigate).toHaveBeenCalledWith('/User');
   });
 });

@@ -12,10 +12,10 @@ import { Link } from 'react-router-dom';
 const Navbar = () => {
  
    const [isProfileOpen, setIsProfileOpen] = useState(false);
-   const userName = sessionStorage.getItem("email");
+   const userName = sessionStorage.getItem("email") || "";
    console.log(" userName: " + userName);
 
-   const Name = userName.split("@")[0]
+   const Name = userName ? userName.split("@")[0] : "Guest";
 
 
   return (
