@@ -53,8 +53,7 @@ const Sidebar = ({ activePath = "/" }) => {
   return (
     <div
       className={`
-       fixed top-16 left-0 
-        z-50
+     fixed min-h-screen top-16 
         h-[calc(100vh-4rem)] 
         bg-white
         transition-all duration-300 ease-in-out

@@ -1,9 +1,9 @@
 import React, {useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useParams } from 'react-router-dom';
+
 import { fetchTickets } from '../../redux/Slice/UserSlice';
-import { setUser } from '../../redux/Slice/authSlice';
+
 import TaskCard from './Taskcard';
 import Loading from "../../compoents/Loadingpage"
 import Footer from '../../compoents/footers';

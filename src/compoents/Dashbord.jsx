@@ -8,10 +8,10 @@ import {
 } from "react-icons/fa";
 import { Line, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement } from "chart.js";
-import { useDispatch, useSelector } from "react-redux";
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchProfile } from "../../src/redux/Slice/UserSlice";
+
 
 import Card from "./Card";
 

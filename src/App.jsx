@@ -5,10 +5,8 @@ import Homepage from "./page/Home/Homepage";
 import Login from "./page/login/Login";
 import Signup from "./page/login/Signup";
 import ForgotPwd from "./page/login/ForgotPwd";
-import Tickets from "./page/Admin/Tickets"; // Your task management page
 import AdminLayout from "./page/Admin/AdminLayout";
 import UserticketList from "./page/user/UserTickets";
-import MyTickets from "./page/user/MyTickets";
 import RaiseTicket from "./page/user/RaiseTicket";
 import UserProfile from "./page/user/UserProfile";
 import UserLayout from "./page/user/UserLayout";
@@ -17,16 +15,13 @@ import AssignedTasks from "./page/Engineer/AssignedTasks";
 import TaskAcceptance from "./page/Engineer/TaskAcceptance";
 import Hazards from "./page/Engineer/Hazards";
 import EngineerProfile from "./page/Engineer/EngineerProfile";
-// import Engineers from "./page/Admin/Engineers"
 import PagaeNotFound from "./compoents/PageNotFound";
-import Engineers from "./page/Admin/AdminEngineerList";
 import AdminTaskList from "./page/Admin/AdminTaskList";
 import AdminUserList from "./page/Admin/AdminUserList";
 import AdminCompletedTasks from "./page/Admin/AdminCompletedTasks";
 import AdminEngineerList from "./page/Admin/AdminEngineerList";
 import AdminDeferredTasks from "./page/Admin/AdminDeferredTasks";
 import AdminEngineerTasks from "./page/Admin/AdminEngineerTasks";
-import Search from "./compoents/Searchbar";
 import RaiseEngineerTickes from "./page/Engineer/HazardsTicket";
 import AdminEngineerApproval from "./page/Admin/AdminEngineerApproval";
 import ProtectedRoute from "./utils/protectedRoute";

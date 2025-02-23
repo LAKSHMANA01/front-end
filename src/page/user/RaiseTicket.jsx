@@ -1,7 +1,7 @@
 // TicketForm.jsx
 import React, { useState } from "react";
-import { MapPin, AlertTriangle, Send } from "lucide-react";
-import CustomCard from "./CustomCard";
+import { AlertTriangle, Send } from "lucide-react";
+import CustomCard from "./../../compoents/CustomCard";
 import { submitTicket } from "../../redux/Slice/raiseticke";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
@@ -76,39 +76,6 @@ const TicketForm = () => {
           </select>
         </div>
         <div>
-          {/* <input
-          type="text"
-          className={inputStyles}
-          placeholder="Latitude"
-          value={ticketForm.location.latitude}
-          onChange={(e) =>
-            setTicketForm((prevState) => ({
-              ...prevState,
-              location: {
-                ...prevState.location,
-                latitude: e.target.value,
-              },
-            }))
-          }
-          required
-        /> */}
-
-          {/* <input
-          type="text"
-          className={inputStyles}
-          placeholder="Longitude"
-          value={ticketForm.location.longitude}
-          onChange={(e) =>
-            setTicketForm((prevState) => ({
-              ...prevState,
-              location: {
-                ...prevState.location,
-                longitude: e.target.value,
-              },
-            }))
-          }
-          required
-        /> */}
           <label className={labelStyles}>Address</label>
           <input
             type="text"

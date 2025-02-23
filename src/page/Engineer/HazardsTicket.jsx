@@ -78,40 +78,7 @@ const TicketForm = () => {
           </select>
         </div>
         <div>
-          {/* <input
-          type="text"
-          className={inputStyles}
-          placeholder="Latitude"
-          value={ticketForm.location.latitude}
-          onChange={(e) =>
-            setTicketForm((prevState) => ({
-              ...prevState,
-              location: {
-                ...prevState.location,
-                latitude: e.target.value,
-              },
-            }))
-          }
-          required
-        /> */}
-
-          {/* <input
-          type="text"
-          className={inputStyles}
-          placeholder="Longitude"
-          value={ticketForm.location.longitude}
-          onChange={(e) =>
-            setTicketForm((prevState) => ({
-              ...prevState,
-              location: {
-                ...prevState.location,
-                longitude: e.target.value,
-              },
-            }))
-          }
-          required
-        /> */}
-
+   
           <input
             type="text"
             className={inputStyles}

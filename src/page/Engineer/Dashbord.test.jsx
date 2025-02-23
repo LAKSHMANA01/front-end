@@ -1,6 +1,6 @@
-// Example usage in a parent component:
 import React from 'react';
-import Dashboard from "./../../compoents/Dashbord"
+import Dashboard from "./../../compoents/Dashbord";// Fixed the import path
+
 const EngineerDashboard = () => {
   const metrics = {
     activeEngineers: 140,
@@ -36,11 +36,12 @@ const EngineerDashboard = () => {
 
   return (
     <Dashboard
-    role="engineer"
-    
-     
-     
+      role="engineer"
+      metrics={metrics}
+      taskProgress={taskProgress}
+      teamPerformance={teamPerformance}
     />
   );
 };
+
 export default EngineerDashboard;

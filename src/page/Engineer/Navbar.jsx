@@ -1,57 +1,88 @@
-import React, { useState } from 'react';
-import { Bell, Search, Sun, Moon, Menu, LogOut } from "lucide-react";
+import  Notification from "./../../compoents/notification"
+import { Bell, Search, Sun, Moon, Menu, LogOut, User } from "lucide-react";
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch} from 'react-redux';
+import { useState, useEffect  } from 'react';
+import { fetchNotifications} from "./../../redux/Slice/notificationSlice"
 
-const EngineerNavbar = ({ onToggleTheme, isDarkMode = false, userName = "John Doe" }) => {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { tasks, profiledata, updateProfile, error } = useSelector((state) => state.engineer);
+
+
+const EngineerNavbar = () => {
+  const UserName = sessionStorage.getItem("role")
+  const ProfileName = UserName.split("@")[0]
+  const dispatch = useDispatch();
+  const [isClick, SetClicked] = useState('');
+ 
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  
   const { notifications } = useSelector((state) => state.notifications);
   const notificationsCount = notifications.filter(notification => notification.isRead === false).length;
 
+  useEffect(() => {
+    dispatch(fetchNotifications());
+  }, [dispatch]);
+
   return (
-    <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50">
+    <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50  ml-30">
       {/* Left side - Mobile menu */}
       <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
               bg-clip-text text-transparent hidden sm:block md:block">
               Telecom Services
         </h1>
-      <div className="flex items-center space-x-4">
-        <button className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-          <Menu size={24} />
-        </button>
-      </div>
+   
 
       {/* Middle - Search Bar */}
 
       {/* Right side - Notifications, Theme Toggle, Profile */}
       <div className="flex items-center space-x-4">
         {/* Notifications */}
-        <button className="relative p-2 text-gray-600 dark:text-gray-300 
-          hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+      
+
+
+        <button
+          className="relative p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+          onClick={() => {SetClicked(!isClick)}  
+          } >
+
           <Bell size={24} />
           {notificationsCount > 0 && (
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"> </span>
+            <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs flex items-center justify-center rounded-full">
+              {notificationsCount}
+            </span>
           )}
-        </button>
-        <Link to="/logout"><LogOut /></Link>
-
-        {/* Theme Toggle */}
-        <button
-          onClick={onToggleTheme}
-          className="p-2 text-gray-600 dark:text-gray-300 
-            hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
-        >
-          {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+             { isClick && <Notification/>}
+             
         </button>
 
         {/* Profile Section */}
-        <div className="flex items-center space-x-3">
-          <div className="hidden md:block text-right">
-            <p className="text-sm font-medium dark:text-white">{profiledata?.name}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Engineer</p>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></div>
+        <div className="relative">
+          <button
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <User className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            { ProfileName}
+            </span>
+          </button>
+
+          {/* Dropdown menu */}
+          {isProfileOpen && (
+            <div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-md shadow-lg dark:bg-gray-700">
+            
+              <button
+                onClick={() => console.log('Logout clicked')}
+                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center space-x-2"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>
+                <Link to="/">Logout </Link></span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

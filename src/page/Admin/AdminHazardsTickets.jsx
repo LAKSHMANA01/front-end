@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 
 import { MapPin, AlertTriangle, Send } from "lucide-react";
-import CustomCard from "./CustomCard";
+import CustomCard from "../../compoents/CustomCard";
 import { HazardsTicket } from "../../redux/Slice/raiseticke";
 import { useDispatch,  } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";

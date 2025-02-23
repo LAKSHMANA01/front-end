@@ -1,13 +1,10 @@
 import React from "react";
 
 
-const DashboardCard = ({
+const Card = ({
   icon,
   title,
   value,
- 
-
-
   onClick,
 }) => {
 
@@ -27,7 +24,7 @@ const DashboardCard = ({
         >
           {/* Display large icons */}
           <div className="flex justify-center">
-            {React.cloneElement(icon, { size: iconSize,  })}
+          {React.cloneElement(icon, { size: iconSize })}
           </div>
         </div>
 
@@ -48,4 +45,4 @@ const DashboardCard = ({
   );
 };
 
-export default DashboardCard;
+export default Card;
