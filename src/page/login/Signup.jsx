@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../../utils/apiClient";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
+import {
+  validateEmail, 
+  validatePassword, 
+  validatePincode, 
+  validatePhoneNumber, validateSecurityAnswer} from "../../utils/validation"
 function Signup() {
   const [formData, setFormData] = useState({
     name: "",
@@ -21,18 +26,34 @@ function Signup() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  // Validation functions
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePassword = (password) =>
-    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(
-      password
-    );
-  const validatePincode = (pincode) => /^[1-9][0-9]{5}$/.test(pincode); // Basic Indian pincode validation
+  const validators = {
+    email: validateEmail,
+    password: validatePassword,
+    pincode: validatePincode,
+    phone: validatePhoneNumber,
+    securityAnswer: validateSecurityAnswer,
+  };
 
-  // Handle input change
+  const errorMessages = {
+    email: "Invalid email format.",
+    password:
+      "Password must be 8-15 characters, include uppercase, number & special character.",
+    pincode: "Invalid pincode format.",
+    phone: "Invalid phone number format.",
+    securityAnswer: "Invalid security answer.",
+  };
+
+  //  Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if(validators[name]){
+      setErrors((prev) => ({
+        ...prev,
+        [name]: validators[name](value)? "" : errorMessages[name],
+      }))
+    }
   };
 
   // Handle availability checkbox change
@@ -49,55 +70,36 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate fields
-    const newErrors = {};
-    if (!validateEmail(formData.email))
-      newErrors.email = "Invalid email format.";
-    if (!validatePassword(formData.password))
-      newErrors.password =
-        "Password must be 8-15 characters long, include a capital letter, a number, and a special character.";
-    if (
-      formData.role === "engineer" &&
-      (!formData.specialization || formData.availability.length === 0)
-    )
-      newErrors.engineerFields =
-        "Please provide specialization and availability.";
 
-    if (!validatePincode(formData.pincode))
-      newErrors.pincode = "Invalid pincode format.";
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (Object.values(errors).some((error) =>error)) {
+      //setErrors(newErrors);
+      toast.error("Please correct the errors and try again.");
       return;
     }
 
     try {
-      // const response = await apiClient.post("/users/newUser", {
-      //     ...formData,
-      //     specialization: formData.role === "engineer" ? formData.specialization : undefined,
-      //     availability: formData.role === "engineer" ? formData.availability : undefined,
-      // });
       const response = await apiClient.post("/users/newUser", {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.address,
-        pincode: formData.pincode,
-        password: formData.password,
-        securityQuestion: formData.securityQuestion,
-        securityAnswer: formData.securityAnswer,
-        role: formData.role,
+        // name: formData.name,
+        // email: formData.email,
+        // phone: formData.phone,
+        // address: formData.address,
+        // pincode: formData.pincode,
+        // password: formData.password,
+        // securityQuestion: formData.securityQuestion,
+        // securityAnswer: formData.securityAnswer,
+        // role: formData.role,
+        ...formData,
         specialization:
           formData.role === "engineer" ? formData.specialization : null,
         availability: formData.role === "engineer" ? formData.availability : [],
       });
 
-    //   alert("Registration successful! Please log in.");
+      //alert("Registration successful! Please log in.");
       toast.success("Registration successful! Please log in.");
       
       setTimeout(() => navigate("/login"), 5000); // Small delay to show toast
     
-      navigate("/login");
+      //navigate("/login");
     } catch (error) {
       console.error(
         "Signup Error:",
@@ -129,7 +131,8 @@ function Signup() {
                   <input
                     type={field === "email" ? "email" : "text"}
                     placeholder={`Enter ${field}`}
-                    className="w-full px-4 py-2 border rounded-md"
+                    //className="w-full px-4 py-2 border rounded-md"
+                    className={`w-full px-4 py-2 border rounded-md ${errors[field] ? "border-2 border-red-500" : "border border-gray-300"}`}
                     name={field}
                     value={formData[field]}
                     onChange={handleChange}
@@ -153,7 +156,8 @@ function Signup() {
                     <input
                       type={field === "password" ? "password" : "text"}
                       placeholder={`Enter ${field}`}
-                      className="w-full px-4 py-2 border rounded-md"
+                      //className="w-full px-4 py-2 border rounded-md"
+                      className={`w-full px-4 py-2 border rounded-md ${errors[field] ? "border-2 border-red-500" : "border border-gray-300"}`}
                       name={field}
                       value={formData[field]}
                       onChange={handleChange}

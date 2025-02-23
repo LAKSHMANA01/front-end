@@ -7,11 +7,9 @@ const TaskCard = ({ task }) => {
       {/* Card Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            {task.serviceType}
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900">Service Type : {task.serviceType}</h3>
           <span className={`text-sm ${getStatusStyle(task.status)}`}>
-            {task.status}
+            Status : {task.status}
           </span>
         </div>
         <button className="text-gray-400 hover:text-blue-600 transition-colors">
@@ -37,14 +35,8 @@ const TaskCard = ({ task }) => {
 
         {/* Priority Indicator */}
         <div className="flex items-center gap-2">
-          <span
-            className={`w-3 h-3 rounded-full ${getPriorityColor(
-              task.priority
-            )}`}
-          ></span>
-          <span className="text-sm text-gray-500">
-            {task.priority} priority
-          </span>
+          <span className={`w-3 h-3 rounded-full ${getPriorityColor(task.priority)}`}></span>
+          <span className="text-sm text-gray-500">Priority : {task.priority} priority</span>
         </div>
 
         {/* Progress Bar

@@ -100,7 +100,7 @@ const Dashboard = () => {
 
   return (
     <div className="grow p-6 dark:bg-gray-900 dark:text-white">
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-6 mt-10">Dashboard</h1>
 
       {/* Cards Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
