@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEngineerTasks, updateTaskStatus } from '../../redux/Slice/EngineerSlice';
-<<<<<<< HEAD
-import TaskCard from '../user/Taskcard';
-=======
 import {sendNotification} from '../../redux/Slice/notificationSlice';
 import TaskCard from './TaskCard';
->>>>>>> ab8fe80f67ac7467229d3c0b627af2ee0e13ba33
 import Loading from "../../compoents/Loadingpage";
 // import Navbar from '../user/Navbar';
 

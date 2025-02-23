@@ -10,15 +10,11 @@ import Footer from '../../compoents/footers';
 import Notasksimage from '../../assets/NoTasks.png';
 
 
-const email = sessionStorage.getItem('email');
-const role = sessionStorage.getItem('role');
-
 const UserTicketList = () => {
   //const  userId  = 2
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  //console.log("User:",user);
   const { tasks, loading, error } = useSelector((state) => state.tickets);
   
   useEffect(() => {

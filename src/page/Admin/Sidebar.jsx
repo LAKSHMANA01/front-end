@@ -51,6 +51,7 @@ const AdminSidebar = () => {
       className={`
         fixed top-16 left-0 
         z-50
+       md:mt-16
         h-[calc(100vh-4rem)] 
         bg-white 
         border-r border-gray-300 
@@ -74,7 +75,7 @@ const AdminSidebar = () => {
       </button>
 
       {/* Logo Section */}
-      <div className="p-4 flex items-center justify-center h-16 border-b border-gray-300">
+      <div className="p-4 flex items-center justify-center h-16 border-b border-gray-300 ">
         {isExpanded ? (
           <h1 className="text-2xl font-bold text-blue-600">
             Admin Panel

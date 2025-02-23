@@ -3,17 +3,15 @@ import { Clock, AlertTriangle, User } from 'lucide-react';
 import apiClient from '../../utils/apiClient';
 import { fetchDeferredTasks } from '../../redux/Slice/AdminSlice';
 import { useDispatch } from 'react-redux';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 const AdminTaskCard = ({ task = {} }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentAssignee, setCurrentAssignee] = useState(task.assignee);
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
   const [availableEngineers, setAvailableEngineers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [comments, setComments] = useState(task.comments || []);
-  const [newComment, setNewComment] = useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -33,27 +31,10 @@ const AdminTaskCard = ({ task = {} }) => {
         throw new Error('Failed to fetch engineers');
       }
 
-      const data = response.data;
-
-      // if (data && Array.isArray(data.engineers)) {
-      //   const formattedEngineers = data.engineers.map(engineer => ({
-      //     id: engineer._id,
-      //     name: engineer.name,
-      //     email: engineer.email,t
-      
-      //     currentTasks: engineer.currentTasks,
-      //     availability: engineer.availability,
-      //     specialization: engineer.specialization,
-      //     location: engineer.location
-      //   }));
 
       const approvedEngineers =response.data.engineers.filter(engineer => engineer.isEngineer)
         setAvailableEngineers(approvedEngineers);
         setError(null);
-      
-      // else {
-      //   throw new Error('Invalid data format received from server');
-      // }
     } catch (err) {
       setError(err.message || 'Failed to fetch available engineers');
       console.error('Error fetching engineers:', err);
@@ -118,17 +99,20 @@ const AdminTaskCard = ({ task = {} }) => {
       // Show success message if needed
       // You could add a success state here if desired
       dispatch(fetchDeferredTasks()); // update diferred tasks list
+      toast.success(" Tickets reassign successfully!");
       
     } catch (err) {
       console.error('Error reassigning engineer:', err);
       setError(err.message || 'Failed to reassign engineer');
+      toast.error("Failed to reassign tickets!");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-lg shadow ml-16 mt-10">
+    <>
+      <div className="w-full max-w-md bg-white rounded-lg shadow ml-16 mt-10">
       {/* Card Header */}
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
@@ -221,7 +205,21 @@ const AdminTaskCard = ({ task = {} }) => {
 
         
       </div>
-    </div>
+      </div>
+      <div>
+        <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      </div>
+    </>
   );
 };
 
@@ -236,3 +234,11 @@ const getStatusStyle = (status) => {
 };
 
 export default AdminTaskCard;
+
+
+
+
+
+
+
+
