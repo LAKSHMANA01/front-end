@@ -5,6 +5,7 @@ import engineerReducer from './Slice/EngineerSlice';
 import  RaiseTickets from "./Slice/raiseticke"
 import adminReducer from "./Slice/AdminSlice";
 import authReducer from "./Slice/authSlice"
+import notification from "./Slice/notificationSlice"
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     RaiseTicket :  RaiseTickets,
     admin: adminReducer,
     auth: authReducer,
+    notifications: notification,  // Add notification slice here for global notifications
      
   },
 });

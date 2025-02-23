@@ -1,7 +1,7 @@
 import React, { useEffect, useState , useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllUsers } from "../../redux/Slice/AdminSlice";
-import AdminNavbar from "./NavBar";
+
 import { debounce } from "lodash";
 
 const AdminUserList = () => {
@@ -18,26 +18,20 @@ const AdminUserList = () => {
    
   
   const debouncedSearch = useCallback(debounce((searchTerm) => {
+    console.log(users, " User information: " )
     setFilteredUsers(
       users.filter((user) =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        user?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
       )
     );
   }, 900), [users]);
+
   const handledebounce = (e) => {
     debouncedSearch(e.target.value);
     setSearchTerm(e.target.value);
   }
 
-  
 
-  // useEffect(() => {
-  //   setFilteredUsers(
-  //     users.filter((user) =>
-  //       user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //     )
-  //   );
-  // }, [searchTerm, users]);
 
   if (loading) {
     return (
@@ -57,7 +51,7 @@ const AdminUserList = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <AdminNavbar />
+     
       
       <div className="p-4 sm:p-6 lg:p-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">All Users</h1>

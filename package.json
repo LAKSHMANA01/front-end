@@ -8,32 +8,25 @@
     "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
     "axios": "^1.7.9",
-    "chart.js": "^4.4.7",
+    "chart.js": "^4.4.8",
     "cra-template": "1.2.0",
     "https-browserify": "^1.0.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.474.0",
-    "react": "^19.0.0",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "^19.0.0",
-    "react-icons": "^5.4.0",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0",
     "react-leaflet": "^5.0.0",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^7.1.5",
+    "react-router-dom": "^7.2.0",
     "react-scripts": "^5.0.1",
     "react-toastify": "^11.0.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "browserslist": {
     "production": [
@@ -47,7 +40,19 @@
       "last 1 safari version"
     ]
   },
+  
   "devDependencies": {
-    "tsconfig-paths": "^4.2.0"
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-react": "^7.24.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/user-event": "^14.5.2",
+    "babel-jest": "^29.7.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "whatwg-fetch": "^3.6.20"
   }
+
 }

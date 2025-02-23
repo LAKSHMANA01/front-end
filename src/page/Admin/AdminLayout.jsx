@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import AdminSidebar from "./Sidebar";
 import AdminNavbar from "./NavBar";
 import Footer from "../../compoents/footers";
-// import ThemeContextProvider from "../../ContextAPI/ContextAPI";
+
 
 const AdminLayout = () => {
   return (

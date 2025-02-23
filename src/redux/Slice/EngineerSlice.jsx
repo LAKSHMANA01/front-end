@@ -160,6 +160,7 @@ export const HazardsUpdateTickets = createAsyncThunk(
     }
   }
 );
+
 // AsyncThunk for Harzards engineer updateing
 export const HazardsDeleteTickets = createAsyncThunk(
   'engineer/HazardsDeleteTickets',

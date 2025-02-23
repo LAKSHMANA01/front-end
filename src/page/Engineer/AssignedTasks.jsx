@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEngineerTasks, updateTaskStatus } from '../../redux/Slice/EngineerSlice';
+<<<<<<< HEAD
 import TaskCard from '../user/Taskcard';
+=======
+import {sendNotification} from '../../redux/Slice/notificationSlice';
+import TaskCard from './TaskCard';
+>>>>>>> ab8fe80f67ac7467229d3c0b627af2ee0e13ba33
 import Loading from "../../compoents/Loadingpage";
 // import Navbar from '../user/Navbar';
 
@@ -9,6 +14,7 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
 
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
+    
     const { tasks = [], loading, error } = useSelector((state) => state.engineer);
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,7 +54,14 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
     const handleUpdateStatus = () => {
         if (selectedTask && newStatus !== selectedTask.status) {
             dispatch(updateTaskStatus({ taskId: selectedTask._id, status: newStatus }));
-
+        console.log("high")     
+        if (newStatus === "deferred") {
+            dispatch(sendNotification({ 
+                userId: selectedTask._id,  // Ensure this field exists in your task object
+                messageTOSend: `Task "${selectedTask.title}" has been deferred by ${user.email}`, 
+                isRead: false 
+            }));
+        }
             // Update local state for instant UI change
             setLocalTasks((prevTasks) =>
                 prevTasks.map((task) =>

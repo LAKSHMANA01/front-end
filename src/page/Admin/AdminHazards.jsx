@@ -187,9 +187,9 @@ const AdminHazards = () => {
               <textarea name="description" value={updateFormData.description} onChange={handleInputChange} rows="3" className="w-full p-2 border rounded" placeholder="Description" required />
               <select name="riskLevel" value={updateFormData.riskLevel} onChange={handleInputChange} className="w-full p-2 border rounded" required>
                 <option value="">Select Risk Level</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
               </select>
               <input type="text" name="address" value={updateFormData.address} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Address" required />
               <input type="text" name="pincode" value={updateFormData.pincode} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Pincode" required />

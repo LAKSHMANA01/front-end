@@ -219,23 +219,7 @@ const AdminTaskCard = ({ task = {} }) => {
           </div>
         )}
 
-        {/* Comments Section */}
-        {/* <div className="mt-4">
-          <h4 className="font-medium mb-2">Comments</h4>
-          <div className="space-y-2">
-            {comments.map((comment) => (
-              <div key={comment.id} className="bg-gray-50 p-2 rounded">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">{comment.author}</span>
-                  <span className="text-gray-500">
-                    {new Date(comment.timestamp).toLocaleString()}
-                  </span>
-                </div>
-                <p className="mt-1">{comment.text}</p>
-              </div>
-            ))}
-          </div>
-        </div> */}
+        
       </div>
     </div>
   );
