@@ -48,18 +48,20 @@ export const fetchAllEngineers = createAsyncThunk("admin/fetchAllEngineers", asy
   }
 });
 
-export const approveEngineer = createAsyncThunk("admin/approveEngineer", async ({engineerEmail, approve},{rejectWithValue}) =>{
-  try{
-    const response = await apiClient.patch(`/admin/approve-engineer/${engineerEmail}`, 
-      {
+export const approveEngineer = createAsyncThunk(
+  "admin/approveEngineer",
+  async ({ engineerEmail, approve }, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.patch(`/admin/approve-engineer/${engineerEmail}`, {
         email: engineerEmail,
-        approve
+        approve,
       });
-    return response.data;
-  }catch(error){
-    return rejectWithValue(error.response?.data || "Failed to update engineer approval");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update engineer approval");
+    }
   }
-})
+);
 
 export const fetchDeferredTasks = createAsyncThunk(
   "admin/deferredTasks/fetchAll",

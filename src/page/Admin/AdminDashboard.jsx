@@ -6,20 +6,16 @@
 
 
 import React from "react";
-import Sidebar from "../../compoents/Sidebar";
+import Sidebar from "./Sidebar";
 import Navbar from "../../compoents/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
-import ThemeContextProvider from "../../ContextAPI/ContextAPI";
-import AdminTaskList from "../../compoents/AdminTaskList"; // Import AdminTaskList
-import Navbar from './NavBar';
+import AdminTaskList from "./AdminTaskList"; // Import AdminTaskList
 import AdminNavbar from "./NavBar";
-import AdminSearch from "./AdminSearch";
 
 function AdminDashboard() {
   const location = useLocation();
   
   return (
-    <ThemeContextProvider>
       <div className="flex">
         {/* Sidebar is always visible */}
         <Sidebar />
@@ -33,7 +29,6 @@ function AdminDashboard() {
           {location.pathname === "/admin/tasks" ? <AdminTaskList /> : <Outlet />}
         </div>
       </div>
-    </ThemeContextProvider>
   );
 }
 
