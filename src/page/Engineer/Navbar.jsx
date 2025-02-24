@@ -8,8 +8,9 @@ import { fetchNotifications} from "./../../redux/Slice/notificationSlice"
 
 
 const EngineerNavbar = () => {
-  const UserName = sessionStorage.getItem("role")
+  const UserName = sessionStorage.getItem("email")
   const ProfileName = UserName.split("@")[0]
+  console.log("ProfileNamesdsd: " + ProfileName)
   const dispatch = useDispatch();
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -71,7 +72,7 @@ const EngineerNavbar = () => {
 
           {/* Dropdown menu */}
           {isProfileOpen && (
-            <div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-md shadow-lg dark:bg-gray-700">
+            <div className="absolute right-0 mt-28 w-48 py-2 ml-8 bg-white rounded-md shadow-lg dark:bg-gray-700">
             
               <button
                 onClick={() => console.log('Logout clicked')}

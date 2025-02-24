@@ -51,7 +51,7 @@ const AdminTaskList = () => {
   });
 
   return (
-    <div className="space-y-6 p-4 mt-20">
+    <div className="space-y-6 p-4 mt-25 ml-6 pl-3 mt-16">
       {/* Search Bar */}
       <div className="relative mb-6">
         <input
@@ -73,39 +73,40 @@ const AdminTaskList = () => {
       </div>
 
       {/* Status Dropdown */}
-      <div className="relative mb-6">
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="w-40 px-4 py-2 rounded-lg border border-gray-200 
-            dark:border-gray-700 dark:bg-gray-800 
-            focus:outline-none focus:border-blue-500
-            dark:text-gray-300"
-        >
-          <option value="">All Statuses</option>
-          <option value="open">Open</option>
-          <option value="in progress">In Progress</option>
-          <option value="completed">Completed</option>
-        </select>
-        {/* Priority Dropdown */}
-        <select
-         value={priorityFilter}
-         onChange={(e) =>  SetpriorityFilter(e.target.value)}
-          className="w-40 px-4 py-2 rounded-lg border border-gray-200 
-            dark:border-gray-700 dark:bg-gray-800 
-            focus:outline-none focus:border-blue-500
-            dark:text-gray-300 mt-8"
-        >
-          <option >Priority</option>
-          <option value="low">low</option>
-          <option value="Medium">Medium</option>
-          <option value="high">High</option>
-       {/* 'low', 'medium', 'high' */}
-        </select>
-      </div>
+     {/* Dropdowns Container */}
+<div className="flex gap-x-6">
+  {/* Status Dropdown */}
+  <select
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+    className="w-40 px-4 py-2 rounded-lg border border-gray-200 
+      dark:border-gray-700 dark:bg-gray-800 
+      focus:outline-none focus:border-blue-500 dark:text-gray-300"
+  >
+    <option value="">All Statuses</option>
+    <option value="open">Open</option>
+    <option value="in progress">In Progress</option>
+    <option value="completed">Completed</option>
+  </select>
+
+  {/* Priority Dropdown */}
+  <select
+    value={priorityFilter}
+    onChange={(e) => SetpriorityFilter(e.target.value)}
+    className="w-40 px-4 py-2 rounded-lg border border-gray-200 
+      dark:border-gray-700 dark:bg-gray-800 
+      focus:outline-none focus:border-blue-500 dark:text-gray-300"
+  >
+    <option value="">Priority</option>
+    <option value="low">Low</option>
+    <option value="medium">Medium</option>
+    <option value="high">High</option>
+  </select>
+</div>
+
 
       {/* Task Cards */}
-      <div className="flex flex-wrap gap-6 ">
+      <div className="flex flex-wrap gap-6  ml-10">
         {filteredTasks.map((task) => (
           <AdminTaskCard key={task._id || task.id} task={task} />
         ))}

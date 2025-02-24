@@ -10,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const TicketForm = () => {
-  const userId = 2;
+
   const [ticketForm, setTicketForm] = useState({
    hazardType: "installation",
    description: "",

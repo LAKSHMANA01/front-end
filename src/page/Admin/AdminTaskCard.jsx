@@ -5,6 +5,7 @@ import { fetchDeferredTasks } from '../../redux/Slice/AdminSlice';
 import { useDispatch } from 'react-redux';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useLocation } from "react-router-dom";
 
 
 const AdminTaskCard = ({ task = {} }) => {
@@ -12,13 +13,19 @@ const AdminTaskCard = ({ task = {} }) => {
   const [availableEngineers, setAvailableEngineers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [Button, SetButton] = useState(null);
   const dispatch = useDispatch();
+  const location = useLocation();
+
 
   useEffect(() => {
     if (showAssigneeDropdown) {
       fetchAvailableEngineers();
     }
-  }, [showAssigneeDropdown]);
+    if(location.pathname === "/admin/deferred" ){
+       SetButton(true)
+    }
+  }, [showAssigneeDropdown , location]);
   
 
   const fetchAvailableEngineers = async () => {
@@ -112,13 +119,13 @@ const AdminTaskCard = ({ task = {} }) => {
 
   return (
     <>
-      <div className="w-full max-w-md bg-white rounded-lg shadow ml-16 mt-10 md:ml-0">
+      <div className="w-full max-w-md bg-white rounded-lg shadow ml-30 mt-10 md:ml-0">
       {/* Card Header */}
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">{task.serviceType}</h3>
           <span className={getStatusStyle(task.status)}>{task.status}</span>
-          <span className={getStatusStyle(task.status)}>{task.priority}</span>
+          <span className={getPriorityStyle(task.priority)}>{task.priority}</span>
         </div>
       </div>
 
@@ -132,13 +139,14 @@ const AdminTaskCard = ({ task = {} }) => {
             <User className="w-5 h-5 text-gray-500" />
             <span>Current Engineer: {task.engineerEmail || "Unassigned"}</span>
           </div>
-          <button 
+          {Button &&  <button 
             onClick={() => setShowAssigneeDropdown(!showAssigneeDropdown)}
             className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
             disabled={loading}
           >
             {loading ? 'Processing...' : 'Reassign'}
-          </button>
+          </button>}
+         
         </div>
 
         {/* Error Display */}
@@ -232,6 +240,16 @@ const getStatusStyle = (status) => {
   };
   return `px-3 py-1 rounded-full text-sm ${styles[status?.toLowerCase()] || styles.pending}`;
 };
+const getPriorityStyle = (priority) => {
+  const styles = {
+    high: "bg-red-100 text-red-800",       // High priority - Red
+    medium: "bg-orange-100 text-orange-800", // Medium priority - Orange
+    low: "bg-green-100 text-green-800",   // Low priority - Green
+  };
+
+  return `px-3 py-1 rounded-full text-sm ${styles[priority?.toLowerCase()] || styles.low}`;
+};
+
 
 export default AdminTaskCard;
 
