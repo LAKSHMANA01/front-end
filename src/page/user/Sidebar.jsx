@@ -2,11 +2,13 @@ import { LayoutDashboard, ClipboardList, AlertTriangle, Settings, ChevronRight, 
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { MdDashboard } from 'react-icons/md';
+import { MdOutlinePendingActions } from 'react-icons/md';
 
 const Sidebar = ({ activePath = '/' }) => {
 const UserName = sessionStorage.getItem("email") ;
 const firstName  =  UserName.split('@')[0];
   const [isExpanded, setIsExpanded] = useState(true);
+
   const navigate = useNavigate();
 
   // Retrieve the state from local storage when the component mounts
@@ -35,7 +37,7 @@ const firstName  =  UserName.split('@')[0];
     setIsExpanded(newState);
     localStorage.setItem('isSidebarExpanded', JSON.stringify(newState));
   };
-
+  const closeSidebar = () => setIsExpanded(false);
   return (
     <div
       className={`
@@ -73,7 +75,7 @@ const firstName  =  UserName.split('@')[0];
           return (
             <button
               key={item.path}
-              onClick={() => handleNavigation(item.path)}
+              onClick={() => {handleNavigation(item.path) ,closeSidebar()}}
               className={`
                 flex items-center px-4 py-3 mb-2 w-full rounded-lg transition-all duration-200
                 ${active ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-800'}

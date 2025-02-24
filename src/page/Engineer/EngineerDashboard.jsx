@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import Navbar from "../../page/Engineer/Navbar"; // Assuming Navbar is a top navigation bar.
+import Navbar from "./Navbar"; // Assuming Navbar is a top navigation bar.
 
 const EngineerLayout = () => {
   return (

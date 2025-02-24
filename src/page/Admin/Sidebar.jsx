@@ -19,6 +19,8 @@ const AdminSidebar = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const closeSidebar = () => setIsExpanded(false);
+ 
 
   // Retrieve the state from local storage when the component mounts
   useEffect(() => {
@@ -96,7 +98,7 @@ const AdminSidebar = () => {
             return (
               <button
                 key={item.path}
-                onClick={() => handleNavigation(item.path)}
+                onClick={() =>{ handleNavigation(item.path), closeSidebar()}}
                 className={`
                   flex items-center px-4 py-3 w-full rounded-lg 
                   transition-all duration-200

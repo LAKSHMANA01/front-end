@@ -3,19 +3,25 @@ import {
   LayoutDashboard,
   ClipboardList,
   AlertTriangle,
-  Settings,
+
   ChevronRight,
   ChevronLeft,
   User,
-  LogOut,
-  Search,
+
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+
+import { MdOutlinePendingActions } from 'react-icons/md';
+
 
 const Sidebar = ({ activePath = "/" }) => {
+  const UserName = sessionStorage.getItem("email") ;
+const firstName  =  UserName.split('@')[0];
+      
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  
+
   const navigate = useNavigate();
 
   // Resize handler for responsiveness
@@ -33,6 +39,7 @@ const Sidebar = ({ activePath = "/" }) => {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+    setIsExpanded(false)
   }, []);
 
   const menuItems = [
@@ -41,7 +48,7 @@ const Sidebar = ({ activePath = "/" }) => {
     { path: "/engineer/hazards", icon: AlertTriangle, label: "Hazards" },
     { path: "/engineer/profile", icon: User, label: "Profile" },
     // { path: '/engineer/settings', icon: Settings, label: 'Settings' }
-    { path: '/engineer/task/acceptance', icon: Settings, label: 'Task Acceptance' }
+    { path: '/engineer/task/acceptance', icon:MdOutlinePendingActions, label: 'Task Acceptance' }
   ];
 
   const isActive = (path) => activePath === path;
@@ -54,6 +61,7 @@ const Sidebar = ({ activePath = "/" }) => {
     <div
       className={`
      fixed min-h-screen top-16 
+     z-10
         h-[calc(100vh-4rem)] 
         bg-white
         transition-all duration-300 ease-in-out
@@ -73,6 +81,8 @@ const Sidebar = ({ activePath = "/" }) => {
           {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </button>
       )}
+      
+      
 
       {/* Logo Section */}
       <div className="p-4 flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-800">
@@ -81,7 +91,7 @@ const Sidebar = ({ activePath = "/" }) => {
             className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent"
           >
-            Engineer
+            
           </h1>
         ) : (
           <h1 className="text-2xl font-bold text-blue-600"></h1>
@@ -89,26 +99,7 @@ const Sidebar = ({ activePath = "/" }) => {
       </div>
 
       {/* Search Bar (only when expanded) */}
-      {isExpanded && (
-        <div className="p-4">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full px-4 py-2 pl-10 pr-4 
-                rounded-lg border border-gray-200 
-                dark:border-gray-700 dark:bg-gray-800 
-                focus:outline-none focus:border-blue-500
-                dark:text-gray-300"
-            />
-            <Search
-              size={20}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 
-                text-gray-400 dark:text-gray-500"
-            />
-          </div>
-        </div>
-      )}
+
 
       {/* Menu Items */}
       <nav className="mt-6 px-2">
@@ -117,7 +108,7 @@ const Sidebar = ({ activePath = "/" }) => {
           return (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
+              onClick={() =>{ navigate(item.path) , closeSidebar()}}
               className={`
                 flex items-center px-4 py-3 mb-2 w-full
                 rounded-lg transition-all duration-200
@@ -146,29 +137,7 @@ const Sidebar = ({ activePath = "/" }) => {
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="absolute bottom-0 w-full p-4 border-t border-gray-200 dark:border-gray-800">
-        <div
-          className={`flex items-center ${
-            isExpanded ? "justify-between" : "justify-center"
-          }`}
-        >
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" />
-            {isExpanded && (
-              <div>
-                <Link to="/">
-                  <LogOut />
-                </Link>
-                <p className="text-sm font-medium dark:text-white">User Name</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Engineer
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 };
