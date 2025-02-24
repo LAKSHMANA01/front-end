@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 
 import { MapPin, AlertTriangle, Send } from "lucide-react";
-import CustomCard from "./CustomCard";
+import CustomCard from "../../compoents/CustomCard";
 import { HazardsTicket } from "../../redux/Slice/raiseticke";
 import { useDispatch,  } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
@@ -63,54 +63,17 @@ const TicketForm = () => {
     <CustomCard  className=""title="Add New Hazards" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className={labelStyles}>Hazards Title</label>
-          <select
+
+          <input
+            type="text"
             className={inputStyles}
-            value={ticketForm.serviceType}
-            onChange={(e) =>
-              setTicketForm({ ...ticketForm,hazardType: e.target.value })
-            }
-            
-          >
-            <option value="installation">New Installation</option>
-            <option value="fault">Fault Report</option>
-            {/* <option value="maintenance">Maintenance Request</option> */}
-          </select>
+            placeholder="Hazard Title"
+            value={ticketForm.hazardType}
+            required
+          />
+
         </div>
         <div>
-          {/* <input
-          type="text"
-          className={inputStyles}
-          placeholder="Latitude"
-          value={ticketForm.location.latitude}
-          onChange={(e) =>
-            setTicketForm((prevState) => ({
-              ...prevState,
-              location: {
-                ...prevState.location,
-                latitude: e.target.value,
-              },
-            }))
-          }
-          required
-        /> */}
-
-          {/* <input
-          type="text"
-          className={inputStyles}
-          placeholder="Longitude"
-          value={ticketForm.location.longitude}
-          onChange={(e) =>
-            setTicketForm((prevState) => ({
-              ...prevState,
-              location: {
-                ...prevState.location,
-                longitude: e.target.value,
-              },
-            }))
-          }
-          required
-        /> */}
 
           <input
             type="text"
@@ -129,7 +92,7 @@ const TicketForm = () => {
           <textarea
             className={inputStyles}
             rows={4}
-            placeholder="Describe your issue or request in detail"
+            placeholder="Describe hazard in detail"
             value={ticketForm.description}
             onChange={(e) =>
               setTicketForm({ ...ticketForm, description: e.target.value })
@@ -153,20 +116,6 @@ const TicketForm = () => {
           </select>
         </div>
 
-        {/* <div>
-          <label className={labelStyles}>Contact Phone</label>
-          <input
-            type="tel"
-            className={inputStyles}
-            placeholder="Enter contact number"
-            value={ticketForm.contactPhone}
-            onChange={(e) =>
-              setTicketForm({ ...ticketForm, contactPhone: e.target.value })
-            }
-            required
-          />
-        </div> */}
-
         <div>
           <label className={labelStyles}>
            Enter pin Code
@@ -179,13 +128,23 @@ const TicketForm = () => {
           />
         </div>
 
+        <div className="flex justify-between">
+
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
+          className="w-40 flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
         >
           <Send size={16} />
-          Submit Ticket
+          Submit Hazard
         </button>
+        <button
+          type="submit"
+          className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
+        >
+          <Send size={16} />
+          cancel
+        </button>
+        </div>
       </form>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </CustomCard>

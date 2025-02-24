@@ -1,7 +1,7 @@
 // TicketForm.jsx
 import React, { useState } from "react";
-import { MapPin, AlertTriangle, Send } from "lucide-react";
-import CustomCard from "./CustomCard";
+import { AlertTriangle, Send } from "lucide-react";
+import CustomCard from "./../../compoents/CustomCard";
 import { submitTicket } from "../../redux/Slice/raiseticke";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
@@ -21,35 +21,31 @@ const TicketForm = () => {
   const Raisetickets = useSelector((state) => state.Raisetickets);
   const user = useSelector((state) => state.auth.user);
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Ticket submitted:", ticketForm);
+  if (!email) {
+    toast.error("User email not found!");
+    return;
+  }
 
-    const formDatawithUserId = {
-      ...ticketForm,
-      //  userId: userId // Add userId to the submitted data
-    };
+  try {
+    await dispatch(submitTicket({ ...ticketForm, email })); 
+    toast.success("Ticket submitted successfully!");
     
-    try {
-      if (email) {
-        console.log('venu')
-        dispatch(submitTicket({ ...ticketForm, email }));
-        toast.success("Ticket submitted successfully!");
-       
-      }
-      // Reset form on success
-      setTicketForm({
-        serviceType: "installation",
-        address: "",
-        description: "",
-        pincode: "",
-      });
-    } catch (err) {
-      console.error("Failed to submit ticket:", err);
-      toast.error("Failed to submit ticket!");
-    }
-  };
+    // Reset form on success
+    setTicketForm({
+      serviceType: "installation",
+      address: "",
+      description: "",
+      pincode: "",
+    });
+  } catch (err) {
+    console.error("Failed to submit ticket:", err);
+    toast.error("Failed to submit ticket!");
+  }
+};
+
 
   const inputStyles =
     "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
@@ -76,43 +72,11 @@ const TicketForm = () => {
           </select>
         </div>
         <div>
-          {/* <input
-          type="text"
-          className={inputStyles}
-          placeholder="Latitude"
-          value={ticketForm.location.latitude}
-          onChange={(e) =>
-            setTicketForm((prevState) => ({
-              ...prevState,
-              location: {
-                ...prevState.location,
-                latitude: e.target.value,
-              },
-            }))
-          }
-          required
-        /> */}
-
-          {/* <input
-          type="text"
-          className={inputStyles}
-          placeholder="Longitude"
-          value={ticketForm.location.longitude}
-          onChange={(e) =>
-            setTicketForm((prevState) => ({
-              ...prevState,
-              location: {
-                ...prevState.location,
-                longitude: e.target.value,
-              },
-            }))
-          }
-          required
-        /> */}
-
+          <label className={labelStyles}>Address</label>
           <input
             type="text"
             className={inputStyles}
+            
             placeholder="Address"
             value={ticketForm.address}
             onChange={(e) =>
@@ -184,9 +148,9 @@ const TicketForm = () => {
       
     </CustomCard>
    </div>
-   <dv className="mt-6">
+   <div className="mt-6">
       <Footer />
-      </dv>
+      </div>
     </div>
      
   );

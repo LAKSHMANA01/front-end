@@ -12,11 +12,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     const role = sessionStorage.getItem("role");
 
     if (!token) {
-      navigate("/login"); // Redirect to login if no token
       toast.error("Please log in to access this page."); // Display error toast message
+      setTimeout(() => navigate("/login"),1000 );
+      //navigate("/login"); // Redirect to login if no token
     } else if (!allowedRoles.includes(role)) {
-      navigate("/unauthorized");
       toast.error("Please log in to access this page."); // Display
+      setTimeout(() => navigate("/unauthorized"),1000 );
 
       // Redirect if role is not allowed
     }
@@ -42,19 +43,3 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 export default ProtectedRoute;
 
-// import "react-toastify/dist/ReactToastify.css";
-// import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-// toast.success("Ticket submitted successfully!");
-// toast.success("Ticket submitted successfully!");
-// <ToastContainer
-// position="top-right"
-// autoClose={5000}
-// hideProgressBar={false}
-// newestOnTop={false}
-// closeOnClick
-// rtl={false}
-// pauseOnFocusLoss
-// draggable
-// pauseOnHover
-// />

@@ -1,6 +1,4 @@
 import React, { useEffect, useState,  useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { HazardsTickets ,HazardsUpdateTickets, HazardsDeleteTickets} from '../../redux/Slice/EngineerSlice';
 import { Link, useNavigate} from 'react-router-dom';
@@ -43,7 +41,7 @@ const EngineerDashboard = () => {
     debounce((value) => {
       setFilteredTasks(
         Hazards.filter((task) =>
-          task.pincode.toLowerCase().includes(value.toLowerCase())
+          task.hazardType.toLowerCase().includes(value.toLowerCase())
         )
       );
     }, 500),
@@ -97,6 +95,15 @@ const EngineerDashboard = () => {
     }));
   };
 
+  const getHazardStyles = (level) =>{
+    const styles = {
+      Low: 'bg-yellow-200',
+      Medium : 'bg-orange-200',
+      High : 'bg-red-200'
+    }
+    return styles[level] || "bg-gray-200";
+  }
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="bg-white shadow-md p-6 mb-6">
@@ -125,12 +132,12 @@ const EngineerDashboard = () => {
               <div
                 key={ticket._id}
                 onClick={() => handleTaskClick(ticket)}
-                className="border p-4 rounded-lg cursor-pointer hover:shadow-md transition"
+                className={`border p-4 rounded-lg cursor-pointer hover:shadow-md transition ${getHazardStyles(ticket.riskLevel)}`}
               >
-                <h3 className="font-bold">{ticket.hazardType}</h3>
-                <p>{ticket.description}</p>
-                <p className="text-sm text-gray-500">{ticket.riskLevel}</p>
-                <p className="text-sm text-gray-500">{ticket.pincode}</p>
+                <h3 className="font-bold">Hazard : {ticket.hazardType}</h3>
+                <p className='break-words whitespace-normal overflow-hidden text-ellipsis max-h-20'>Description : {ticket.description}</p>
+                <p className="text-sm text-black-500"><span>Risk level : </span>{ticket.riskLevel}</p>
+                <p className="text-sm text-black-500">Pincode : {ticket.pincode}</p>
               </div>
             ))
           ) : (
@@ -140,8 +147,8 @@ const EngineerDashboard = () => {
       </div>
 
       {isModalOpen && selectedTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-md p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-auto">
+          <div className="bg-white rounded-lg w-full max-w-md p-6 relative max-h-[80vh] overflow-y-auto mt-20">
             <div className="flex justify-between items-start">
               <h2 className="text-2xl font-bold">{selectedTask.hazardType}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
@@ -150,16 +157,16 @@ const EngineerDashboard = () => {
             <div className="space-y-4">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-medium">Risk Level</h4>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  selectedTask.riskLevel === 'High' ? 'bg-red-100 text-red-800' :
-                  selectedTask.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-green-100 text-green-800'
+                <span className={`px-3 py-1 rounded-full text-sm ${getHazardStyles(selectedTask.riskLevel)
+                  // selectedTask.riskLevel === 'High' ? 'bg-red-100 text-red-800' :
+                  // selectedTask.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                  // 'bg-green-100 text-green-800'
                 }`}>
                   {selectedTask.riskLevel}
                 </span>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gray-50 p-4 rounded-lg max-h-[200px] overflow-auto break-words whitespace-normal">
                 <h4 className="font-medium">Description</h4>
                 <p>{selectedTask.description}</p>
               </div>

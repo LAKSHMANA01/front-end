@@ -3,6 +3,7 @@ import { User, Mail, Phone, MapPin, Camera, CheckCircle } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUpdateProfile, fetchProfile } from "../../redux/Slice/UserSlice";
 import Footer from "./../../compoents/footers";
+import { validateEmail,validatePhoneNumber } from "../../utils/validation";
 
 const UserProfile = () => {
   const userEmail = sessionStorage.getItem("email");
@@ -25,6 +26,7 @@ const UserProfile = () => {
     address: "",
   });
 
+  const [errors, setErrors] = useState({ email: "", phone: "" }); // **Added state for errors**
   useEffect(() => {
     if (profile.email) {
       setUser({
@@ -42,6 +44,13 @@ const UserProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess(false);
+
+    const emailError = validateEmail(user.email) ? "" : "Invalid email format"; // **Validate email**
+    const phoneError = validatePhoneNumber(user.phone) ? "" : "Invalid phone number"; // **Validate phone**
+
+    setErrors({ email: emailError, phone: phoneError });
+
+    if (emailError || phoneError) return; // **Prevent submission if errors exist**
 
     try {
       // Dispatch updated profile with an object containing userEmail, role, and updatedata (user)
@@ -61,19 +70,12 @@ const UserProfile = () => {
 
   return (
   <div>
-    <div className="min-h-screen bg-gradient-to-br  from-blue-50 to-white p-8">
+    <div className="min-h-screen bg-gradient-to-br   from-blue-50 to-white p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-blue-900 mb-6">Your Profile</h1>
           <div className="relative inline-block group">
-            {/* <img
-              src={user?.avatar || "/path/to/default-avatar.jpg"} // Default avatar
-              className="w-32 h-32 rounded-full border-4 border-white shadow-lg group-hover:border-blue-200 transition-all duration-300"
-              alt="Profile"
-            /> */}
-            {/* <button className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full hover:bg-blue-600 transition-colors duration-200 shadow-lg">
-              <Camera className="w-5 h-5 text-white" />
-            </button> */}
+          
           </div>
         </div>
 
@@ -86,7 +88,7 @@ const UserProfile = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     activeTab === tab.id
-                      ? "bg-blue-500 text-white shadow-md"
+                      ? "bg-blue-500 text-white shadow-md "
                       : "bg-white text-blue-500 hover:bg-blue-50"
                   }`}
                 >
@@ -124,7 +126,7 @@ const UserProfile = () => {
 
             {activeTab === "update" && (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-6 ">
                   <InputField
                     label="Full Name"
                     value={user.name}
@@ -142,6 +144,7 @@ const UserProfile = () => {
                     }
                     icon={<Mail className="w-5 h-5" />}
                   />
+                  {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>} {/* **Show email error** */}
                   <InputField
                     label="Phone"
                     type="tel"
@@ -151,6 +154,7 @@ const UserProfile = () => {
                     }
                     icon={<Phone className="w-5 h-5" />}
                   />
+                   {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>} {/* **Show phone error** */}
                   <InputField
                     label="Address"
                     value={user.address}

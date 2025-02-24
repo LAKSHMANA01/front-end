@@ -22,10 +22,39 @@ export const fetchEngineerTasks = createAsyncThunk(
     try {
       const response = await apiClient.get(`/tasks/engineer/${email}`);
       console.log(`response.data inside fetchEngineerTasks: ${response.data}`);
+      if(!response.data){
+        return {message : "No tasks available you."}
+      }
       return response.data;
       
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch engineer tasks');
+    }
+  }
+);
+
+export const fetchAcceptTask = createAsyncThunk(
+  'engineer/fetchAcceptTask',
+  async ({ taskId, email }, { rejectWithValue }) => {
+    try {
+      console.log(`fetchAcceptTask: ${taskId}`);
+      const response = await apiClient.patch(`/engineer/tasks/${taskId}/accept/${email}`);
+      console.log("response.data.ticket", response.data.ticket)
+      return { taskId, updatedTask: response.data.ticket };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to accept task');
+    }
+  }
+);
+
+export const fetchRejectTask = createAsyncThunk(
+  'engineer/fetchRejectTask',
+  async ({ taskId, email }, { rejectWithValue }) => {
+    try {
+      await apiClient.patch(`/engineer/tasks/${taskId}/reject/${email}`);
+      return { taskId };
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to reject task');
     }
   }
 );
@@ -78,10 +107,16 @@ export const fetchEngineerProfiledata = createAsyncThunk(
 
 export const updateTaskStatus = createAsyncThunk(
   "engineer/updateTaskStatus",
-  async ({ taskId, status }, { rejectWithValue }) => {
+  async ({ taskId, status }, { rejectWithValue, dispatch }) => {
     try {
       const response = await apiClient.patch(`/tasks/updateTicketStatus/${taskId}`, { status });
-      return response.data; // Return only serializable data
+      
+      if (status === "deferred") {
+        const userEmail = response.data.engineerEmail; // Get engineer's email from response
+        dispatch(fetchEngineerTasks(userEmail)); // Dispatch fetchEngineerTasks if status is 'deferred'
+      }
+
+      return response.data; // Return updated task info
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -93,7 +128,7 @@ export const HazardsTickets = createAsyncThunk(
   async ({ rejectWithValue }) => {
     try {
       console.log("data comeing in axio")
-      const response =  await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      const response =  await apiClient.get(`/hazards/getAllHazards`);
       console.log("response.data inside fetchEngineerTasks:",response.data);
       return response.data; // Return updated task info
     } catch (error) {
@@ -108,8 +143,8 @@ export const HazardsUpdateTickets = createAsyncThunk(
   async (updatedData, { rejectWithValue }) => {
     console.log("updatedData inside fetchUpdateHazardsUpdateTickets:", updatedData);
     try {
-      const response = await axios.patch(
-        `https://localhost:8000/api/hazards/updateHazard/${updatedData._id}`, 
+      const response = await apiClient.patch(
+        `/hazards/updateHazard/${updatedData._id}`, 
         updatedData, 
         {
           headers: {
@@ -117,7 +152,7 @@ export const HazardsUpdateTickets = createAsyncThunk(
           }
         }
       );
-      const res = await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      const res = await apiClient.get(`/hazards/getAllHazards`);
       console.log("response.data inside  Hazards :", response.data);
       return res.data;
     } catch (error) {
@@ -125,17 +160,18 @@ export const HazardsUpdateTickets = createAsyncThunk(
     }
   }
 );
+
 // AsyncThunk for Harzards engineer updateing
 export const HazardsDeleteTickets = createAsyncThunk(
   'engineer/HazardsDeleteTickets',
   async (updatedData, { rejectWithValue }) => {
     console.log("deletedData inside fetchUpdateHazardsUpdateTickets:", updatedData);
     try {
-      const response = await axios.delete(
-        `https://localhost:8000/api/hazards/deleteHazard/${updatedData}`, 
+      const response = await apiClient.delete(
+        `/hazards/deleteHazard/${updatedData}`, 
        
       );
-      const res = await axios.get(`https://localhost:8000/api/hazards/getAllHazards`);
+      const res = await apiClient.get(`/hazards/getAllHazards`);
       console.log("response.data inside  Hazards :", response.data);
       return res.data;
     } catch (error) {
@@ -163,11 +199,52 @@ const engineerSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      // .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
+      //   state.tasks = Array.isArray(action.payload) ? action.payload : [];
+      //   state.loading = false;
+      // })
       .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
-        state.tasks = action.payload;
+        if (Array.isArray(action.payload)) {
+          state.tasks = action.payload;
+        } else if (action.payload.message) {
+          state.tasks = []; // Set empty if no tasks are found
+          state.error = action.payload.message;
+        }
         state.loading = false;
       })
+      
       .addCase(fetchEngineerTasks.rejected, (state, action) => {
+        state.error = action.payload || 'Error fetching tasks';
+        state.loading = false;
+      })
+
+      .addCase(fetchAcceptTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAcceptTask.fulfilled, (state, action) => {
+        const { taskId, updatedTask } = action.payload;
+        state.tasks =state.tasks.map(task => task._id === taskId ? updatedTask :task);
+        // const taskIndex = state.tasks.findIndex(task => task._id === taskId);
+        // if (taskIndex !== -1) {
+        //   state.tasks[taskIndex] = updatedTask;
+        // }
+        state.loading = false;
+      })
+      .addCase(fetchAcceptTask.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+
+      .addCase(fetchRejectTask.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRejectTask.fulfilled, (state, action) => {
+        state.tasks = state.tasks.filter(task => task._id !== action.payload.taskId);
+        state.loading = false;
+      })
+      .addCase(fetchRejectTask.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
       })

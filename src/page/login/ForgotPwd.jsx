@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import apiClient from '../../utils/apiClient';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ResetPassword = () => {
     const [email, setEmail] = useState('');
@@ -11,21 +13,21 @@ const ResetPassword = () => {
     const [step, setStep] = useState(1);
     const navigate = useNavigate();
 
-    // 🔹 Reusable API request function
+    // reusable API request function
     const sendResetRequest = async (data, onSuccess, errorMessage) => {
         try {
             const response = await apiClient.post('/users/reset', data);
             if (response.data.success) {
                 onSuccess(response.data);
             } else {
-                alert(response.data.message);
+                toast.error(response.data.message);
             }
         } catch (error) {
-            alert(error.response?.data?.message || errorMessage);
+            toast.error(error.response?.data?.message || errorMessage);
         }
     };
 
-    // ✅ Step 1: Handle Email Verification
+    // handle Email Verification
     const handleEmailSubmit = (e) => {
         e.preventDefault();
         sendResetRequest(
@@ -38,7 +40,7 @@ const ResetPassword = () => {
         );
     };
 
-    // ✅ Step 2: Handle Security Answer Verification
+    // handle Security Answer Verification
     const handleSecurityAnswerSubmit = (e) => {
         e.preventDefault();
         sendResetRequest(
@@ -48,18 +50,18 @@ const ResetPassword = () => {
         );
     };
 
-    // ✅ Step 3: Handle Password Reset
+    // handle Password Reset
     const handlePasswordReset = (e) => {
         e.preventDefault();
         if (newPassword !== confirmPassword) {
-            alert("Passwords do not match");
+            toast.error("Passwords do not match");
             return;
         }
         sendResetRequest(
             { email, newPassword },
             () => {
-                alert("Password reset successfully!");
-                navigate('/login');
+                toast.success("Password reset successfully!");
+                setTimeout(() => navigate('/login'),2000);
             },
             "Error resetting password"
         );
@@ -67,6 +69,7 @@ const ResetPassword = () => {
 
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100">
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar /> {/* Toast container */}
             <div className="bg-white p-6 rounded-lg shadow-md w-96">
                 <h2 className="text-2xl font-bold mb-4 text-center">Reset Password</h2>
 

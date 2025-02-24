@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { HazardsTickets ,HazardsUpdateTickets, HazardsDeleteTickets} from '../../redux/Slice/EngineerSlice';
 import { Link, useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
+import EngineerDashBoard from '../Engineer/Hazards'
 
 const AdminHazards = () => {
   const { Hazards, loading, error } = useSelector((state) => state.engineer);
@@ -80,6 +78,15 @@ const AdminHazards = () => {
     }));
   };
 
+  const getHazardStyles = (level) =>{
+    const styles = {
+      low: 'bg-yellow-200',
+      medium : 'bg-orange-200',
+      high : 'bg-red-200'
+    }
+    return styles[level] || "bg-gray-200";
+  }
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen mt-16">
       <div className="bg-white shadow-md p-6 mb-6">
@@ -107,13 +114,16 @@ const AdminHazards = () => {
             filteredTasks.map((ticket) => (
               <div
                 key={ticket._id}
+                //style={{backgroundColor : getHazardStyles(ticket.riskLevel)}}
+                className={`border p-4 rounded-lg cursor-pointer hover:shadow-md transition ${getHazardStyles(ticket.riskLevel)}`}
                 onClick={() => handleTaskClick(ticket)}
-                className="border p-4 rounded-lg cursor-pointer hover:shadow-md transition"
+                //className="border p-4 rounded-lg cursor-pointer hover:shadow-md transition"
               >
-                <h3 className="font-bold">{ticket.hazardType}</h3>
-                <p>{ticket.description}</p>
-                <p className="text-sm text-gray-500">{ticket.riskLevel}</p>
-                <p className="text-sm text-gray-500">{ticket.pincode}</p>
+                <h3 className="font-bold">Harzard : {ticket.hazardType}</h3>
+                <p className='break-words whitespace-normal overflow-hidden text-ellipsis max-h-20'>
+                  Description : {ticket.description}</p>
+                <p className="text-sm text-gray-500">Risk level : {ticket.riskLevel}</p>
+                <p className="text-sm text-gray-500">Pincode : {ticket.pincode}</p>
               </div>
             ))
           ) : (
@@ -123,8 +133,8 @@ const AdminHazards = () => {
       </div>
 
       {isModalOpen && selectedTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-md p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-auto">
+          <div className="bg-white rounded-lg w-full max-w-md p-6 relative max-h-[80vh] overflow-y-auto mt-20">
             <div className="flex justify-between items-start">
               <h2 className="text-2xl font-bold">{selectedTask.hazardType}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
@@ -133,17 +143,17 @@ const AdminHazards = () => {
             <div className="space-y-4">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-medium">Risk Level</h4>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  selectedTask.riskLevel === 'High' ? 'bg-red-100 text-red-800' :
-                  selectedTask.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-green-100 text-green-800'
+                <span className={`px-3 py-1 rounded-full text-sm ${getHazardStyles(selectedTask.riskLevel)
+                  // selectedTask.riskLevel === 'High' ? 'bg-red-100 text-red-800' :
+                  // selectedTask.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                  // 'bg-green-100 text-green-800'
                 }`}>
                   {selectedTask.riskLevel}
                 </span>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium">Description</h4>
+              <div className="bg-gray-50 p-4 rounded-lg max-h-[200px] overflow-auto break-words whitespace-normal">
+                <h4 className="font-medium ">Description</h4>
                 <p>{selectedTask.description}</p>
               </div>
 
@@ -175,9 +185,9 @@ const AdminHazards = () => {
               <textarea name="description" value={updateFormData.description} onChange={handleInputChange} rows="3" className="w-full p-2 border rounded" placeholder="Description" required />
               <select name="riskLevel" value={updateFormData.riskLevel} onChange={handleInputChange} className="w-full p-2 border rounded" required>
                 <option value="">Select Risk Level</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
               </select>
               <input type="text" name="address" value={updateFormData.address} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Address" required />
               <input type="text" name="pincode" value={updateFormData.pincode} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Pincode" required />
@@ -193,6 +203,7 @@ const AdminHazards = () => {
        <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </div>
   );
+
 };
 
 export default AdminHazards;

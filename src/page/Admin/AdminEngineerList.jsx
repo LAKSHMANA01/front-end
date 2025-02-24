@@ -18,6 +18,7 @@ const AdminEngineerList = () => {
 
   useEffect(() => {
     dispatch(fetchAllApprovedEngineers());
+    //dispatch(fetchEngineerTasks()); // Fetch tasks for each engineer on mount
   }, [dispatch]);
 
   // Debounce search input to prevent unnecessary API calls
@@ -41,7 +42,7 @@ const AdminEngineerList = () => {
 
   return (
     <div className="p-4 mt-20">
-      <AdminNavbar />
+   
 
       <div className="relative mb-6">
         <input
@@ -74,7 +75,7 @@ const AdminEngineerList = () => {
           <div
             key={engineer._id}
             className="bg-white p-4 shadow-md rounded-lg cursor-pointer hover:shadow-lg"
-            onClick={() => navigate(`/admin/engineer/${engineer.email}`)} // ✅ Navigate on click
+            onClick={() => navigate(`/admin/engineer/${engineer.email}`)} 
           >
             <h2 className="text-lg font-semibold">{engineer.name}</h2>
             <p className="text-gray-500">Email: {engineer.email}</p>

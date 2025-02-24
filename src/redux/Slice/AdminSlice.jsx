@@ -2,10 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiClient from "../../utils/apiClient";
 
+
 // Fetch all tasks
 export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await apiClient.get('/admin/tasks'); // Replace with your API
+    const response = await apiClient.get('/admin/tasks'); 
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch tasks");
@@ -15,7 +16,7 @@ export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, 
 // Fetch all users
 export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await apiClient.get('/admin/users'); // Replace with your API
+    const response = await apiClient.get('/admin/users'); 
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch users");
@@ -24,8 +25,9 @@ export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, 
 
 export const fetchAllApprovedEngineers = createAsyncThunk("admin/fetchAllApprovedEngineers",async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get("/admin/engineers"); // Replace with your API
-      //console.log("Approved Engineers Response:", response.data); // Debugging
+      const response = await apiClient.get("/admin/engineers"); 
+
+      //console.log("Approved Engineers Response:", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch engineers");
@@ -63,7 +65,7 @@ export const fetchDeferredTasks = createAsyncThunk(
   "admin/deferredTasks/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("https://localhost:8000/api/admin/status/deferred"); // Replace with your API
+      const response = await apiClient.get("/admin/status/deferred"); 
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch deferred tasks");
@@ -76,10 +78,10 @@ export const fetchAvailableEngineers = createAsyncThunk(
   'tasks/fetchAvailableEngineers',
   async () => {
     try {
-      const response = await axios.get('/api/engineers/available');
-      return response.data.engineers; // Assuming API returns an array of engineers
+      const response = await apiClient.get('/api/engineers/available');
+      return response.data.engineers; // array of engineers
     } catch (error) {
-      throw new Error(error.response?.data?.message || error.message); // Handle error
+      throw new Error(error.response?.data?.message || error.message); 
     }
   }
 );
@@ -89,12 +91,12 @@ export const reassignTicket = createAsyncThunk(
   'tasks/reassignTicket',
   async ({ ticketId, engineerId }) => {
     try {
-      const response = await axios.patch(`/api/reassign/${ticketId}/${engineerId}`, {}, {
+      const response = await apiClient.patch(`/api/reassign/${ticketId}/${engineerId}`, {}, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      return response.data; // Assuming the response has details of reassigned ticket
+      return response.data; // reassigned ticket
     } catch (error) {
       throw new Error(error.response?.data?.message || error.message); // Handle error
     }
@@ -105,7 +107,7 @@ export const fetchEngineerTasks = createAsyncThunk(
   "admin/fetchEngineerTasks",
   async (engineerEmail, { rejectWithValue }) => {
     try {
-      //console.log("engineerId", engineerId);
+      console.log("engineerEmail", engineerEmail);
       const response = await apiClient.get(`/tasks/engineer/${engineerEmail}`); 
       return response.data;
     } catch (error) {
@@ -119,6 +121,7 @@ const adminSlice = createSlice({
   name: 'admin',
   initialState: {
     tasks: [],
+    engineerTasks:[],
     completedTasks: [],
     deferredTasks: [],
     users: [],
@@ -128,6 +131,7 @@ const adminSlice = createSlice({
     error: null,
   },
   reducers: {},
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllTasks.pending, (state) => { state.loading = true; })
@@ -176,11 +180,11 @@ const adminSlice = createSlice({
       })
       .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
         state.loading = false;
-        state.tasks = action.payload;
+        state.engineerTasks = action.payload;
       })
       .addCase(fetchEngineerTasks.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload?.message || "Error fetching tasks.";
       })
       .addCase(fetchAvailableEngineers.pending, (state) => {
         state.loading = true;
