@@ -3,6 +3,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
   moduleNameMapper: {
+    roots: ["<rootDir>/src"],
     // Handle CSS imports
     '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
    
@@ -20,6 +21,7 @@ module.exports = {
   transform: {
     '^.+\\.(js|jsx)$': 'babel-jest'
   },
+  testMatch: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[tj]s?(x)"],
   transformIgnorePatterns: [
     'node_modules/(?!(lucide-react)/)' // Allow transformation of lucide-react
   ],

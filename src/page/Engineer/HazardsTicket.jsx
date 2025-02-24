@@ -42,7 +42,7 @@ const TicketForm = () => {
       console.log("Ticket submitted successfully:", response);
       // Reset form on success
       setTicketForm({
-        hazardType: "installation", // Default value, can be changed by the user
+        hazardType: "", // Default value, can be changed by the user
         description: "",
         riskLevel: "medium", // Default, can be changed by the user
         address: "",
@@ -60,25 +60,23 @@ const TicketForm = () => {
   const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
-    <CustomCard title="Raise New Ticket" icon={AlertTriangle}>
+    <CustomCard title="Add New Hazards" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className={labelStyles}>Service Type</label>
-          <select
+          <label className={labelStyles}>Hazards Type</label>
+          <input
+            type="text"
             className={inputStyles}
-            value={ticketForm.serviceType}
+            placeholder=" Enter Hazards Type"
+            value={ticketForm.hazardType}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm,hazardType: e.target.value })
+              setTicketForm({ ...ticketForm,  hazardType: e.target.value })
             }
-            required99
-          >
-            <option value="installation">New Installation</option>
-            <option value="fault">Fault Report</option>
-            {/* <option value="maintenance">Maintenance Request</option> */}
-          </select>
+            required
+          />
         </div>
         <div>
-   
+        <label className={labelStyles}>Address</label>
           <input
             type="text"
             className={inputStyles}
@@ -151,7 +149,7 @@ const TicketForm = () => {
           className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
         >
           <Send size={16} />
-          Submit Ticket
+          Submit Hazards
         </button>
       </form>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />

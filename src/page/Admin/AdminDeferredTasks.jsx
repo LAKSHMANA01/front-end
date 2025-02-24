@@ -26,7 +26,7 @@ const AdminDeferredTasks = () => {
 
   return (
     <div className="space-y-6 p-4">
-      <AdminNavbar />
+   
       <div className="flex flex-wrap gap-6"> 
       {deferredTasks.map((task) => (
         <AdminTaskCard key={task._id || task.id} task={task} />

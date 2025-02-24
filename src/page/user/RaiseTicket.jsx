@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./../../compoents/footers";
 const email = sessionStorage.getItem('email');
+
 const token = sessionStorage.getItem('token');
 console.log(email, token);
 const TicketForm = () => {  
@@ -23,7 +24,7 @@ const TicketForm = () => {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
-
+  console.log("djabfkalnsdlmfasdfasdf", email)
   if (!email) {
     toast.error("User email not found!");
     return;
