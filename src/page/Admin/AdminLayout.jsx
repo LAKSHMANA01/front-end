@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import AdminSidebar from "./Sidebar";
-import AdminNavbar from "./NavBar";
+import AdminNavbar from "./../../compoents/Navbar";
 import Footer from "../../compoents/footers";
 
 
@@ -13,7 +13,7 @@ const AdminLayout = () => {
         {/* Sidebar is fixed and should be placed below the navbar */}
         <AdminSidebar />
         {/* Main content area: add top margin to offset fixed navbar */}
-        <div className="mt-7 ml-200 md:ml-20 transition-all duration-300">
+        <div className="mt-7 lg:ml-20 ms:ml-0 transition-all duration-300">
           <Outlet />
         </div>
         {/* <Footer/> */}

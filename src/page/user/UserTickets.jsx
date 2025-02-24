@@ -7,7 +7,7 @@ import { fetchTickets } from '../../redux/Slice/UserSlice';
 import TaskCard from './Taskcard';
 import Loading from "../../compoents/Loadingpage"
 import Footer from '../../compoents/footers';
-import Notasksimage from '../../assets/NoTasks.png';
+// import Notasksimage from '../../assets/NoTasks.png';
 
 
 const UserTicketList = () => {
@@ -37,7 +37,7 @@ const UserTicketList = () => {
 
   if(tasks.length === 0) {
     return  <div className='top-24 justify-center  flex flex-col items-center'>
-    <img src={Notasksimage} alt="No Tasks" className="w-72 h-30 " />
+    {/* <img src={Notasksimage} alt="No Tasks" className="w-72 h-30 " /> */}
     {/* <p>No Tickets raised yet!</p> */}
   </div>
   }

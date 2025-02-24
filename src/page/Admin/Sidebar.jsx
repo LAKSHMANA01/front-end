@@ -12,6 +12,7 @@ import {
   LogOut
 } from "lucide-react";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { MdOutlinePendingActions } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
 const AdminSidebar = () => {
@@ -33,7 +34,8 @@ const AdminSidebar = () => {
     { path: '/admin/engineers', icon: Wrench, label: 'Engineers' },
     { path: '/admin/engineer-approval', icon: UserCog, label: 'EngineersApproval' },
     { path: '/admin/users', icon: Users, label: 'Users' },
-    { path: '/admin/hazards', icon:AlertTriangle, label: 'Hazards' }
+    { path: '/admin/hazards', icon:AlertTriangle, label: 'Hazards' },
+    { path: '/admin/deferred', icon:MdOutlinePendingActions, label: 'Deferred Tasks' }
   ];
 
   // Determine active menu item
@@ -51,6 +53,7 @@ const AdminSidebar = () => {
       className={`
         fixed top-16 left-0 
         z-50
+   
         h-[calc(100vh-4rem)] 
         bg-white 
         border-r border-gray-300 
@@ -126,19 +129,7 @@ const AdminSidebar = () => {
       {/* Footer */}
       <div className="border-t border-gray-300 p-4">
         <div className={`flex items-center ${isExpanded ? 'justify-between' : 'justify-center'}`}>
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full bg-blue-500 
-              flex items-center justify-center">
-              <UserCog size={20} className="text-white" />
-            </div>
-            {isExpanded && (
-              <div>
-               
-                <p className="text-sm font-medium text-gray-700">Admin Name</p>
-                <p className="text-xs text-gray-500">Administrator</p>
-              </div>
-            )}
-          </div>
+        
         </div>
       </div>
     </aside>

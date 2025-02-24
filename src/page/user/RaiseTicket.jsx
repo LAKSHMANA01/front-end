@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./../../compoents/footers";
 const email = sessionStorage.getItem('email');
+
 const token = sessionStorage.getItem('token');
 console.log(email, token);
 const TicketForm = () => {  
@@ -21,35 +22,31 @@ const TicketForm = () => {
   const Raisetickets = useSelector((state) => state.Raisetickets);
   const user = useSelector((state) => state.auth.user);
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("djabfkalnsdlmfasdfasdf", email)
+  if (!email) {
+    toast.error("User email not found!");
+    return;
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Ticket submitted:", ticketForm);
-
-    const formDatawithUserId = {
-      ...ticketForm,
-      //  userId: userId // Add userId to the submitted data
-    };
+  try {
+    await dispatch(submitTicket({ ...ticketForm, email })); 
+    toast.success("Ticket submitted successfully!");
     
-    try {
-      if (email) {
-        console.log('venu')
-        dispatch(submitTicket({ ...ticketForm, email }));
-        toast.success("Ticket submitted successfully!");
-       
-      }
-      // Reset form on success
-      setTicketForm({
-        serviceType: "installation",
-        address: "",
-        description: "",
-        pincode: "",
-      });
-    } catch (err) {
-      console.error("Failed to submit ticket:", err);
-      toast.error("Failed to submit ticket!");
-    }
-  };
+    // Reset form on success
+    setTicketForm({
+      serviceType: "installation",
+      address: "",
+      description: "",
+      pincode: "",
+    });
+  } catch (err) {
+    console.error("Failed to submit ticket:", err);
+    toast.error("Failed to submit ticket!");
+  }
+};
+
 
   const inputStyles =
     "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";

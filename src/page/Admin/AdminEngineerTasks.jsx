@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEngineerTasks } from "../../redux/Slice/AdminSlice"; 
 import { useParams } from "react-router-dom";
-import AdminNavbar from "./NavBar";
+
 import AdminTaskCard from "./AdminTaskCard"; 
 
 const AdminEngineerTasks = () => {
@@ -22,7 +22,7 @@ const AdminEngineerTasks = () => {
 
   return (
     <div className="space-y-6 p-4">
-      <AdminNavbar />
+      
       <h2 className="text-xl font-bold text-center">Tasks Assigned to Engineer</h2>
       {tasks.map((task) => (
         <AdminTaskCard key={task.id} task={task} />
