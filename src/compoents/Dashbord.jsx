@@ -37,16 +37,16 @@ const Dashboard = () => {
   const getCardConfig = (role) => {
     const cardData = {
       user: [
-        { icon: <FaUserCog />, title: "Active Engineers", value: "140" },
-        { icon: <FaBox />, title: "Completed Task", value: "82" },
-        { icon: <FaRegClock />, title: "Pending task", value: "20" },
-        { icon: <FaMapPin />, title: "Total Task", value: "102" },
+        { icon: <FaUserCog />, title: "Open Tasks", value: "140" },
+        { icon: <FaBox />, title: "Completed Tasks", value: "82" },
+        { icon: <FaRegClock />, title: "Pending Tasks", value: "20" },
+        { icon: <FaMapPin />, title: "Total Tasks", value: "202" },
       ],
       engineer: [
         { icon: <FaBox />, title: "My Active Tasks", value: "12" },
         { icon: <FaRegClock />, title: "Pending Reviews", value: "5" },
         { icon: <FaMapPin />, title: "Completed Tasks", value: "45" },
-        { icon: <FaUsers />, title: "Team Size", value: "8" },
+        { icon: <FaUsers />, title: "Total Tasks", value: "8" },
       ],
       admin: [
         { icon: <FaBox />, title: "Open Tickets", value: "3" },

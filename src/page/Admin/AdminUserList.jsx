@@ -35,7 +35,7 @@ const AdminUserList = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div role="status" className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -101,8 +101,7 @@ const AdminUserList = () => {
                       </span>
                     </div>
                     <span className=" w-full py-2 bg-gray hover:bg-white-200 text-black-900 rounded-md transition-colors duration-300">
-                    Address: {user.address
-} <br/> Phone: {user.phone}
+                    Address: {user.address} <br/> Phone: {user.phone}
                     </span>
                   </div>
                 </div>

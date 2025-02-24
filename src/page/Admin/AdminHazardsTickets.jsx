@@ -1,4 +1,3 @@
-// TicketForm.jsx
 import React, { useState } from "react";
 
 
@@ -9,7 +8,7 @@ import { useDispatch,  } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const TicketForm = () => {
+const AdminHazardsTickets = () => {
   const userId = 2;
   const [ticketForm, setTicketForm] = useState({
    hazardType: "installation",
@@ -24,8 +23,7 @@ const TicketForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    console.log("Ticket submitted:", ticketForm);
+
   
     // Make sure the data matches the backend's expected format
     const formData = {
@@ -38,11 +36,11 @@ const TicketForm = () => {
   
     try {
       const response = await dispatch(HazardsTicket(formData));
-      toast.success("Ticket submitted successfully!");
+      toast.success("Hazard submitted successfully!");
       // console.log("Ticket submitted successfully:", response);
       // Reset form on success
       setTicketForm({
-        hazardType: "installation", // Default value, can be changed by the user
+        hazardType: "", // Default value, can be changed by the user
         description: "",
         riskLevel: "medium", // Default, can be changed by the user
         address: "",
@@ -50,7 +48,7 @@ const TicketForm = () => {
       });
       //  navigate("/admin/hazards")
     } catch (err) {
-      console.error("Failed to submit ticket:", err);
+      console.error("Failed to submit Hazard:", err);
     }
   };
   
@@ -69,6 +67,9 @@ const TicketForm = () => {
             className={inputStyles}
             placeholder="Hazard Title"
             value={ticketForm.hazardType}
+            onChange={(e) =>
+              setTicketForm({ ...ticketForm, hazardType: e.target.value })
+            }
             required
           />
 
@@ -102,8 +103,9 @@ const TicketForm = () => {
         </div>
 
         <div>
-          <label className={labelStyles}>Priority Level</label>
+          <label htmlFor="priority-level" className={labelStyles}>Priority Level</label>
           <select
+            id="priority-level"
             className={inputStyles}
             value={ticketForm.riskLevel}
             onChange={(e) =>
@@ -116,12 +118,14 @@ const TicketForm = () => {
           </select>
         </div>
 
+
         <div>
-          <label className={labelStyles}>
+          <label className={labelStyles} htmlFor="pincode">
            Enter pin Code
           </label>
           <input
             type="text"
+            id="pincode"
             className={inputStyles}
             value={ticketForm.pincode}
             onChange={(e) => setTicketForm({...ticketForm,  pincode: e.target.value})}
@@ -151,4 +155,4 @@ const TicketForm = () => {
   );
 };
 
-export default TicketForm;
+export default AdminHazardsTickets;

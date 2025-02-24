@@ -68,6 +68,7 @@ const AdminSidebar = () => {
     >
       {/* Toggle Button */}
       <button
+        data-testid="toggle-sidebar"
         onClick={toggleSidebar}
         className="absolute -right-3 top-8 bg-blue-500 text-white 
           rounded-full p-2 hover:bg-blue-600 transition-colors 

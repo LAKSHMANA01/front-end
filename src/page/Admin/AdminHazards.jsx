@@ -30,9 +30,6 @@ const AdminHazards = () => {
   useEffect(() => {
     dispatch(HazardsTickets({})); // Fetch hazard tickets on mount
   }, [dispatch]);
-
-
-  
   
   useEffect(() => {
     setFilteredTasks(Hazards.filter((task) => task.pincode.toLowerCase().includes(searchTerm.toLowerCase())));
