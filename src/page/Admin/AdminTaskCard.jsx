@@ -80,10 +80,10 @@ const AdminTaskCard = ({ task = {} }) => {
       }
       
       // Update the UI
-      setCurrentAssignee({
-        name: selectedEngineer.name,
-        initials: selectedEngineer.name.split(' ').map(n => n[0]).join(''),
-      });
+      // setCurrentAssignee({
+      //   name: selectedEngineer.name,
+      //   initials: selectedEngineer.name.split(' ').map(n => n[0]).join(''),
+      // });
       
       // Add reassignment comment
       const comment = {
@@ -92,7 +92,7 @@ const AdminTaskCard = ({ task = {} }) => {
         timestamp: new Date().toISOString(),
         author: 'Admin'
       };
-      setComments(prevComments => [...prevComments, comment]);
+      // setComments(prevComments => [...prevComments, comment]);
       
       // Close the dropdown
       setShowAssigneeDropdown(false);
