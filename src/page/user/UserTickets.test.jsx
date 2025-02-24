@@ -69,3 +69,4 @@ describe('UserTicketList Component', () => {
     expect(screen.getByAltText('No Tasks')).toBeInTheDocument();
   });
 });
+module.exports = 'test-file-stub';

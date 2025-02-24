@@ -112,7 +112,7 @@ const AdminTaskCard = ({ task = {} }) => {
 
   return (
     <>
-      <div className="w-full max-w-md bg-white rounded-lg shadow ml-16 mt-10">
+      <div className="w-full max-w-md bg-white rounded-lg shadow ml-16 mt-10 md:ml-0">
       {/* Card Header */}
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">

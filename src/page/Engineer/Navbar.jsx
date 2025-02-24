@@ -11,17 +11,17 @@ const EngineerNavbar = () => {
   const UserName = sessionStorage.getItem("role")
   const ProfileName = UserName.split("@")[0]
   const dispatch = useDispatch();
-  const [isClick, SetClicked] = useState('');
- 
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-
   
-  const { notifications } = useSelector((state) => state.notifications);
-  const notificationsCount = notifications.filter(notification => notification.isRead === false).length;
-
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  
+  const [isClick, SetClicked] = useState('');
+  
+  
   useEffect(() => {
     dispatch(fetchNotifications());
   }, [dispatch]);
+  const { notifications } = useSelector((state) => state.notifications);
+  const notificationsCount = notifications.filter(notification => notification.isRead === false).length;
 
   return (
     <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50  ml-30">
@@ -34,6 +34,9 @@ const EngineerNavbar = () => {
 
       {/* Middle - Search Bar */}
 
+
+        {/* Profile Section */}
+        <div className="relative">
       {/* Right side - Notifications, Theme Toggle, Profile */}
       <div className="flex items-center space-x-4">
         {/* Notifications */}
@@ -54,9 +57,6 @@ const EngineerNavbar = () => {
              { isClick && <Notification/>}
              
         </button>
-
-        {/* Profile Section */}
-        <div className="relative">
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"

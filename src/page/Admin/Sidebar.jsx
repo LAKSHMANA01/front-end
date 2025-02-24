@@ -51,7 +51,7 @@ const AdminSidebar = () => {
       className={`
         fixed top-16 left-0 
         z-50
-       md:mt-16
+   
         h-[calc(100vh-4rem)] 
         bg-white 
         border-r border-gray-300 

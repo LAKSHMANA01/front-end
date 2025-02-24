@@ -42,7 +42,7 @@ const AdminEngineerList = () => {
 
   return (
     <div className="p-4 mt-20">
-      <AdminNavbar />
+   
 
       <div className="relative mb-6">
         <input

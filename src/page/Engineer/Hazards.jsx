@@ -1,6 +1,4 @@
 import React, { useEffect, useState,  useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { HazardsTickets ,HazardsUpdateTickets, HazardsDeleteTickets} from '../../redux/Slice/EngineerSlice';
 import { Link, useNavigate} from 'react-router-dom';
