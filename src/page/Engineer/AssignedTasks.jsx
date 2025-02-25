@@ -73,10 +73,8 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
     if (error) return <div>Error: {error.message}</div>;
 
     return (
-        <div
-            className={`transition-all duration-300 ease-in-out p-4
-            ${isExpanded ? 'ml-[100x] lg:ml-[100px] xl:ml-[100px]' : 'ml-[10x] lg:ml-[40px]'}
-        `}
+        <div className={`transition-all duration-300 ease-in-out p-4 
+            ${isExpanded ? 'ml-[100px] lg:ml-[100px] xl:ml-[100px]' : 'ml-[10px] lg:ml-[40px] xl:ml-[40px]'}`}
         >
             {/* <Navbar /> */}
 
