@@ -28,6 +28,7 @@ const Navbar = () => {
 
    const Name = userName ? userName.split("@")[0] : "Guest";
    useEffect(() => {
+
     dispatch(fetchNotifications());
   }, [dispatch]);
   

@@ -12,7 +12,7 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
     const user = useSelector((state) => state.auth.user);
     
     const { tasks = [], loading, error } = useSelector((state) => state.engineer);
-    const [searchQuery, setSearchQuery] = useState('');
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [newStatus, setNewStatus] = useState('');
@@ -48,16 +48,30 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
     };
 
     const handleUpdateStatus = () => {
-        if (selectedTask && newStatus !== selectedTask.status) {
+        if (selectedTask && newStatus) {
             dispatch(updateTaskStatus({ taskId: selectedTask._id, status: newStatus }));
-        console.log("high")     
-        if (newStatus === "deferred") {
-            dispatch(sendNotification({ 
-                userId: selectedTask._id,  // Ensure this field exists in your task object
-                messageTOSend: `Task "${selectedTask.title}" has been deferred by ${user.email}`, 
-                isRead: false 
-            }));
-        }
+    
+        // Send notification to task's owner when status is deferred
+        console.log( "sdassadasd",{ 
+            taskID: selectedTask._id,  // Ensure this field exists in your task object
+            messageTOSend: `Task with ID: ${selectedTask._id} has been deferred by ${user.email}`, 
+            isRead: false 
+        }) 
+        // if (newStatus === "deferred" || newStatus === "failed") {
+        //     const notificationPayload = {
+        //          // Ensure this exists
+        //         messageToSend: `Task "${selectedTask._id}" has been deferred by ${user.email}`,
+        //         isRead: false,
+        //     };
+    
+        //     dispatch(sendNotification(notificationPayload))
+        //         .then((response) => {
+        //             console.log("Notification sent:", response);
+        //         })
+        //         .catch((error) => {
+        //             console.error("Error sending notification:", error);
+        //         });
+        // }
             // Update local state for instant UI change
             setLocalTasks((prevTasks) =>
                 prevTasks.map((task) =>
@@ -69,7 +83,7 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
         }
     };
 
-    if (loading) return <Loading />;
+    if (loading) return <Loading />;        
     if (error) return <div>Error: {error.message}</div>;
 
     return (

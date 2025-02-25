@@ -118,19 +118,7 @@ const TicketForm = () => {
           </select>
         </div>
 
-        {/* <div>
-          <label className={labelStyles}>Contact Phone</label>
-          <input
-            type="tel"
-            className={inputStyles}
-            placeholder="Enter contact number"
-            value={ticketForm.contactPhone}
-            onChange={(e) =>
-              setTicketForm({ ...ticketForm, contactPhone: e.target.value })
-            }
-            required
-          />
-        </div> */}
+       
 
         <div>
           <label className={labelStyles}>

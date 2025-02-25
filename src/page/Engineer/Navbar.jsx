@@ -25,7 +25,7 @@ const EngineerNavbar = () => {
   const notificationsCount = notifications.filter(notification => notification.isRead === false).length;
 
   return (
-    <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50  ml-30">
+    <nav className="h-16 bg-white mb-10 rounded-md   dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center  fixed top-0 left-0 w-full z-50  justify-end lg:justify-between xl:justify-between  ">
       {/* Left side - Mobile menu */}
       <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
               bg-clip-text text-transparent hidden sm:block md:block">

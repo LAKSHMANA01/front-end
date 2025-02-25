@@ -14,7 +14,7 @@ const TaskAcceptance = ({ isExpanded }) => {
         if (user && user.email) {
             dispatch(fetchEngineerTasks(user.email));
         }
-    }, [user.email, dispatch]);
+    }, [user?.email, dispatch]);
 
     useEffect(() => {
         if(Array.isArray(tasks)){
