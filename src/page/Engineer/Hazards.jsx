@@ -76,6 +76,7 @@ const EngineerDashboard = () => {
    setIsUpdateModalOpen(false)
    console.log("deleted Hazards submitted:", task._id);
    dispatch(HazardsDeleteTickets(task._id))
+   //navigate('/engineer/Hazards')
    toast.success("Hazards deleted successfully!");
  }
  
@@ -97,9 +98,9 @@ const EngineerDashboard = () => {
 
   const getHazardStyles = (level) =>{
     const styles = {
-      Low: 'bg-yellow-200',
-      Medium : 'bg-orange-200',
-      High : 'bg-red-200'
+      low: 'bg-yellow-200',
+      medium : 'bg-orange-200',
+      high : 'bg-red-200'
     }
     return styles[level] || "bg-gray-200";
   }
@@ -180,7 +181,7 @@ const EngineerDashboard = () => {
 
             <div className="flex justify-between mt-6">
               <button onClick={() => handleUpdateClick(selectedTask)} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Update</button>
-              <button onClick={()=>handleDeleteClick(selectedTask)} className="bg-red-500 text-white px-4 py-2 rounded-lg">Delete</button>
+              <button onClick={()=>{handleDeleteClick(selectedTask); setIsModalOpen(false)}} className="bg-red-500 text-white px-4 py-2 rounded-lg">Delete</button>
             </div>
           </div>
         </div>
@@ -199,9 +200,9 @@ const EngineerDashboard = () => {
               <textarea name="description" value={updateFormData.description} onChange={handleInputChange} rows="3" className="w-full p-2 border rounded" placeholder="Description" required />
               <select name="riskLevel" value={updateFormData.riskLevel} onChange={handleInputChange} className="w-full p-2 border rounded" required>
                 <option value="">Select Risk Level</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
               </select>
               <input type="text" name="address" value={updateFormData.address} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Address" required />
               <input type="text" name="pincode" value={updateFormData.pincode} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Pincode" required />

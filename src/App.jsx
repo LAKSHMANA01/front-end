@@ -29,6 +29,7 @@ import Logout from "./utils/logout";
 import HazardsAdmin from "././page/Admin/AdminHazards";
 import Hazardtickets from "././page/Admin/AdminHazardsTickets";
 import Dashboard from "././page/user/Dashbord";
+import DashboardEngineer from "././page/Engineer/Dashbord";
 
 
 function App() {
@@ -97,7 +98,7 @@ function App() {
               <EngineerDashboard />
               </ProtectedRoute>}>
             {/* Nested Routes (these will be rendered inside EngineerDashboard) */}
-            <Route index element={<Dashboard />} />
+            <Route index element={<DashboardEngineer />} />
             <Route element={<AssignedTasks />} />{" "}
             {/* Default route inside EngineerDashboard */}
             <Route path="task/acceptance" element={<TaskAcceptance />} ></Route>

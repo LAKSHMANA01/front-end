@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./../../compoents/footers";
+
 const email = sessionStorage.getItem('email');
 
 const token = sessionStorage.getItem('token');
