@@ -111,11 +111,11 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
         <div className="bg-white p-4 rounded-lg shadow-md dark:bg-gray-800">
           <h3 className="text-lg font-semibold mb-4">Task Progress</h3>
-          {chartData.taskProgress ? <Line data={chartData.taskProgress} /> : <p>No Task Data</p>}
+          {chartData?.taskProgress ? <Line data={chartData.taskProgress} /> : <p>No Task Data</p>}
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md dark:bg-gray-800">
           <h3 className="text-lg font-semibold mb-4">Team Performance</h3>
-          {chartData.teamPerformance ? <Bar data={chartData.teamPerformance} /> : <p>No Team Data</p>}
+          {chartData?.teamPerformance ? <Bar data={chartData.teamPerformance} /> : <p>No Team Data</p>}
         </div>
       </div>
 

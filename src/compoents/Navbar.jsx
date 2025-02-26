@@ -5,6 +5,7 @@ import { useSelector, useDispatch} from 'react-redux';
 import { Link } from 'react-router-dom';
 import  Notification from './notification';
 import { fetchNotifications} from "./../redux/Slice/notificationSlice"
+import Sidebar from '../page/Admin/Sidebar';
 
 
 
@@ -12,10 +13,11 @@ import { fetchNotifications} from "./../redux/Slice/notificationSlice"
          
 
 
-const Navbar = () => {
+const Navbar = ( { toggleSidebar}) => {
 
 
   const dispatch = useDispatch();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   
   const [isClick, SetClicked] = useState('');
@@ -34,8 +36,13 @@ const Navbar = () => {
   
   const { notifications } = useSelector((state) => state.notifications);
   const NotificationsCount = notifications.filter(notification => notification.isRead === false).length;
+  const handleSidbar = () => {
+    setIsMenuOpen(!isMenuOpen);
+  }
 
   return (
+    <> 
+   
     <nav className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 right-0 z-50">
       {/* Left side - Mobile menu and Search */}
       <div className="flex items-center space-x-4">
@@ -43,8 +50,9 @@ const Navbar = () => {
               bg-clip-text text-transparent hidden sm:block md:block">
               Telecom Services
         </h1>
-        <button className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-          <Menu size={24} />
+        <button className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"  onClick={toggleSidebar}>
+       
+          <Menu size={24}  />
         </button>
       </div>
 
@@ -102,6 +110,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+    </>
   );
 };
 

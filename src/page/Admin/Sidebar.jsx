@@ -15,7 +15,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { MdOutlinePendingActions } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ isopen }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,6 +66,8 @@ const AdminSidebar = () => {
           ? 'w-64 translate-x-0' 
           : 'w-20 md:translate-x-0 -translate-x-full'
         }
+        ${ isopen || window.innerWidth >= 768 ? 'translate-x-0' : '-translate-x-full'}
+
       `}
     >
       {/* Toggle Button */}
@@ -73,7 +75,7 @@ const AdminSidebar = () => {
         onClick={toggleSidebar}
         className="absolute -right-3 top-8 bg-blue-500 text-white 
           rounded-full p-2 hover:bg-blue-600 transition-colors 
-          shadow-lg"
+          shadow-lg hidden lg:block"
       >
         {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>

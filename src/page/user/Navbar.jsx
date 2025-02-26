@@ -15,7 +15,7 @@ const Navbar = () => {
    const userName = sessionStorage.getItem("email") || "";
    console.log(" userName: " + userName);
 
-   const Name = userName ? userName.split("@")[0] : "Guest";
+   const Name = userName ? userName?.split("@")[0] : "Guest";
 
 
   return (
