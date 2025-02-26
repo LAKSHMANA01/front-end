@@ -26,8 +26,7 @@ export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, 
 export const fetchAllApprovedEngineers = createAsyncThunk("admin/fetchAllApprovedEngineers",async (_, { rejectWithValue }) => {
     try {
       const response = await apiClient.get("/admin/engineers"); 
-
-      //console.log("Approved Engineers Response:", response.data);
+      console.log("naveen", response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch engineers");

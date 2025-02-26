@@ -294,11 +294,19 @@ const TicketForm = () => {
 
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
+          className="w-40 flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
         >
           <Send size={16} />
           Submit Hazards
         </button>
+        <button
+            type="button"
+            onClick={() => navigate("/admin/Hazards")}
+            className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-colors"
+          >
+            <Send size={16} />
+            Cancel
+          </button>
       </form>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </CustomCard>
