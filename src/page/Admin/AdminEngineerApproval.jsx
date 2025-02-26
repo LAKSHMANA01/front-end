@@ -28,11 +28,13 @@ const AdminEngineerApproval = () => {
   };
 
   if (loading) return <div className="text-center text-gray-500"><Loading /></div>;
-  if (error) return <div className="text-center text-red-500">Error: {error}</div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
   if (!Array.isArray(engineers) || engineers.length === 0) return <p className="text-center text-gray-500">No engineers available.</p>;
 
   return (
+    
     <div className="p-4 mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      
       {/* <AdminNavbar /> */}
       {engineers.map((engineer) => (
         <div

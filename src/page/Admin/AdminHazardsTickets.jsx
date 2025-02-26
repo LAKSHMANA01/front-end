@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
-
-import { MapPin, AlertTriangle, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MapPin, AlertTriangle, Send, X} from "lucide-react";
 import CustomCard from "../../compoents/CustomCard";
 import { HazardsTicket } from "../../redux/Slice/raiseticke";
-import { useDispatch,  } from "react-redux";
+import { useDispatch} from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AdminHazardsTickets = () => {
   const userId = 2;
   const [ticketForm, setTicketForm] = useState({
-   hazardType: "installation",
+   hazardType: "",
    description: "",
    riskLevel: "medium",
    address: "",
@@ -19,7 +19,14 @@ const AdminHazardsTickets = () => {
   });
   // const navigate = useNavigate()
   const dispatch = useDispatch();
- 
+  const navigate = useNavigate();
+
+  const handleCancel = () => {
+     toast.success("Cancelled!");
+      setTimeout(() => {
+      navigate('/admin/hazards');
+    }, 1000); // Delay navigation by 1 second
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +43,12 @@ const AdminHazardsTickets = () => {
   
     try {
       const response = await dispatch(HazardsTicket(formData));
-      toast.success("Hazard submitted successfully!");
+      if (response) {
+        toast.success("Hazard submitted successfully!");
+        setTimeout(() => {
+          navigate('/admin/hazards');
+        }, 1000); // Delay navigation by 1 second
+      }
       // console.log("Ticket submitted successfully:", response);
       // Reset form on success
       setTicketForm({
@@ -48,7 +60,7 @@ const AdminHazardsTickets = () => {
       });
       //  navigate("/admin/hazards")
     } catch (err) {
-      console.error("Failed to submit Hazard:", err);
+      console.error("Failed to submit Hazard:");
     }
   };
   
@@ -133,7 +145,13 @@ const AdminHazardsTickets = () => {
         </div>
 
         <div className="flex justify-between">
-
+        <button
+            onClick={handleCancel}
+          className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-colors"
+        >
+          <X size={16} />
+          cancel
+        </button>
         <button
           type="submit"
           className="w-40 flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
@@ -141,13 +159,7 @@ const AdminHazardsTickets = () => {
           <Send size={16} />
           Submit Hazard
         </button>
-        <button
-          type="submit"
-          className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          <Send size={16} />
-          cancel
-        </button>
+        
         </div>
       </form>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />

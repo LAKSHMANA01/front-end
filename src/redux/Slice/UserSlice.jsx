@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import apiClient from '../../utils/apiClient';
+import apiClient from '../../utils/apiClientUser';
 
 // AsyncThunk for fetching tickets
 export const fetchTickets = createAsyncThunk(

@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "./apiClient";
+import apiClient from "./apiClientUser";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
