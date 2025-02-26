@@ -9,7 +9,7 @@ import { fetchNotifications} from "./../../redux/Slice/notificationSlice"
 
 const EngineerNavbar = () => {
   const UserName = sessionStorage.getItem("email")
-  const ProfileName = UserName.split("@")[0]
+  const ProfileName = UserName?.split("@")[0]
   console.log("ProfileNamesdsd: " + ProfileName)
   const dispatch = useDispatch();
   
@@ -22,7 +22,7 @@ const EngineerNavbar = () => {
     dispatch(fetchNotifications());
   }, [dispatch]);
   const { notifications } = useSelector((state) => state.notifications);
-  const notificationsCount = notifications.filter(notification => notification.isRead === false).length;
+  const notificationsCount = notifications?.filter(notification => notification.isRead === false).length;
 
   return (
     <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50  ml-30">
@@ -49,7 +49,7 @@ const EngineerNavbar = () => {
           onClick={() => {SetClicked(!isClick)}  
           } >
 
-          <Bell size={24} />
+          <Bell size={24}/>
           {notificationsCount > 0 && (
             <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs flex items-center justify-center rounded-full">
               {notificationsCount}
@@ -80,7 +80,7 @@ const EngineerNavbar = () => {
               >
                 <LogOut className="h-4 w-4" />
                 <span>
-                <Link to="/">Logout </Link></span>
+                <Link to="/logout">Logout </Link></span>
               </button>
             </div>
           )}
