@@ -34,13 +34,13 @@ const AdminHazardsTickets = () => {
   
     // Make sure the data matches the backend's expected format
     const formData = {
-      hazardType: ticketForm.hazardType, // "laksmana"
-      description: ticketForm.description, // "Hazard Description"
-      riskLevel: ticketForm.riskLevel, // Ensure you're passing the correct risk level from ticketForm
-      address: ticketForm.address, // "satyam, vizag"
-      pincode: ticketForm.pincode, // "530013"
+      hazardType: ticketForm.hazardType,
+      description: ticketForm.description,
+      riskLevel: ticketForm.riskLevel,
+      address: ticketForm.address,
+      pincode: ticketForm.pincode,
     };
-  
+
     try {
       const response = await dispatch(HazardsTicket(formData));
       if (response) {
@@ -63,20 +63,14 @@ const AdminHazardsTickets = () => {
       console.error("Failed to submit Hazard:");
     }
   };
-  
-
-  const inputStyles =
-    "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
-  const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
-    <CustomCard  className=""title="Add New Hazards" icon={AlertTriangle}>
+    <CustomCard title="Add New Hazards" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-
           <input
             type="text"
-            className={inputStyles}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Hazard Title"
             value={ticketForm.hazardType}
             onChange={(e) =>
@@ -94,16 +88,29 @@ const AdminHazardsTickets = () => {
             placeholder="Address"
             value={ticketForm.address}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm,  address: e.target.value })
+              setTicketForm({ ...ticketForm, hazardType: e.target.value })
             }
             required
           />
-
         </div>
         <div>
-          <label className={labelStyles}>Description</label>
+          <input
+            type="text"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Address"
+            value={ticketForm.address}
+            onChange={(e) =>
+              setTicketForm({ ...ticketForm, address: e.target.value })
+            }
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Description
+          </label>
           <textarea
-            className={inputStyles}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={4}
             placeholder="Describe hazard in detail"
             value={ticketForm.description}
@@ -115,10 +122,11 @@ const AdminHazardsTickets = () => {
         </div>
 
         <div>
-          <label htmlFor="priority-level" className={labelStyles}>Priority Level</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Priority Level
+          </label>
           <select
-            id="priority-level"
-            className={inputStyles}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={ticketForm.riskLevel}
             onChange={(e) =>
               setTicketForm({ ...ticketForm, riskLevel: e.target.value })
@@ -132,15 +140,16 @@ const AdminHazardsTickets = () => {
 
 
         <div>
-          <label className={labelStyles} htmlFor="pincode">
-           Enter pin Code
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Enter Pin Code
           </label>
           <input
             type="text"
-            id="pincode"
-            className={inputStyles}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={ticketForm.pincode}
-            onChange={(e) => setTicketForm({...ticketForm,  pincode: e.target.value})}
+            onChange={(e) =>
+              setTicketForm({ ...ticketForm, pincode: e.target.value })
+            }
           />
         </div>
 

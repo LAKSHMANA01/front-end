@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import apiClient from '../../utils/apiClientUser';
+import apiClientEngineer from '../../utils/apiClientEngineer';
+import apiClientUser from '../../utils/apiClientUser';
 import apiClientNH from '../../utils/apiClientNH';
 
 // AsyncThunk for fetching engineer tasks
@@ -10,9 +11,9 @@ export const fetchProfile = createAsyncThunk(
   async ({ userEmail, role }) => {
     console.log(`Fetching ${userEmail}`);
     console.log(`userId inside fetchProfile ticketSlice: ${userEmail}`);
-    const response = await apiClient.get(`/profile/${role}/${userEmail}`);
-    console.log(`response.data inside profile: ${response.data}`);
-    return response.data;
+    const response = await apiClientUser.get(`/users/profile/${role}/${userEmail}`);
+    console.log("response.data inside profile", response.data);
+    return response.data.profile.user;
   }
 );
 
@@ -21,12 +22,12 @@ export const fetchEngineerTasks = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     console.log(`email inside fetchEngineerTasks: ${email}`);
     try {
-      const response = await apiClient.get(`/tasks/engineer/${email}`);
-      console.log(`response.data inside fetchEngineerTasks: ${response.data}`);
+      const response = await apiClientEngineer.get(`/tasks/engineer/${email}`);
+      console.log("response.data inside fetchEngineerTasks:",response.data);
       if(!response.data){
         return {message : "No tasks available you."}
       }
-      return response.data;
+      return response.data.tasks;
       
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch engineer tasks');
@@ -39,7 +40,7 @@ export const fetchAcceptTask = createAsyncThunk(
   async ({ taskId, email }, { rejectWithValue }) => {
     try {
       console.log(`fetchAcceptTask: ${taskId}`);
-      const response = await apiClient.patch(`/engineer/tasks/${taskId}/accept/${email}`);
+      const response = await apiClientEngineer.patch(`/engineer/tasks/${taskId}/accept/${email}`);
       console.log("response.data.ticket", response.data.ticket)
       return { taskId, updatedTask: response.data.ticket };
     } catch (error) {
@@ -52,7 +53,7 @@ export const fetchRejectTask = createAsyncThunk(
   'engineer/fetchRejectTask',
   async ({ taskId, email }, { rejectWithValue }) => {
     try {
-      await apiClient.patch(`/engineer/tasks/${taskId}/reject/${email}`);
+      await apiClientEngineer.patch(`/engineer/tasks/${taskId}/reject/${email}`);
       return { taskId };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to reject task');
@@ -66,7 +67,7 @@ export const fetchUpdateEngineerProfile = createAsyncThunk(
   async ({ email, updatedData }, { rejectWithValue }) => {
     console.log('updatedData inside fetchUpdateEngineerProfile: ',updatedData);
     try {
-      const response = await apiClient.patch(
+      const response = await apiClientEngineer.patch(
         `/updateProfile/engineer/${email}`, 
         updatedData, 
         {
@@ -110,7 +111,7 @@ export const updateTaskStatus = createAsyncThunk(
   "engineer/updateTaskStatus",
   async ({ taskId, status }, { rejectWithValue, dispatch }) => {
     try {
-      const response = await apiClient.patch(`/tasks/updateTicketStatus/${taskId}`, { status });
+      const response = await apiClientEngineer.patch(`/tasks/updateTicketStatus/${taskId}`, { status });
       
       if (status === "deferred") {
         const userEmail = response.data.engineerEmail; // Get engineer's email from response

@@ -3,7 +3,7 @@ import {
   LayoutDashboard,
   ClipboardList,
   AlertTriangle,
-
+  ShieldAlert,
   ChevronRight,
   ChevronLeft,
   User,
@@ -16,7 +16,7 @@ import { MdOutlinePendingActions } from 'react-icons/md';
 
 const Sidebar = ({ activePath = "/" }) => {
   const UserName = sessionStorage.getItem("email") ;
-const firstName  =  UserName.split('@')[0];
+const firstName  =  UserName?.split('@')[0];
       
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -45,7 +45,7 @@ const firstName  =  UserName.split('@')[0];
   const menuItems = [
     { path: "/engineer", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/engineer/assignedTasks", icon: ClipboardList, label: "Tasks" },
-    { path: "/engineer/hazards", icon: AlertTriangle, label: "Hazards" },
+    { path: "/engineer/hazards", icon: ShieldAlert, label: "Hazards" },
     { path: "/engineer/profile", icon: User, label: "Profile" },
     // { path: '/engineer/settings', icon: Settings, label: 'Settings' }
     { path: '/engineer/task/acceptance', icon:MdOutlinePendingActions, label: 'Task Acceptance' }
@@ -109,6 +109,7 @@ const firstName  =  UserName.split('@')[0];
             <button
               key={item.path}
               onClick={() =>{ navigate(item.path) , closeSidebar()}}
+              title={item.label}
               className={`
                 flex items-center px-4 py-3 mb-2 w-full
                 rounded-lg transition-all duration-200
