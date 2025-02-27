@@ -34,4 +34,4 @@ const AdminNavbar = ({}) => {
   );
 };
 
-export default Navbar;
+export default AdminNavbar;

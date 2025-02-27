@@ -48,7 +48,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import Dashbord from "./../../compoents/Dashbord";
 import { fetchTickets } from "../../redux/Slice/UserSlice";
-import apiClient from "../../utils/apiClientUser";
+import apiClientEngineer from "../../utils/apiClientEngineer";
 
 const UserDashboard = ({ debouncedSearchTerm = "", statusFilter = "", priorityFilter = "" }) => {
   const email=sessionStorage.getItem("email")
@@ -59,8 +59,9 @@ const UserDashboard = ({ debouncedSearchTerm = "", statusFilter = "", priorityFi
    useEffect(() => {
     const fetchTicketsData = async () => {
       try {
-        const response = await apiClient.get(`/tasks/user/${email}`);
-        dispatch(fetchTickets.fulfilled(response.data));
+        const response = await apiClientEngineer.get(`/tasks/user/${email}`);
+        console.log(response);
+        dispatch(fetchTickets.fulfilled(response.data.tasks));
       } catch (error) {
         console.error("Error fetching engineer tasks:", error);
         dispatch(fetchTickets.rejected(error.response?.data || "Failed to fetch engineer tasks"));

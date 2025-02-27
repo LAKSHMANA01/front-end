@@ -70,7 +70,8 @@ export const fetchDeferredTasks = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await apiClientAdmin.get("/admin/status/deferred"); 
-      return response.data;
+      console.log(response.data);
+      return response.data.tickets;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch deferred tasks");
     }
