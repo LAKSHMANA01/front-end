@@ -91,6 +91,7 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
             ${isExpanded ? 'ml-[100px] lg:ml-[100px] xl:ml-[100px]' : 'ml-[10px] lg:ml-[40px] xl:ml-[40px]'}`}
         >
             {/* <Navbar /> */}
+            <h1 className=' font-bold bg-white rounded-md  justify-start text-2xl  w-full h-50  p-3 mb-6'> My Tickets  </h1>
 
             {/* Responsive Grid Layout */}
             {localTasks.length === 0 ?(

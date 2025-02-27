@@ -167,8 +167,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 const TicketForm = () => {
-  const userId = 2;
+ 
   const [ticketForm, setTicketForm] = useState({
     hazardType: "installation",
     description: "",
@@ -294,21 +295,28 @@ const TicketForm = () => {
           />
         </div>
 
-        <button
+       <div className="flex justify-between  ">
+       <button
           type="submit"
-          className="w-40 flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
+          className="w-20  lg:w-40 flex items-center   bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
         >
           <Send size={16} />
           Submit Hazards
         </button>
         <button
-            type="button"
-            onClick={() => navigate("/admin/Hazards")}
-            className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-colors"
-          >
-            <Send size={16} />
-            Cancel
-          </button>
+          type="submit"
+          className="w-20   lg:w-40 flex items-center   bg-red-500 text-white p-1 rounded-md hover:bg-blue-600 transition-colors"
+          onClick={() =>  navigate("/engineer/Hazards")}
+        >
+          
+          <Send size={16} />
+          Cannel Hazards
+        </button>
+
+
+       </div>
+       
+        
       </form>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </CustomCard>

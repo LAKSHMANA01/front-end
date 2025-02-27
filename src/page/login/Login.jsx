@@ -84,7 +84,7 @@ function Login() {
         sessionStorage.setItem("role", role);
 
         toast.success("Login successful!");
-        setTimeout(() => navigate(`/${role}`), 1000);
+        setTimeout(() => navigate(`/${role}`), 200);
       } else {
         toast.error(response.data.error);
         setEmailError("Invalid email or password.");

@@ -19,9 +19,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { MdOutlinePendingActions } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ isopen , onSidebarClose}) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
   const closeSidebar = () => setIsExpanded(false);
  
@@ -33,6 +34,17 @@ const AdminSidebar = () => {
       setIsExpanded(JSON.parse(savedState));
     }
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    handleResize(); // Set initial value
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
 
   const menuItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
@@ -46,7 +58,13 @@ const AdminSidebar = () => {
 
   // Determine active menu item
   const isActive = (path) => location.pathname === path;
-  const handleNavigation = (path) => navigate(path);
+  // Methods to open and close the sidebar
+  const handleNavigation = (path) => {navigate(path)
+
+    if (isMobile && onSidebarClose) {
+      onSidebarClose(); // Call the callback to inform parent component
+    }
+  };
 
   const toggleSidebar = () => {
     const newState = !isExpanded;
@@ -70,6 +88,8 @@ const AdminSidebar = () => {
           ? 'w-64 translate-x-0' 
           : 'w-20 md:translate-x-0 -translate-x-full'
         }
+        ${(isMobile && !isopen) ? '-translate-x-full' : 'translate-x-0'}
+
       `}
     >
       {/* Toggle Button */}
@@ -78,7 +98,7 @@ const AdminSidebar = () => {
         onClick={toggleSidebar}
         className="absolute -right-3 top-8 bg-blue-500 text-white 
           rounded-full p-2 hover:bg-blue-600 transition-colors 
-          shadow-lg"
+          shadow-lg hidden lg:block"
       >
         {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>

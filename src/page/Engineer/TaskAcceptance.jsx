@@ -71,7 +71,8 @@ const TaskAcceptance = ({ isExpanded }) => {
 
     return (
         <div className={`transition-all duration-300 ease-in-out p-4 ${isExpanded ? 'ml-[100px]' : 'ml-[40px]'}`}>
-            <h2 className="text-xl font-bold mb-4">Pending Tasks</h2>
+             <h1 className=' font-bold bg-white rounded-md  justify-start text-2xl  w-full h-50  p-3 mb-6'>  Pending Tasks </h1>
+          
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {localTasks.length === 0 ? (
                     <div className="text-gray-500">No tasks found.</div>
