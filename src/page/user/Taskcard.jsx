@@ -6,6 +6,7 @@ const TaskCard = ({ task, showPriority, assignEngineer }) => {
     <div>
     <div className="group relative bg-gradient-to-br from-white to-blue-50 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200 hover:border-blue-200">
       {/* Card Header */}
+     
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Service Type : {task.serviceType}</h3>

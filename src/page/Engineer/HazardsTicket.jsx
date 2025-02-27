@@ -220,7 +220,7 @@ const TicketForm = () => {
   };
 
   const inputStyles =
-    "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
+    "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent justify-center";
   const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
@@ -310,7 +310,7 @@ const TicketForm = () => {
         >
           
           <Send size={16} />
-          Cannel Hazards
+          Cancel Hazards
         </button>
 
 
