@@ -2,7 +2,7 @@ import { LayoutDashboard, ClipboardList,FileWarning,AlertTriangle, Settings, Che
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { MdDashboard } from 'react-icons/md';
-import { MdOutlinePendingActions } from 'react-icons/md';
+
 
 const Sidebar = ({ activePath = '/' }) => {
 const UserName = sessionStorage.getItem("email") ;
@@ -61,10 +61,10 @@ const firstName  =  UserName?.split('@')[0];
         {isExpanded ? (
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent">
-       Hi {firstName}
+       {firstName}
           </h1>
         ) : (
-          <h1 className="text-2xl font-bold text-blue-600"></h1>
+          <h1 className="text-2xl font-bold text-blue-600">{firstName.charAt(0).toUpperCase()}</h1>
         )}
       </div>
 

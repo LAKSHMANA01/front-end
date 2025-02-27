@@ -52,7 +52,7 @@ import {fetchEngineerTasks,HazardsTickets} from "../../redux/Slice/EngineerSlice
 const EngineerDashboard = ({ debouncedSearchTerm="", statusFilter="", priorityFilter="" }) => {
   
   const email=sessionStorage.getItem("email")
-  const role=sessionStorage.getItem("role")
+ 
 
   const { tasks, loading, error,Hazards } = useSelector((state) => state.engineer);
    console.log("hdjhfasd1122323sasdv", tasks)

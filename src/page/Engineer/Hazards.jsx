@@ -110,7 +110,7 @@ const EngineerDashboard = () => {
       <div className="bg-white shadow-md p-6 mb-6">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-800">Hazards Tasks</h1>
-          <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-all">
+          <button className="bg-blue-500 hover:bg-blue-600 text-white  px-2 py-1 md:p-2 rounded-lg transition-all ">
             <Link to="/engineer/RiseTickets">Add Hazards</Link>
           </button>
         </div>
@@ -124,10 +124,10 @@ const EngineerDashboard = () => {
         
           value={searchTerm}
           onChange={handleSearchChange}
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-20"
+          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-15"
           />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
           {filteredTasks.length > 0 ? (
             filteredTasks.map((ticket) => (
               <div

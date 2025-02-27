@@ -317,7 +317,7 @@ const Dashboard = ({ ticketStatusData, taskPriorityData,data }) => {
 
   return (
     <div className="grow p-6 dark:bg-gray-900 dark:text-white">
-      <h1 className="text-2xl font-bold mb-6 mt-10">Dashboard</h1>
+     <h1 className=' font-bold bg-white rounded-md  justify-start text-2xl  w-full h-50  p-3 mb-6'>  DashBoard  </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {cardConfig.length > 0 ? cardConfig.map((card, index) => <Card key={index} icon={card.icon} title={card.title} value={card.value} />) : <p>No data available</p>}

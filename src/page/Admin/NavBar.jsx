@@ -3,7 +3,7 @@ import { Sun, Moon, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
-const AdminNavbar = () => {
+const AdminNavbar = ({}) => {
 
 
   return (

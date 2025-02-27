@@ -4,10 +4,10 @@ import axios from "axios";
 // Fetch notifications (Async Action)
 export const fetchNotifications = createAsyncThunk(
   "notifications/fetchNotifications",
-  async (userId, { rejectWithValue }) => {
+  async (userId, email, { rejectWithValue }) => {
     try {
       console.log("data nofification", userId)
-      const response = await axios.get(`https://localhost:8003/api/notifications/getNotifications/marina@gmail.com`);
+      const response = await axios.get(`https://localhost:8003/api/notifications/getNotifications/${email}`);
       console.log("Here Fetchnotification here",response)
       return response.data.notifications.filter((notif) => !notif.isRead);
     } catch (error) {
@@ -23,8 +23,8 @@ export const markAsRead = createAsyncThunk(
   async (notificationId, { rejectWithValue }) => {
     try {
       console.log("notification marked as read");
-      await axios.patch(`https://localhost:8003/api/notifications/updateNotification/67b8114bfa70ebf5e966cb18`, { isRead: true } );
-      return "marina@gmail.com" ; // Return the ID to update state
+      await axios.patch(`https://localhost:8003/api/notifications/updateNotification/${notificationId}`, { isRead: true } );
+      return notificationId ; // Return the ID to update state
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -34,13 +34,14 @@ export const markAsRead = createAsyncThunk(
 // Send notification (Async Action)
 export const sendNotification = createAsyncThunk(
   "notifications/sendNotification",
-  async ({ email, messageToSend, isRead }, { rejectWithValue }) => {
+  async ({  messageToSend, isRead }, { rejectWithValue }) => {
     try {
-      const notificationData = { email, message: messageToSend, isRead };
+      const notificationData = { email: "admin@gmail.com" , message: messageToSend, isRead };
+      console.log("notificationData", notificationData)
       await axios.post("https://localhost:8003/api/notifications/addNotification", notificationData);
+      console.log("notification sent");
       
     } catch (error) {
-
       return rejectWithValue(error.response.data);
     }
   }
