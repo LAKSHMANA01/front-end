@@ -3,7 +3,7 @@ import { Sun, Moon, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
-const Navbar = () => {
+const AdminNavbar = ({}) => {
 
 
   return (
@@ -34,4 +34,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default AdminNavbar;

@@ -1,9 +1,9 @@
 import axios from "axios";
-import API_BASE_URL from "../config/apiConfig";
+import API_ADMIN_URL from "../config/apiConfigAdmin";
 // import https from "https";
 
 const apiClient = axios.create({
-    baseURL: API_BASE_URL,
+  baseURL: API_ADMIN_URL,
     //withCredentials: true, // Ensures cookies are sent with requests
     headers: {
       "Content-Type": "application/json", // Ensure JSON format

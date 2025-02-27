@@ -1,8 +1,8 @@
-import { LayoutDashboard, ClipboardList, AlertTriangle, Settings, ChevronRight, ChevronLeft, User } from "lucide-react";
+import { LayoutDashboard, ClipboardList,FileWarning,AlertTriangle, Settings, ChevronRight, ChevronLeft, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { MdDashboard } from 'react-icons/md';
-import { MdOutlinePendingActions } from 'react-icons/md';
+
 
 const Sidebar = ({ activePath = '/' }) => {
 const UserName = sessionStorage.getItem("email") ;
@@ -21,8 +21,8 @@ const firstName  =  UserName?.split('@')[0];
 
   const menuItems = [
     { path: '/User', icon: MdDashboard, label: 'Dashboard' },
-    { path: '/User/tickets', icon: LayoutDashboard, label: 'MyTicket' },
-    { path: '/User/RaiseTicket', icon: AlertTriangle, label: 'RaiseTickets' },
+    { path: '/User/tickets', icon: ClipboardList, label: 'MyTicket' },
+    { path: '/User/RaiseTicket', icon: FileWarning, label: 'RaiseTickets' },
     { path: '/User/UserProfile', icon: User, label: 'Profile' },
   ];
 
@@ -61,10 +61,10 @@ const firstName  =  UserName?.split('@')[0];
         {isExpanded ? (
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent">
-       Hi {firstName}
+       {firstName}
           </h1>
         ) : (
-          <h1 className="text-2xl font-bold text-blue-600"></h1>
+          <h1 className="text-2xl font-bold text-blue-600">{firstName.charAt(0).toUpperCase()}</h1>
         )}
       </div>
 
@@ -76,6 +76,7 @@ const firstName  =  UserName?.split('@')[0];
             <button
               key={item.path}
               onClick={() => {handleNavigation(item.path) ,closeSidebar()}}
+              title={item.label}
               className={`
                 flex items-center px-4 py-3 mb-2 w-full rounded-lg transition-all duration-200
                 ${active ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-800'}

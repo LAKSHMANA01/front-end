@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
-
-import { MapPin, AlertTriangle, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MapPin, AlertTriangle, Send, X} from "lucide-react";
 import CustomCard from "../../compoents/CustomCard";
 import { HazardsTicket } from "../../redux/Slice/raiseticke";
-import { useDispatch,  } from "react-redux";
+import { useDispatch} from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AdminHazardsTickets = () => {
   const userId = 2;
   const [ticketForm, setTicketForm] = useState({
-   hazardType: "installation",
+   hazardType: "",
    description: "",
    riskLevel: "medium",
    address: "",
@@ -19,7 +19,14 @@ const AdminHazardsTickets = () => {
   });
   // const navigate = useNavigate()
   const dispatch = useDispatch();
- 
+  const navigate = useNavigate();
+
+  const handleCancel = () => {
+     toast.success("Cancelled!");
+      setTimeout(() => {
+      navigate('/admin/hazards');
+    }, 1000); // Delay navigation by 1 second
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,16 +34,21 @@ const AdminHazardsTickets = () => {
   
     // Make sure the data matches the backend's expected format
     const formData = {
-      hazardType: ticketForm.hazardType, // "laksmana"
-      description: ticketForm.description, // "Hazard Description"
-      riskLevel: ticketForm.riskLevel, // Ensure you're passing the correct risk level from ticketForm
-      address: ticketForm.address, // "satyam, vizag"
-      pincode: ticketForm.pincode, // "530013"
+      hazardType: ticketForm.hazardType,
+      description: ticketForm.description,
+      riskLevel: ticketForm.riskLevel,
+      address: ticketForm.address,
+      pincode: ticketForm.pincode,
     };
-  
+
     try {
       const response = await dispatch(HazardsTicket(formData));
-      toast.success("Hazard submitted successfully!");
+      if (response) {
+        toast.success("Hazard submitted successfully!");
+        setTimeout(() => {
+          navigate('/admin/hazards');
+        }, 1000); // Delay navigation by 1 second
+      }
       // console.log("Ticket submitted successfully:", response);
       // Reset form on success
       setTicketForm({
@@ -48,23 +60,17 @@ const AdminHazardsTickets = () => {
       });
       //  navigate("/admin/hazards")
     } catch (err) {
-      console.error("Failed to submit Hazard:", err);
+      console.error("Failed to submit Hazard:");
     }
   };
-  
-
-  const inputStyles =
-    "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
-  const labelStyles = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
-    <CustomCard  className=""title="Add New Hazards" icon={AlertTriangle}>
+    <CustomCard title="Add New Hazards" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-
           <input
             type="text"
-            className={inputStyles}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Hazard Title"
             value={ticketForm.hazardType}
             onChange={(e) =>
@@ -82,16 +88,29 @@ const AdminHazardsTickets = () => {
             placeholder="Address"
             value={ticketForm.address}
             onChange={(e) =>
-              setTicketForm({ ...ticketForm,  address: e.target.value })
+              setTicketForm({ ...ticketForm, hazardType: e.target.value })
             }
             required
           />
-
         </div>
         <div>
-          <label className={labelStyles}>Description</label>
+          <input
+            type="text"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Address"
+            value={ticketForm.address}
+            onChange={(e) =>
+              setTicketForm({ ...ticketForm, address: e.target.value })
+            }
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Description
+          </label>
           <textarea
-            className={inputStyles}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={4}
             placeholder="Describe hazard in detail"
             value={ticketForm.description}
@@ -103,10 +122,11 @@ const AdminHazardsTickets = () => {
         </div>
 
         <div>
-          <label htmlFor="priority-level" className={labelStyles}>Priority Level</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Priority Level
+          </label>
           <select
-            id="priority-level"
-            className={inputStyles}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={ticketForm.riskLevel}
             onChange={(e) =>
               setTicketForm({ ...ticketForm, riskLevel: e.target.value })
@@ -120,20 +140,27 @@ const AdminHazardsTickets = () => {
 
 
         <div>
-          <label className={labelStyles} htmlFor="pincode">
-           Enter pin Code
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Enter Pin Code
           </label>
           <input
             type="text"
-            id="pincode"
-            className={inputStyles}
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={ticketForm.pincode}
-            onChange={(e) => setTicketForm({...ticketForm,  pincode: e.target.value})}
+            onChange={(e) =>
+              setTicketForm({ ...ticketForm, pincode: e.target.value })
+            }
           />
         </div>
 
         <div className="flex justify-between">
-
+        <button
+            onClick={handleCancel}
+          className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-colors"
+        >
+          <X size={16} />
+          cancel
+        </button>
         <button
           type="submit"
           className="w-40 flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
@@ -141,13 +168,7 @@ const AdminHazardsTickets = () => {
           <Send size={16} />
           Submit Hazard
         </button>
-        <button
-          type="submit"
-          className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          <Send size={16} />
-          cancel
-        </button>
+        
         </div>
       </form>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />

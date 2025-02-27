@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, AlertTriangle, User } from 'lucide-react';
-import apiClient from '../../utils/apiClient';
+import apiClient from '../../utils/apiClientAdmin';
 import { fetchDeferredTasks } from '../../redux/Slice/AdminSlice';
 import { useDispatch } from 'react-redux';
 import { ToastContainer, toast } from "react-toastify";
@@ -36,12 +36,12 @@ const AdminTaskCard = ({ task = {} }) => {
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const currentDay = days[new Date().getDay()];
       const response = await apiClient.get(`/admin/engineers/availability/${currentDay}`);
-      if (!response) {
+      if (!response.data) {
         throw new Error('Failed to fetch engineers');
       }
 
       const data = response.data;
-
+      console.log("data",data)
       // if (data && Array.isArray(data.engineers)) {
       //   const formattedEngineers = data.engineers.map(engineer => ({
       //     id: engineer._id,
@@ -54,7 +54,7 @@ const AdminTaskCard = ({ task = {} }) => {
       //     location: engineer.location
       //   }));
 
-      const approvedEngineers =response.data.engineers.filter(engineer => engineer.isEngineer)
+      const approvedEngineers =response.data?.engineers.filter(engineer => engineer.isEngineer)
         setAvailableEngineers(approvedEngineers);
         setError(null);
       
@@ -62,7 +62,7 @@ const AdminTaskCard = ({ task = {} }) => {
       //   throw new Error('Invalid data format received from server');
       // }
     } catch (err) {
-      setError(err.message || 'Failed to fetch available engineers');
+      // setError(err.message || 'Failed to fetch available engineers');
       console.error('Error fetching engineers:', err);
     } finally {
       setLoading(false);
@@ -139,7 +139,7 @@ const AdminTaskCard = ({ task = {} }) => {
       {/* Card Header */}
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">{task.serviceType}</h3>
+          <h3 className="text-lg font-semibold">{task.serviceType.toUpperCase()}</h3>
           <span className={getStatusStyle(task.status)}>{task.status}</span>
           <span className={getPriorityStyle(task.priority)}>{task.priority}</span>
         </div>
@@ -252,7 +252,7 @@ const AdminTaskCard = ({ task = {} }) => {
 const getStatusStyle = (status) => {
   const styles = {
     completed: 'bg-green-100 text-green-800',
-    'in progress': 'bg-blue-100 text-blue-800',
+    'in-progress': 'bg-blue-100 text-blue-800',
     pending: 'bg-yellow-100 text-yellow-800',
     deferred: 'bg-gray-100 text-gray-800'
   };

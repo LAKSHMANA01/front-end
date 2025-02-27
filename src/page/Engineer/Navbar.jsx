@@ -7,7 +7,7 @@ import { fetchNotifications} from "./../../redux/Slice/notificationSlice"
 
 
 
-const EngineerNavbar = () => {
+const EngineerNavbar = ({toggleSidebar}) => {
   const UserName = sessionStorage.getItem("email")
   const ProfileName = UserName?.split("@")[0]
   console.log("ProfileNamesdsd: " + ProfileName)
@@ -22,15 +22,19 @@ const EngineerNavbar = () => {
     dispatch(fetchNotifications());
   }, [dispatch]);
   const { notifications } = useSelector((state) => state.notifications);
-  const notificationsCount = notifications.filter(notification => notification.isRead === false).length;
+  const notificationsCount = notifications?.filter(notification => notification.isRead === false).length;
 
   return (
-    <nav className="h-16 bg-white mb-10 rounded-md dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between fixed top-0 left-0 w-full z-50  ml-30">
+    <nav className="h-16 bg-white mb-10 rounded-md   dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center  fixed top-0 left-0 w-full z-50  justify-between lg:justify-between xl:justify-between  ">
       {/* Left side - Mobile menu */}
       <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
               bg-clip-text text-transparent hidden sm:block md:block">
               Telecom Services
         </h1>
+        <button className="md:hidden  text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"  onClick={toggleSidebar}>
+       
+       <Menu size={24}  />
+     </button>
    
 
       {/* Middle - Search Bar */}
@@ -49,7 +53,7 @@ const EngineerNavbar = () => {
           onClick={() => {SetClicked(!isClick)}  
           } >
 
-          <Bell size={24} />
+          <Bell size={24}/>
           {notificationsCount > 0 && (
             <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs flex items-center justify-center rounded-full">
               {notificationsCount}

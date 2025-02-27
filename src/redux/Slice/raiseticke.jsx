@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import apiClient from '../../utils/apiClient';
+import apiClientUser from '../../utils/apiClientUser';
 
 export const submitTicket = createAsyncThunk(
   'tickets/submitTicket',
@@ -9,7 +9,7 @@ export const submitTicket = createAsyncThunk(
     //console.log("ticketData inside submitTicket", ticketData);
     
     try {
-      const response = await apiClient.post(
+      const response = await apiClientUser.post(
         `/users/raiseTicket/${email}`, 
         rest, // Send the rest of the ticket data
     
