@@ -20,7 +20,7 @@ const UserTicketList = () => {
   useEffect(() => {
     
     if (user?.email && user?.role && !isDataLoaded)  {
-      dispatch(fetchTickets({userEmail: user.email, role: user.role}));
+      dispatch(fetchTickets({userEmail: user?.email, role: user?.role}));
       setIsDataLoaded(true)
     }
   }, [user, dispatch,isDataLoaded]);

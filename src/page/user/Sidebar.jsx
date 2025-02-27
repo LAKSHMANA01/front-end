@@ -6,7 +6,7 @@ import { MdOutlinePendingActions } from 'react-icons/md';
 
 const Sidebar = ({ activePath = '/' }) => {
 const UserName = sessionStorage.getItem("email") ;
-const firstName  =  UserName.split('@')[0];
+const firstName  =  UserName?.split('@')[0];
   const [isExpanded, setIsExpanded] = useState(true);
 
   const navigate = useNavigate();

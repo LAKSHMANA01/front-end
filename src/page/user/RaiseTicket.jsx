@@ -24,15 +24,17 @@ const TicketForm = () => {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
-  console.log("djabfkalnsdlmfasdfasdf", email)
-  if (!email) {
+  console.log("djabfkalnsdlmfasdfasdf",email)
+  if (!user.email) {
     toast.error("User email not found!");
     return;
   }
 
   try {
+    if(email){
     await dispatch(submitTicket({ ...ticketForm, email })); 
     toast.success("Ticket submitted successfully!");
+  }
     
     // Reset form on success
     setTicketForm({

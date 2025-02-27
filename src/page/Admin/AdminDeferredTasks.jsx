@@ -20,8 +20,8 @@ const AdminDeferredTasks = () => {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
-  if (!deferredTasks || deferredTasks.length === 0) {
-    return <p className="text-center text-gray-500">No deferred tasks available.</p>;
+  if (!deferredTasks || deferredTasks?.length === 0) {
+    return <p className="text-center text-gray-500 mt-5">No deferred tasks available.</p>;
   }
 
   return (

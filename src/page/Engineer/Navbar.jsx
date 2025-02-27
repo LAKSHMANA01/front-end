@@ -9,7 +9,7 @@ import { fetchNotifications} from "./../../redux/Slice/notificationSlice"
 
 const EngineerNavbar = () => {
   const UserName = sessionStorage.getItem("email")
-  const ProfileName = UserName.split("@")[0]
+  const ProfileName = UserName?.split("@")[0]
   console.log("ProfileNamesdsd: " + ProfileName)
   const dispatch = useDispatch();
   
@@ -80,7 +80,7 @@ const EngineerNavbar = () => {
               >
                 <LogOut className="h-4 w-4" />
                 <span>
-                <Link to="/">Logout </Link></span>
+                <Link to="/logout">Logout </Link></span>
               </button>
             </div>
           )}
