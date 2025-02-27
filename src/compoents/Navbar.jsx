@@ -13,7 +13,7 @@ import Sidebar from '../page/Admin/Sidebar';
          
 
 
-const Navbar = ( { toggleSidebar}) => {
+const Navbar = ( {toggleSidebar}) => {
 
 
   const dispatch = useDispatch();

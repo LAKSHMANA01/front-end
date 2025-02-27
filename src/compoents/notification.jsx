@@ -15,7 +15,7 @@ const Notifications = () => {
   }, [dispatch, userId]);
 
   return (
-    <div className="absolute left-1/2 top-16 -translate-x-1/2 bg-white shadow-lg 
+    <div className="absolute left-1/4 top-16 -translate-x-1/2 bg-white shadow-lg 
     rounded-lg p-4 w-72 sm:w-80 z-50 border border-gray-200" >
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Notifications</h3>
 
