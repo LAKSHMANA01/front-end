@@ -12,21 +12,7 @@ const TaskCard = ({ task }) => {
             Status : {task.status}
           </span>
         </div>
-        <button className="text-gray-400 hover:text-blue-600 transition-colors">
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-            />
-          </svg>
-        </button>
+      
       </div>
 
       {/* Card Body */}
@@ -39,30 +25,12 @@ const TaskCard = ({ task }) => {
           <span className="text-sm text-gray-500">Priority : {task.priority} priority</span>
         </div>
 
-        {/* Progress Bar
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Progress</span>
-            <span>{task.progress}%</span>
-          </div>
-          <div className="h-2 bg-gray-200 rounded-full">
-            <div 
-              className={`h-2 rounded-full ${getProgressColor(task.progress)}`}
-              style={{ width: `${task.progress}%` }}
-            ></div>
-          </div>
-        </div> */}
+
+
 
         {/* Due Date and Assignee */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          {/* <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-xs text-blue-600">{task.assignee?.initials || 'N/A'}</span>
-            </div>
-            <span className="text-sm text-gray-500">
-              Assigned to: {task.engineerEmail || 'Not assigned'}
-            </span>
-          </div> */}
+
           <div className="flex items-center gap-2">
             <svg
               className="w-4 h-4 text-gray-400"
@@ -103,7 +71,7 @@ const TaskCard = ({ task }) => {
       </div>
 
       {/* Hover Actions */}
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
         <button className="p-1 hover:bg-blue-50 rounded-lg text-blue-600">
           <svg
             className="w-5 h-5"
@@ -119,7 +87,7 @@ const TaskCard = ({ task }) => {
             />
           </svg>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

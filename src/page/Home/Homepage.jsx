@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ChevronRight, CheckCircle, MapPin, Shield, Server, Wifi, Users, Clipboard, AlertTriangle, Mail, Smartphone, Calendar, Clock } from 'lucide-react';
 import { Link,useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import {  Menu, LogOut ,User ,Bell} from "lucide-react";
+
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -70,6 +72,7 @@ const LandingPage = () => {
             className="md:hidden p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
+             <Menu size={24}  />
             {/* Hamburger icon */}
           </button>
         </div>
@@ -205,17 +208,7 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+    
     </div>
   );
 };

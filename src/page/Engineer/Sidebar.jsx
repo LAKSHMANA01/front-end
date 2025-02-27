@@ -14,9 +14,9 @@ import { useNavigate } from "react-router-dom";
 import { MdOutlinePendingActions } from 'react-icons/md';
 
 
-const Sidebar = ({ activePath = "/" }) => {
+const Sidebar = ({ activePath = "/" , isopen ,  onSidebarClose})  => {
   const UserName = sessionStorage.getItem("email") ;
-const firstName  =  UserName?.split('@')[0];
+
       
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -30,6 +30,7 @@ const firstName  =  UserName?.split('@')[0];
       if (window.innerWidth < 768) {
         setIsMobile(true);
         setIsExpanded(false);
+        setIsMobile(window.innerWidth < 768);
       } else {
         setIsMobile(false);
         setIsExpanded(false); // Initially closed on larger screens as well
@@ -41,6 +42,12 @@ const firstName  =  UserName?.split('@')[0];
     return () => window.removeEventListener("resize", handleResize);
     setIsExpanded(false)
   }, []);
+
+  const toggleSidebar = () => {
+    const newState = !isExpanded;
+    setIsExpanded(newState);
+    if (onToggle) onToggle(newState);
+  };
 
   const menuItems = [
     { path: "/engineer", icon: LayoutDashboard, label: "Dashboard" },
@@ -60,21 +67,27 @@ const firstName  =  UserName?.split('@')[0];
   return (
     <div
       className={`
-     fixed min-h-screen top-16 
-     z-10
+     fixed top-16 left-0 
+        z-50
+   
         h-[calc(100vh-4rem)] 
-        bg-white
-        transition-all duration-300 ease-in-out
-        border-r border-wh
-        ${isExpanded ? "w-64" : "w-20"}
-        shadow-xl
-        flex flex-col
+        bg-white 
+        border-r border-gray-300 
+        shadow-xl 
+        flex flex-col 
+        transition-all duration-300 ease-in-out 
+        ${isExpanded 
+          ? 'w-64 translate-x-0' 
+          : 'w-20 md:translate-x-0 -translate-x-full'
+        }
+         ${(isMobile && !isopen) ? '-translate-x-full' : 'translate-x-0'}
+
       `}
     >
       {/* Toggle Button (Hidden on Mobile) */}
       {!isMobile && (
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => setIsExpanded(!isExpanded) }
           className="absolute -right-3 top-8 bg-blue-600 text-white
             rounded-full p-1 hover:bg-blue-700 transition-colors shadow-lg"
         >
@@ -82,7 +95,7 @@ const firstName  =  UserName?.split('@')[0];
         </button>
       )}
       
-      
+     
 
       {/* Logo Section */}
       <div className="p-4 flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-800">
@@ -91,10 +104,10 @@ const firstName  =  UserName?.split('@')[0];
             className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent"
           >
-            
+           {UserName?.split('@')[0].toUpperCase()}
           </h1>
         ) : (
-          <h1 className="text-2xl font-bold text-blue-600"></h1>
+          <h1 className="text-2xl font-bold text-blue-600"> {UserName?.charAt(0).toUpperCase()}</h1>
         )}
       </div>
 
@@ -108,7 +121,15 @@ const firstName  =  UserName?.split('@')[0];
           return (
             <button
               key={item.path}
-              onClick={() =>{ navigate(item.path) , closeSidebar()}}
+              onClick={() =>{ navigate(item.path) 
+                 closeSidebar()
+                 if (isMobile && onSidebarClose) {
+                  onSidebarClose(); // Call the callback to inform parent component
+                }
+                //  toggleSidebar()
+              }}
+              
+
               className={`
                 flex items-center px-4 py-3 mb-2 w-full
                 rounded-lg transition-all duration-200
