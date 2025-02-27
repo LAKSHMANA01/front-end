@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Login from "./Login";
-import apiClient from "../../utils/apiClient";
+import apiClient from "../../utils/apiClientUser";
 import { ToastContainer, toast } from "react-toastify";
 
 // Mock the react-toastify toast functions

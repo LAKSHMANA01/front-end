@@ -47,7 +47,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import Dashbord from "./../../compoents/Dashbord";
- import apiClient from "../../utils/apiClient";
+import apiClientEngineer from "../../utils/apiClientEngineer";
+import apiClientNH from "../../utils/apiClientNH";
 import {fetchEngineerTasks,HazardsTickets} from "../../redux/Slice/EngineerSlice"
 const EngineerDashboard = ({ debouncedSearchTerm="", statusFilter="", priorityFilter="" }) => {
   
@@ -55,15 +56,14 @@ const EngineerDashboard = ({ debouncedSearchTerm="", statusFilter="", priorityFi
  
 
   const { tasks, loading, error,Hazards } = useSelector((state) => state.engineer);
-   console.log("hdjhfasd1122323sasdv", tasks)
   
    const dispatch = useDispatch();
 
    useEffect(() => {
     const fetchEngineerTasksData = async () => {
       try {
-        const response = await apiClient.get(`/tasks/engineer/${email}`);
-        dispatch(fetchEngineerTasks.fulfilled(response.data));
+        const response = await apiClientEngineer.get(`/tasks/engineer/${email}`);
+        dispatch(fetchEngineerTasks.fulfilled(response.data.tasks));
       } catch (error) {
         console.error("Error fetching engineer tasks:", error);
         dispatch(fetchEngineerTasks.rejected(error.response?.data || "Failed to fetch engineer tasks"));
@@ -72,8 +72,8 @@ const EngineerDashboard = ({ debouncedSearchTerm="", statusFilter="", priorityFi
 
     const fetchHazardsTicketsData = async () => {
       try {
-        const response = await apiClient.get(`/hazards/getAllHazards`);
-        dispatch(HazardsTickets.fulfilled(response.data));
+        const response = await apiClientNH.get(`/hazards/getAllHazards`);
+        dispatch(HazardsTickets.fulfilled(response.data.hazards));
       } catch (error) {
         console.error("Error fetching hazard tickets:", error);
         dispatch(HazardsTickets.rejected(error.response?.data || "Failed to fetch hazard tickets"));

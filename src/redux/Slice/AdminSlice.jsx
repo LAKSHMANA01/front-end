@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from 'axios';
 
-import apiClient from "../../utils/apiClient";
+import apiClientAdmin from "../../utils/apiClientAdmin"
 
 
 // Fetch all tasks
 export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await apiClient.get('/admin/tasks'); 
-    return response.data;
+    const response = await apiClientAdmin.get('/admin/tasks'); 
+    return response.data.tasks;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch tasks");
   }
@@ -16,18 +17,20 @@ export const fetchAllTasks = createAsyncThunk('admin/tasks/fetchAll', async (_, 
 // Fetch all users
 export const fetchAllUsers = createAsyncThunk('admin/users/fetchAll', async (_, { rejectWithValue }) => {
   try {
-    const response = await apiClient.get('/admin/users'); 
-    return response.data;
+    const response = await apiClientAdmin.get('/admin/users'); 
+    return response.data.users;
   } catch (error) {
     return rejectWithValue(error.response?.data || "Failed to fetch users");
   }
 });
 
 export const fetchAllApprovedEngineers = createAsyncThunk("admin/fetchAllApprovedEngineers",async (_, { rejectWithValue }) => {
-    try {
-      const response = await apiClient.get("/admin/engineers"); 
-      console.log("naveen", response.data)
-      return response.data;
+  try {
+      console.log("inside fetchallapprovedengineers")
+      const response = await apiClientAdmin.get("/admin/engineers"); 
+
+      //console.log("fetchAllApprovedEngineers", response.data.users);
+      return response.data.users;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch engineers");
     }
@@ -36,36 +39,39 @@ export const fetchAllApprovedEngineers = createAsyncThunk("admin/fetchAllApprove
 
 export const fetchAllEngineers = createAsyncThunk("admin/fetchAllEngineers", async(_, {rejectWithValue}) => {
   try{
-    const response = await apiClient.get("/admin/approval/engineers");
+    const response = await apiClientAdmin.get("/admin/approval/engineers");
     // if (!Array.isArray(response.data.approvalEngineers)) {
     //   throw new Error("Invalid data format");
     // }
-    
-    return response.data.approvalEngineers; //this approvalEngineers is from backend API
+    //console.log("fetchAllEngineers", response.data);
+    return response.data.engineers; //this approvalEngineers is from backend API
   }catch(error){
     return rejectWithValue(error.response?.data || "Failed to fetch engineers");
   }
 });
 
-export const approveEngineer = createAsyncThunk("admin/approveEngineer", async ({engineerEmail, approve},{rejectWithValue}) =>{
-  try{
-    const response = await apiClient.patch(`/admin/approve-engineer/${engineerEmail}`, 
-      {
+export const approveEngineer = createAsyncThunk(
+  "admin/approveEngineer",
+  async ({ engineerEmail, approve }, { rejectWithValue }) => {
+    try {
+      const response = await apiClientAdmin.patch(`/admin/approve-engineer/${engineerEmail}`, {
         email: engineerEmail,
-        approve
+        approve,
       });
-    return response.data;
-  }catch(error){
-    return rejectWithValue(error.response?.data || "Failed to update engineer approval");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update engineer approval");
+    }
   }
-})
+);
 
 export const fetchDeferredTasks = createAsyncThunk(
   "admin/deferredTasks/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get("/admin/status/deferred"); 
-      return response.data;
+      const response = await apiClientAdmin.get("/admin/status/deferred"); 
+      console.log(response.data);
+      return response.data.tickets;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch deferred tasks");
     }
@@ -77,7 +83,7 @@ export const fetchAvailableEngineers = createAsyncThunk(
   'tasks/fetchAvailableEngineers',
   async () => {
     try {
-      const response = await apiClient.get('/api/engineers/available');
+      const response = await apiClientAdmin.get('/api/engineers/available');
       return response.data.engineers; // array of engineers
     } catch (error) {
       throw new Error(error.response?.data?.message || error.message); 
@@ -90,7 +96,7 @@ export const reassignTicket = createAsyncThunk(
   'tasks/reassignTicket',
   async ({ ticketId, engineerId }) => {
     try {
-      const response = await apiClient.patch(`/api/reassign/${ticketId}/${engineerId}`, {}, {
+      const response = await apiClientAdmin.patch(`/api/reassign/${ticketId}/${engineerId}`, {}, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -107,7 +113,7 @@ export const fetchEngineerTasks = createAsyncThunk(
   async (engineerEmail, { rejectWithValue }) => {
     try {
       console.log("engineerEmail", engineerEmail);
-      const response = await apiClient.get(`/tasks/engineer/${engineerEmail}`); 
+      const response = await apiClientAdmin.get(`/tasks/engineer/${engineerEmail}`); 
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Error fetching tasks");

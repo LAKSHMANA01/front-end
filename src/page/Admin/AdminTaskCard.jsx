@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, AlertTriangle, User } from 'lucide-react';
-import apiClient from '../../utils/apiClient';
+import apiClient from '../../utils/apiClientAdmin';
 import { fetchDeferredTasks } from '../../redux/Slice/AdminSlice';
 import { useDispatch } from 'react-redux';
 import { ToastContainer, toast } from "react-toastify";
@@ -9,6 +9,8 @@ import { useLocation } from "react-router-dom";
 
 
 const AdminTaskCard = ({ task = {} }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentAssignee, setCurrentAssignee] = useState(task.assignee);
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
   const [availableEngineers, setAvailableEngineers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,16 +36,33 @@ const AdminTaskCard = ({ task = {} }) => {
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const currentDay = days[new Date().getDay()];
       const response = await apiClient.get(`/admin/engineers/availability/${currentDay}`);
-      if (!response) {
+      if (!response.data) {
         throw new Error('Failed to fetch engineers');
       }
 
+      const data = response.data;
+      console.log("data",data)
+      // if (data && Array.isArray(data.engineers)) {
+      //   const formattedEngineers = data.engineers.map(engineer => ({
+      //     id: engineer._id,
+      //     name: engineer.name,
+      //     email: engineer.email,t
+      
+      //     currentTasks: engineer.currentTasks,
+      //     availability: engineer.availability,
+      //     specialization: engineer.specialization,
+      //     location: engineer.location
+      //   }));
 
-      const approvedEngineers =response.data.engineers.filter(engineer => engineer.isEngineer)
+      const approvedEngineers =response.data?.engineers.filter(engineer => engineer.isEngineer)
         setAvailableEngineers(approvedEngineers);
         setError(null);
+      
+      // else {
+      //   throw new Error('Invalid data format received from server');
+      // }
     } catch (err) {
-      setError(err.message || 'Failed to fetch available engineers');
+      // setError(err.message || 'Failed to fetch available engineers');
       console.error('Error fetching engineers:', err);
     } finally {
       setLoading(false);
@@ -106,24 +125,21 @@ const AdminTaskCard = ({ task = {} }) => {
       // Show success message if needed
       // You could add a success state here if desired
       dispatch(fetchDeferredTasks()); // update diferred tasks list
-      toast.success(" Tickets reassign successfully!");
       
     } catch (err) {
       console.error('Error reassigning engineer:', err);
       setError(err.message || 'Failed to reassign engineer');
-      toast.error("Failed to reassign tickets!");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
       <div className="w-full max-w-md bg-white rounded-lg shadow ml-30 mt-10 md:ml-0">
       {/* Card Header */}
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">{task.serviceType}</h3>
+          <h3 className="text-lg font-semibold">{task.serviceType.toUpperCase()}</h3>
           <span className={getStatusStyle(task.status)}>{task.status}</span>
           <span className={getPriorityStyle(task.priority)}>{task.priority}</span>
         </div>
@@ -211,23 +227,25 @@ const AdminTaskCard = ({ task = {} }) => {
           </div>
         )}
 
-        
+        {/* Comments Section */}
+        {/* <div className="mt-4">
+          <h4 className="font-medium mb-2">Comments</h4>
+          <div className="space-y-2">
+            {comments.map((comment) => (
+              <div key={comment.id} className="bg-gray-50 p-2 rounded">
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium">{comment.author}</span>
+                  <span className="text-gray-500">
+                    {new Date(comment.timestamp).toLocaleString()}
+                  </span>
+                </div>
+                <p className="mt-1">{comment.text}</p>
+              </div>
+            ))}
+          </div>
+        </div> */}
       </div>
-      </div>
-      <div>
-        <ToastContainer 
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      </div>
-    </>
+    </div>
   );
 };
 
@@ -252,11 +270,3 @@ const getPriorityStyle = (priority) => {
 
 
 export default AdminTaskCard;
-
-
-
-
-
-
-
-

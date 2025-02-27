@@ -1,4 +1,4 @@
-import { LayoutDashboard, ClipboardList, AlertTriangle, Settings, ChevronRight, ChevronLeft, User } from "lucide-react";
+import { LayoutDashboard, ClipboardList,FileWarning,AlertTriangle, Settings, ChevronRight, ChevronLeft, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { MdDashboard } from 'react-icons/md';
@@ -21,8 +21,8 @@ const Sidebar = ({ activePath = '/', isopen, onSidebarClose }) => {
 
   const menuItems = [
     { path: '/User', icon: MdDashboard, label: 'Dashboard' },
-    { path: '/User/tickets', icon: LayoutDashboard, label: 'MyTicket' },
-    { path: '/User/RaiseTicket', icon: AlertTriangle, label: 'RaiseTickets' },
+    { path: '/User/tickets', icon: ClipboardList, label: 'MyTicket' },
+    { path: '/User/RaiseTicket', icon: FileWarning, label: 'RaiseTickets' },
     { path: '/User/UserProfile', icon: User, label: 'Profile' },
   ];
 

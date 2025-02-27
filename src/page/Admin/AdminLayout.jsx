@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import AdminSidebar from "./Sidebar";
 import AdminNavbar from "./../../compoents/Navbar";
-import Footer from "../../compoents/footers";
 
 
 const AdminLayout = () => {
@@ -22,7 +21,6 @@ const AdminLayout = () => {
         <div className="mt-7 lg:ml-20 ms:ml-0 transition-all duration-300">
           <Outlet />
         </div>
-        {/* <Footer/> */}
       </div>
   
   );

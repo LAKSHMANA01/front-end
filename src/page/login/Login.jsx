@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import apiClient from "../../utils/apiClient";
+import apiClientUser from "../../utils/apiClientUser";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { validatePassword, validateEmail } from "../../utils/validation";
@@ -65,13 +65,15 @@ function Login() {
     if (!password || !validatePassword(password)) toast.error(passwordError);
 
     try {
-      const response = await apiClient.post(`/users/checkUser`, {
+      const response = await apiClientUser.post(`/users/checkUser`, {
         email,
         password,
       });
-
+      
       if (response.data.success) {
-        const { token, email: userEmail, role } = response.data;
+        console.log(response);
+        const { token, email: userEmail, role } = response.data.user;
+        console.log("recieved token", token)
         if (!token) {
           toast.error("Login failed. Please try again.");
           return;

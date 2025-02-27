@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import apiClient from '../../utils/apiClient';
+import apiClientUser from '../../utils/apiClientUser';
+import apiClientEngineer from '../../utils/apiClientEngineer';
 
 // AsyncThunk for fetching tickets
 export const fetchTickets = createAsyncThunk(
   'tickets/fetchTickets',
   async ({ userEmail, role }) => {
     console.log(`userId inside fetchTickets ticketSlice: ${userEmail}`);
-    const response = await apiClient.get(`/tasks/${role}/${userEmail}`);
-    console.log(`response.data inside ticketSlice: ${response.data}`);
-    return response.data;
+    const response = await apiClientEngineer.get(`/tasks/${role}/${userEmail}`);
+    console.log("response.data inside ticketSlice:", response.data);
+    return response.data.tasks;
   }
 );
 
@@ -17,9 +18,9 @@ export const fetchProfile = createAsyncThunk(
   'tickets/fetchProfile',
   async ({ userEmail, role }) => {
     console.log(`userId inside fetchProfile ticketSlice: ${userEmail}`);
-    const response = await apiClient.get(`/profile/${role}/${userEmail}`);
+    const response = await apiClientUser.get(`/users/profile/${role}/${userEmail}`);
     console.log(`response.data inside profile: ${response.data}`);
-    return response.data;
+    return response.data.profile.user;
   }
 );
 
@@ -29,8 +30,8 @@ export const fetchUpdateProfile = createAsyncThunk(
   async ({ userEmail, role, updatedata }, { rejectWithValue }) => {
     console.log(`updatedata inside fetchUpdateProfile ticketSlice: ${JSON.stringify(updatedata)}`);
     try {
-      const response = await apiClient.patch(
-        `/updateProfile/${role}/${userEmail}`,
+      const response = await apiClientUser.patch(
+        `/users/updateProfile/${role}/${userEmail}`,
         updatedata,
       );
       console.log(`response.data inside fetchUpdateProfile ticketSlice: ${response.data}`);

@@ -3,7 +3,7 @@ import {
   LayoutDashboard,
   ClipboardList,
   AlertTriangle,
-
+  ShieldAlert,
   ChevronRight,
   ChevronLeft,
   User,
@@ -16,7 +16,6 @@ import { MdOutlinePendingActions } from 'react-icons/md';
 
 const Sidebar = ({ activePath = "/" , isopen ,  onSidebarClose})  => {
   const UserName = sessionStorage.getItem("email") ;
-
       
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -52,7 +51,7 @@ const Sidebar = ({ activePath = "/" , isopen ,  onSidebarClose})  => {
   const menuItems = [
     { path: "/engineer", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/engineer/assignedTasks", icon: ClipboardList, label: "Tasks" },
-    { path: "/engineer/hazards", icon: AlertTriangle, label: "Hazards" },
+    { path: "/engineer/hazards", icon: ShieldAlert, label: "Hazards" },
     { path: "/engineer/profile", icon: User, label: "Profile" },
     // { path: '/engineer/settings', icon: Settings, label: 'Settings' }
     { path: '/engineer/task/acceptance', icon:MdOutlinePendingActions, label: 'Task Acceptance' }

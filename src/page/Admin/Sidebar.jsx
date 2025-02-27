@@ -3,13 +3,17 @@ import {
   LayoutDashboard, 
   Users,
   Wrench,
+  HardHat,
   ClipboardList,
-  Settings,
+  ClipboardX,
+  FileX,
+  ShieldAlert,
   AlertTriangle,
   ChevronRight,
   ChevronLeft,
-  UserCog,
-  LogOut
+  UserCheck,
+  LogOut,
+  FileClock
 } from "lucide-react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MdOutlinePendingActions } from 'react-icons/md';
@@ -45,11 +49,11 @@ const AdminSidebar = ({ isopen , onSidebarClose}) => {
   const menuItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/tasks', icon: ClipboardList, label: 'Tasks' },
-    { path: '/admin/engineers', icon: Wrench, label: 'Engineers' },
-    { path: '/admin/engineer-approval', icon: UserCog, label: 'EngineersApproval' },
+    { path: '/admin/engineers', icon: HardHat, label: 'Engineers' },
+    { path: '/admin/engineer-approval', icon: UserCheck, label: 'EngineersApproval' },
     { path: '/admin/users', icon: Users, label: 'Users' },
-    { path: '/admin/hazards', icon:AlertTriangle, label: 'Hazards' },
-    { path: '/admin/deferred', icon:MdOutlinePendingActions, label: 'Deferred Tasks' }
+    { path: '/admin/hazards', icon:ShieldAlert, label: 'Hazards' },
+    { path: '/admin/deferred', icon:FileX, label: 'Deferred Tasks' }
   ];
 
   // Determine active menu item
@@ -90,6 +94,7 @@ const AdminSidebar = ({ isopen , onSidebarClose}) => {
     >
       {/* Toggle Button */}
       <button
+        data-testid="toggle-sidebar"
         onClick={toggleSidebar}
         className="absolute -right-3 top-8 bg-blue-500 text-white 
           rounded-full p-2 hover:bg-blue-600 transition-colors 
@@ -99,7 +104,7 @@ const AdminSidebar = ({ isopen , onSidebarClose}) => {
       </button>
 
       {/* Logo Section */}
-      <div className="p-4 flex items-center justify-center h-16 border-b border-gray-300 ">
+      <div className="p-4 flex items-center justify-center h-16 border-b border-gray-300">
         {isExpanded ? (
           <h1 className="text-2xl font-bold text-blue-600">
             Admin Panel
@@ -118,6 +123,7 @@ const AdminSidebar = ({ isopen , onSidebarClose}) => {
               <button
                 key={item.path}
                 onClick={() =>{ handleNavigation(item.path), closeSidebar()}}
+                title={item.label}
                 className={`
                   flex items-center px-4 py-3 w-full rounded-lg 
                   transition-all duration-200
