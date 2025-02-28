@@ -82,7 +82,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white p-8">
+    <div className="min-h-screen  from-blue-50 to-white p-8">
       <EngineerNavbar/>
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">

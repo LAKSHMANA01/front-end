@@ -98,7 +98,7 @@ const AdminHazards = () => {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+      <div className="bg-white p-6 rounded-lg shadow-md mb-3">
        
         <input
           type="text"
@@ -106,10 +106,10 @@ const AdminHazards = () => {
         
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-20"
+          className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500  mb-10"
           />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
           {filteredTasks.length > 0 ? (
             filteredTasks.map((ticket) => (
               <div

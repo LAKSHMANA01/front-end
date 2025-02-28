@@ -39,12 +39,7 @@ const AdminLayout = () => {
 
           {/* Scrollable Content Area */}
           <div
-            className={`
-              flex-1 overflow-y-auto p-4 transition-all duration-300
-             dark:bg-gray-900
-              ${isSidebarExpanded ? 'ml-[50px]' : 'ml-[53px]'}  /* Adjust these values to match your Sidebar widths */
-              ms:ml-40   /* On medium/small screens, remove the margin to overlay content */
-            `}
+           className="flex-1 mt-10 ml-10 md:ml-10 transition-all duration-300 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6"
           > 
             <Outlet />
           </div>

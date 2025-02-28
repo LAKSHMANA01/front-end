@@ -269,45 +269,52 @@
 // export default Dashboard;
 import React from "react";
 import {
-  FaBox,
+  FaTasks,
   FaMapPin,
   FaRegClock,
   FaUserCog,
   FaUsers,
+  FaBox,
+  FaUserPlus,
+  FaClipboardList,
+  FaCheckDouble,
+  FaFileAlt,
+  FaClipboard,
+  FaClipboardCheck,
 } from "react-icons/fa";
 import { Bar,Pie } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement,ArcElement, Title, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement,ArcElement, Title, Tooltip } from "chart.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Card from "./Card";
 import { data } from "react-router-dom";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement,ArcElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement,ArcElement, Title, Tooltip);
 
 const Dashboard = ({ ticketStatusData, taskPriorityData,data }) => {
   const role = sessionStorage.getItem("role");
 
   const getCardConfig = (role) => {
-    const { openTickets=[],allTasks=[],failedTasks=[], allEngineers=[], resolvedTickets=[], approvedEngineers=[],completedTasks=[],pendingTasks=[],totalTasks=[],activeEngineers=[],allHazards=[]} = data;
+    const { openTickets=[],allTasks=[],failedTasks=[],inprogressTasks=[], allEngineers=[], resolvedTickets=[], approvedEngineers=[],completedTasks=[],pendingTasks=[],totalTasks=[],activeEngineers=[],allHazards=[]} = data;
     console.log("data",data)
     const cardData = {
       user: [
-        { icon: <FaMapPin />, title: "Total Tickets", value: totalTasks?.length },
+        { icon: < FaTasks/>, title: "Total Tickets", value: totalTasks?.length },
         { icon: <FaBox />, title: "Completed Tickets", value: completedTasks?.length },
-        { icon: <FaRegClock />, title: "Pending Tickets", value: pendingTasks?.length },
+        { icon: <FaRegClock />, title: "Pending Tickets", value: totalTasks?.length+inprogressTasks?.length },
         { icon: <FaUserCog />, title: "Failed Tickets", value: failedTasks?.length },
       ],
       engineer: [
         { icon: <FaBox />, title: "My Active Tickets", value: allTasks?.length },
-        { icon: <FaRegClock />, title: "Pending Tickets", value: allEngineers?.length },
+        { icon: <FaRegClock />, title: "Pending Tickets", value: allTasks?.length+inprogressTasks?.length },
         { icon: <FaMapPin />, title: "Completed Tickets", value: resolvedTickets?.length },
         { icon: <FaUsers />, title: "All Hazards", value: allHazards?.length },
       ],
       admin: [
-        { icon: <FaBox />, title: "Open Tickets", value: openTickets?.length },
-        { icon: <FaMapPin />, title: "Resolved Tickets", value: resolvedTickets?.length},
-        { icon: <FaRegClock />, title: "New Engineers", value: allEngineers?.length-approvedEngineers?.length  },
-        { icon: <FaUserCog />, title: "Approved Engineers", value: approvedEngineers?.length },
+        { icon: <FaClipboard />, title: "Open Tickets", value: openTickets?.length },
+        { icon: <FaClipboardCheck/>, title: "Resolved Tickets", value: resolvedTickets?.length},
+        { icon: <FaUserPlus />, title: "New Engineers", value: allEngineers?.length-approvedEngineers?.length  },
+        { icon: <FaUsers/>, title: "Approved Engineers", value: approvedEngineers?.length },
       ],
     };
     return cardData[role] || [];
@@ -317,8 +324,7 @@ const Dashboard = ({ ticketStatusData, taskPriorityData,data }) => {
 
   return (
     <div className="grow p-6 dark:bg-gray-900 dark:text-white">
-     <h1 className=' font-bold bg-white rounded-md  justify-start text-2xl  w-full h-50  p-3 mb-6'>  DashBoard  </h1>
-
+       <h1 className=' font-bold bg-white rounded-md  justify-start text-2xl  w-full h-50  p-3 mb-6'> Dashboard  </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {cardConfig.length > 0 ? cardConfig.map((card, index) => <Card key={index} icon={card.icon} title={card.title} value={card.value} />) : <p>No data available</p>}
       </div>
