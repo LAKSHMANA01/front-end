@@ -30,7 +30,7 @@ const AdminLayout = () => {
        
 
         {/* Main Content Area */}
-        <div className="flex flex-1 mt-16 relative">
+        <div className="flex flex-1 mt-14 relative">
           {/* Fixed Sidebar */}
           <Sidebar 
             isExpanded={isSidebarExpanded} 
@@ -39,7 +39,7 @@ const AdminLayout = () => {
 
           {/* Scrollable Content Area */}
           <div
-           className="flex-1 mt-10 ml-10 md:ml-10 transition-all duration-300 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6"
+           className="flex-1 mt-4 md:ml-10 transition-all duration-300 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6"
           > 
             <Outlet />
           </div>

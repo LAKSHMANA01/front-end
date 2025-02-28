@@ -36,8 +36,13 @@ const AdminEngineerApproval = () => {
   if (!Array.isArray(engineers) || engineers.length === 0) return <p className="text-center text-gray-500">No engineers available.</p>;
 
   return (
-    <div className="p-4 mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="p-4 mt-20 ">
+    {/* <AdminNavbar /> */}
+    
+    <h1 className="font-bold bg-white rounded-md text-2xl w-full h-50 p-3 ">Pending Engineer Approvals</h1>
+    <div className="p-4 mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-0">
       {/* <AdminNavbar /> */}
+
       {engineers.map((engineer) => (
         <div
           key={engineer._id}
@@ -73,6 +78,7 @@ const AdminEngineerApproval = () => {
           </div>
         </div>
       ))}
+    </div>
     </div>
   );
 };

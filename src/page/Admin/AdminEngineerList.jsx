@@ -41,10 +41,12 @@ const AdminEngineerList = () => {
   });
 
   return (
-    <div className="p-4 mt-20">
-   
+    <div className="p-4 mt-20 bg-gray 100">
+      
+      <h1 className="font-bold bg-white rounded-md text-2xl w-full p-3 mb-6">Approved Engineers</h1>
 
       <div className="relative mb-6">
+        
         <input
           type="text"
           placeholder="Search engineers by name..."

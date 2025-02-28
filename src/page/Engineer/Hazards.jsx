@@ -187,34 +187,44 @@ const EngineerDashboard = () => {
         </div>
       )}
 
-      {isUpdateModalOpen && selectedTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-sm p-6">
-            <div className="flex justify-between">
-              <h2 className="text-xl font-bold">Update Hazard</h2>
-              <button onClick={() => setIsUpdateModalOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
-            </div>
+{isUpdateModalOpen && selectedTask && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4">
+    <div className="bg-white rounded-lg w-full max-w-lg p-3">
+      <div className="flex justify-between">
+        <h2 className="text-lg font-bold">Update Hazard</h2>
+        <button onClick={() => setIsUpdateModalOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+      </div>
 
-            <form onSubmit={handleUpdateSubmit} className="mt-4 space-y-4">
-              <input type="text" name="hazardType" value={updateFormData.hazardType} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Hazard Type" required />
-              <textarea name="description" value={updateFormData.description} onChange={handleInputChange} rows="3" className="w-full p-2 border rounded" placeholder="Description" required />
-              <select name="riskLevel" value={updateFormData.riskLevel} onChange={handleInputChange} className="w-full p-2 border rounded" required>
-                <option value="">Select Risk Level</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-              <input type="text" name="address" value={updateFormData.address} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Address" required />
-              <input type="text" name="pincode" value={updateFormData.pincode} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Pincode" required />
+      <form onSubmit={handleUpdateSubmit} className="mt-1 ">
+        <label>Hazard Type</label>
+        <input type="text" name="hazardType" value={updateFormData.hazardType} onChange={handleInputChange} className="w-full p-2 border rounded" required />
 
-              <div className="flex justify-end gap-2">
-                <button type="button" onClick={() => setIsUpdateModalOpen(false)} className="px-4 py-2 border rounded">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Update</button>
-              </div>
-            </form>
-          </div>
+        <label>Description</label>
+        <textarea name="description" value={updateFormData.description} onChange={handleInputChange} rows="2" className="w-full p-2 border rounded" required />
+
+        <label>Risk Level</label>
+        <select name="riskLevel" value={updateFormData.riskLevel} onChange={handleInputChange} className="w-full p-2 border rounded" required>
+          <option value="">Select Risk Level</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+
+        <label>Address</label>
+        <input type="text" name="address" value={updateFormData.address} onChange={handleInputChange} className="w-full p-2 border rounded" required />
+
+        <label>Pincode</label>
+        <input type="text" name="pincode" value={updateFormData.pincode} onChange={handleInputChange} className="w-full p-2 border rounded" required />
+
+        <div className="flex justify-end gap-2">
+          <button type="button" onClick={() => setIsUpdateModalOpen(false)} className="px-4 py-2 border rounded">Cancel</button>
+          <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">Update</button>
         </div>
-      )}
+      </form>
+    </div>
+  </div>
+)}
+
        <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </div>
   );

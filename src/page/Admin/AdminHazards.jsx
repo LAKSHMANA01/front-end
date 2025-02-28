@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { HazardsTickets ,HazardsUpdateTickets, HazardsDeleteTickets} from '../../redux/Slice/EngineerSlice';
-import { Link, useNavigate} from 'react-router-dom';
+import { HazardsTickets, HazardsUpdateTickets, HazardsDeleteTickets } from '../../redux/Slice/EngineerSlice';
+import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -30,10 +30,10 @@ const AdminHazards = () => {
   useEffect(() => {
     dispatch(HazardsTickets({})); // Fetch hazard tickets on mount
   }, [dispatch]);
-  
+
   useEffect(() => {
     setFilteredTasks(Hazards.filter((task) => task.pincode.toLowerCase().includes(searchTerm.toLowerCase())));
-  }, [searchTerm,  Hazards]);
+  }, [searchTerm, Hazards]);
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
@@ -43,7 +43,7 @@ const AdminHazards = () => {
   const handleUpdateClick = (task) => {
     setSelectedTask(task);
     setUpdateFormData({
-      _id:task._id,
+      _id: task._id,
       hazardType: task.hazardType,
       description: task.description,
       riskLevel: task.riskLevel,
@@ -54,20 +54,20 @@ const AdminHazards = () => {
     setIsModalOpen(false);
   };
 
- const handleDeleteClick = (task)=>{
-  
-   setIsUpdateModalOpen(false)
-   console.log("deleted Hazards submitted:", task._id);
-   dispatch(HazardsDeleteTickets(task._id))
-   toast.success("Hazards deleted successfully!");
- }
- 
+  const handleDeleteClick = (task) => {
+
+    setIsUpdateModalOpen(false)
+    console.log("deleted Hazards submitted:", task._id);
+    dispatch(HazardsDeleteTickets(task._id))
+    toast.success("Hazards deleted successfully!");
+  }
+
   const handleUpdateSubmit = (e) => {
     e.preventDefault();
     setIsUpdateModalOpen(false);
     // console.log("update Hazards submitted:", updateFormData);
-  dispatch(HazardsUpdateTickets(updateFormData))
-    
+    dispatch(HazardsUpdateTickets(updateFormData))
+
   };
 
   const handleInputChange = (e) => {
@@ -78,11 +78,11 @@ const AdminHazards = () => {
     }));
   };
 
-  const getHazardStyles = (level) =>{
+  const getHazardStyles = (level) => {
     const styles = {
       low: 'bg-yellow-200',
-      medium : 'bg-orange-200',
-      high : 'bg-red-200'
+      medium: 'bg-orange-200',
+      high: 'bg-red-200'
     }
     return styles[level] || "bg-gray-200";
   }
@@ -99,15 +99,15 @@ const AdminHazards = () => {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-3">
-       
+
         <input
           type="text"
           placeholder="Search by hazard type"
-        
+
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500  mb-10"
-          />
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
           {filteredTasks.length > 0 ? (
@@ -117,7 +117,7 @@ const AdminHazards = () => {
                 //style={{backgroundColor : getHazardStyles(ticket.riskLevel)}}
                 className={`border p-4 rounded-lg cursor-pointer hover:shadow-md transition ${getHazardStyles(ticket.riskLevel)}`}
                 onClick={() => handleTaskClick(ticket)}
-                //className="border p-4 rounded-lg cursor-pointer hover:shadow-md transition"
+              //className="border p-4 rounded-lg cursor-pointer hover:shadow-md transition"
               >
                 <h3 className="font-bold">Harzard : {ticket.hazardType}</h3>
                 <p className='break-words whitespace-normal overflow-hidden text-ellipsis max-h-20'>
@@ -147,7 +147,7 @@ const AdminHazards = () => {
                   // selectedTask.riskLevel === 'High' ? 'bg-red-100 text-red-800' :
                   // selectedTask.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
                   // 'bg-green-100 text-green-800'
-                }`}>
+                  }`}>
                   {selectedTask.riskLevel}
                 </span>
               </div>
@@ -166,31 +166,40 @@ const AdminHazards = () => {
 
             <div className="flex justify-between mt-6">
               <button onClick={() => handleUpdateClick(selectedTask)} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Update</button>
-              <button onClick={()=>handleDeleteClick(selectedTask)} className="bg-red-500 text-white px-4 py-2 rounded-lg">Delete</button>
+              <button onClick={() => handleDeleteClick(selectedTask)} className="bg-red-500 text-white px-4 py-2 rounded-lg">Delete</button>
             </div>
           </div>
         </div>
       )}
 
       {isUpdateModalOpen && selectedTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-sm p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-lg p-3">
             <div className="flex justify-between">
-              <h2 className="text-xl font-bold">Update Hazard</h2>
+              <h2 className="text-lg font-bold">Update Hazard</h2>
               <button onClick={() => setIsUpdateModalOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
             </div>
 
-            <form onSubmit={handleUpdateSubmit} className="mt-4 space-y-4">
-              <input type="text" name="hazardType" value={updateFormData.hazardType} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Hazard Type" required />
-              <textarea name="description" value={updateFormData.description} onChange={handleInputChange} rows="3" className="w-full p-2 border rounded" placeholder="Description" required />
+            <form onSubmit={handleUpdateSubmit} className="mt-1 ">
+              <label>Hazard Type:</label>
+              <input type="text" name="hazardType" value={updateFormData.hazardType} onChange={handleInputChange} className="w-full p-2 border rounded" required />
+
+              <label>Description:</label>
+              <textarea name="description" value={updateFormData.description} onChange={handleInputChange} rows="2" className="w-full p-2 border rounded" required />
+
+              <label>Risk Level:</label>
               <select name="riskLevel" value={updateFormData.riskLevel} onChange={handleInputChange} className="w-full p-2 border rounded" required>
                 <option value="">Select Risk Level</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
               </select>
-              <input type="text" name="address" value={updateFormData.address} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Address" required />
-              <input type="text" name="pincode" value={updateFormData.pincode} onChange={handleInputChange} className="w-full p-2 border rounded" placeholder="Pincode" required />
+
+              <label>Address:</label>
+              <input type="text" name="address" value={updateFormData.address} onChange={handleInputChange} className="w-full p-2 border rounded" required />
+
+              <label>Pincode:</label>
+              <input type="text" name="pincode" value={updateFormData.pincode} onChange={handleInputChange} className="w-full p-2 border rounded" required />
 
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setIsUpdateModalOpen(false)} className="px-4 py-2 border rounded">Cancel</button>
@@ -200,7 +209,7 @@ const AdminHazards = () => {
           </div>
         </div>
       )}
-       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
     </div>
   );
 

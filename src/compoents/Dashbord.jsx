@@ -276,11 +276,12 @@ import {
   FaUsers,
   FaBox,
   FaUserPlus,
-  FaClipboardList,
-  FaCheckDouble,
-  FaFileAlt,
   FaClipboard,
   FaClipboardCheck,
+  FaShieldAlt,
+  FaClipboardList,
+  FaBug,
+  FaBan,
 } from "react-icons/fa";
 import { Bar,Pie } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement,ArcElement, Title, Tooltip } from "chart.js";
@@ -299,16 +300,16 @@ const Dashboard = ({ ticketStatusData, taskPriorityData,data }) => {
     console.log("data",data)
     const cardData = {
       user: [
-        { icon: < FaTasks/>, title: "Total Tickets", value: totalTasks?.length },
-        { icon: <FaBox />, title: "Completed Tickets", value: completedTasks?.length },
+        { icon: < FaClipboardList/>, title: "Total Tickets", value: totalTasks?.length },
+        { icon: <FaClipboardCheck />, title: "Completed Tickets", value: completedTasks?.length },
         { icon: <FaRegClock />, title: "Pending Tickets", value: totalTasks?.length+inprogressTasks?.length },
-        { icon: <FaUserCog />, title: "Failed Tickets", value: failedTasks?.length },
+        { icon: <FaBan />, title: "Failed Tickets", value: failedTasks?.length },
       ],
       engineer: [
-        { icon: <FaBox />, title: "My Active Tickets", value: allTasks?.length },
+        { icon: <FaClipboard />, title: "My Active Tickets", value: allTasks?.length },
         { icon: <FaRegClock />, title: "Pending Tickets", value: allTasks?.length+inprogressTasks?.length },
-        { icon: <FaMapPin />, title: "Completed Tickets", value: resolvedTickets?.length },
-        { icon: <FaUsers />, title: "All Hazards", value: allHazards?.length },
+        { icon: <FaClipboardCheck />, title: "Completed Tickets", value: resolvedTickets?.length },
+        { icon: <FaShieldAlt />, title: "All Hazards", value: allHazards?.length },
       ],
       admin: [
         { icon: <FaClipboard />, title: "Open Tickets", value: openTickets?.length },

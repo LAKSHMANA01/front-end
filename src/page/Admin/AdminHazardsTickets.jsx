@@ -203,6 +203,9 @@ const TicketForm = () => {
     <CustomCard title="Add New Hazards" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Hazard Type
+          </label>
           <input
             type="text"
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -215,6 +218,9 @@ const TicketForm = () => {
           />
         </div>
         <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+            Address
+          </label>
           <input
             type="text"
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -261,7 +267,7 @@ const TicketForm = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Enter Pin Code
+            Enter Pincode
           </label>
           <input
             type="text"
