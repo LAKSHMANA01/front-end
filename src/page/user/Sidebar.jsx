@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { MdDashboard } from 'react-icons/md';
 
-
-const Sidebar = ({ activePath = '/' }) => {
-const UserName = sessionStorage.getItem("email") ;
-const firstName  =  UserName?.split('@')[0];
+const Sidebar = ({ activePath = '/', isopen, onSidebarClose }) => {
+  const UserName = sessionStorage.getItem("email");
+  const firstName = UserName?.split('@')[0];
   const [isExpanded, setIsExpanded] = useState(true);
 
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
 
   // Retrieve the state from local storage when the component mounts
   useEffect(() => {
@@ -29,21 +29,49 @@ const firstName  =  UserName?.split('@')[0];
   const isActive = (path) => activePath === path;
 
   const handleNavigation = (path) => {
+    // Close sidebar when navigating to a new page
     navigate(path);
+    
+    if (isMobile && onSidebarClose) {
+      onSidebarClose();
+    }
+    
+    // Always close sidebar on menu click (for both mobile and desktop)
+    if (isMobile) {
+      closeSidebar();
+    }
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    handleResize(); // Set initial value
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleSidebar = () => {
     const newState = !isExpanded;
     setIsExpanded(newState);
     localStorage.setItem('isSidebarExpanded', JSON.stringify(newState));
   };
-  const closeSidebar = () => setIsExpanded(false);
+
+  const closeSidebar = () => {
+    setIsExpanded(false);
+    if (onSidebarClose) {
+      onSidebarClose();
+    }
+  };
+
   return (
     <div
       className={`
         fixed min-h-screen top-16 left-0 z-40 bg-white dark:bg-gray-900
         transition-all duration-300 ease-in-out border-r border-gray-200 dark:border-gray-800
         ${isExpanded ? 'w-64' : 'w-20'} shadow-lg 
+        ${(isMobile && !isopen) ? '-translate-x-full' : 'translate-x-0'}
       `}
     >
       {/* Toggle Button */}
@@ -51,7 +79,7 @@ const firstName  =  UserName?.split('@')[0];
         onClick={toggleSidebar}
         className="absolute -right-3 top-8 bg-blue-600 text-white
           rounded-full p-1 hover:bg-blue-700 transition-colors
-          shadow-lg md:block sm:ml-[100px]"
+          shadow-lg  hidden md:block sm:ml-[100px]"
       >
         {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>
@@ -61,10 +89,10 @@ const firstName  =  UserName?.split('@')[0];
         {isExpanded ? (
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent">
-       {firstName}
+            {firstName}
           </h1>
         ) : (
-          <h1 className="text-2xl font-bold text-blue-600">{firstName.charAt(0).toUpperCase()}</h1>
+          <h1 className="text-2xl font-bold text-blue-600">{firstName?.charAt(0).toUpperCase()}</h1>
         )}
       </div>
 
@@ -75,8 +103,7 @@ const firstName  =  UserName?.split('@')[0];
           return (
             <button
               key={item.path}
-              onClick={() => {handleNavigation(item.path) ,closeSidebar()}}
-              title={item.label}
+              onClick={() => handleNavigation(item.path)}
               className={`
                 flex items-center px-4 py-3 mb-2 w-full rounded-lg transition-all duration-200
                 ${active ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-800'}
@@ -95,9 +122,9 @@ const firstName  =  UserName?.split('@')[0];
                   {item.label}
                 </span>
               )}
-              <div className="absolute left-1/3 transform -translate-x-1/4 mt-2 w-20 bg-white dark:bg-gray-800 text-center text-sm font-medium text-gray-700 dark:text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity sm:hidden">
+              {/* <div className="absolute left-1/3 transform -translate-x-1/4 mt-2 w-20 bg-white dark:bg-gray-800 text-center text-sm font-medium text-gray-700 dark:text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity sm:hidden">
                 {item.label}
-              </div>
+              </div> */}
             </button>
           );
         })}

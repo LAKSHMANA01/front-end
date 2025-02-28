@@ -9,6 +9,11 @@ import Navbar from './Navbar';
 const AdminLayout = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [sidebarvisble, SetSidebarvisble] = useState(false);
+
+  const  toggleSidebar = () => {
+    SetSidebarvisble(!sidebarvisble);
+  }
 
   // Handle scroll event
   const handleScroll = () => {
@@ -26,20 +31,27 @@ const AdminLayout = () => {
  
       <div className="flex flex-col h-screen">
         {/* Fixed Navbar */}
-        <Navbar />
+        <Navbar  toggleSidebar={ toggleSidebar}/>
        
 
         {/* Main Content Area */}
         <div className="flex flex-1 mt-14 relative">
           {/* Fixed Sidebar */}
           <Sidebar 
+          isopen = { sidebarvisble}
+          onSidebarClose= {() => SetSidebarvisble(false)}
             isExpanded={isSidebarExpanded} 
             setIsExpanded={setIsSidebarExpanded} 
           />
 
           {/* Scrollable Content Area */}
           <div
-           className="flex-1 mt-4 md:ml-10 transition-all duration-300 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6"
+            className={`
+              flex-1 overflow-y-auto p-4 transition-all duration-300
+             dark:bg-gray-900
+              ${isSidebarExpanded ? 'ml-[50px]' : 'ml-[53px]'}  /* Adjust these values to match your Sidebar widths */
+              ml-2  lg:ml-14 /* On medium/small screens, remove the margin to overlay content */
+            `}
           > 
             <Outlet />
           </div>

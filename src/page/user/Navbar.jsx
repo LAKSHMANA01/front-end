@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
          
 
 
-const Navbar = () => {
+const Navbar = ({ toggleSidebar}) => {
  
    const [isProfileOpen, setIsProfileOpen] = useState(false);
    const userName = sessionStorage.getItem("email") || "";
@@ -26,7 +26,7 @@ const Navbar = () => {
               bg-clip-text text-transparent hidden sm:block md:block">
               Telecom Services
         </h1>
-        <button className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+        <button className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" onClick={toggleSidebar}>
           <Menu size={24} />
         </button>
       </div>
