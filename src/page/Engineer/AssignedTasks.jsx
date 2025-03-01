@@ -20,11 +20,12 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
 
     useEffect(() => {
         // if (user?.email) {
-        //     console.log('inside atjsx -', user.email);
+            const email=sessionStorage.getItem('email')
+            console.log('inside atjsx -', email);
         //     dispatch(fetchEngineerTasks(user.email));
         // }
-        dispatch(fetchEngineerTasks(user.email))
-    }, [user?.email, user.role, dispatch]);
+        dispatch(fetchEngineerTasks(email))
+    }, [dispatch]);
 
     useEffect(() => {
         console.log("tasks:", tasks);
@@ -192,10 +193,11 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
 /* Utility functions for status & priority styles */
 const getStatusStyle = (status) => {
     switch (status) {
-        case 'open': return 'bg-green-200 text-green-700';
-        case 'in-progress': return 'bg-yellow-200 text-yellow-700';
+        case 'open': return 'bg-yellow-200 text-yellow-700';
+        case 'in-progress': return 'bg-blue-200 text-blue-700';
         case 'deferred': return 'bg-gray-300 text-gray-800';
-        case 'closed': return 'bg-red-200 text-red-700';
+        case 'completed': return 'bg-green-200 text-green-700';
+        case 'failed': return 'bg-red-200 text-red-700';
         default: return 'bg-gray-200 text-gray-800';
     }
 };
