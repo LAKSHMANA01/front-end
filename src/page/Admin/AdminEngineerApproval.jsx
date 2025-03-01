@@ -1,15 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllEngineers, fetchAllApprovedEngineers, approveEngineer } from "../../redux/Slice/AdminSlice";
-import AdminNavbar from "./NavBar";
 import Loading from "../../compoents/Loadingpage";
-import { useNavigate } from "react-router-dom";
 
 const AdminEngineerApproval = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
   const { engineers = [], loading, error } = useSelector((state) => state.admin);
-  const { role } = useSelector((state) => state.auth.user);
 
   // Redirect if not an admin
   // useEffect(() => {
@@ -32,15 +28,13 @@ const AdminEngineerApproval = () => {
   };
 
   if (loading) return <div className="text-center text-gray-500"><Loading /></div>;
-  if (error) return <div className="text-center text-red-500">Error: {error}</div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
   if (!Array.isArray(engineers) || engineers.length === 0) return <p className="text-center text-gray-500">No engineers available.</p>;
 
   return (
-    <div className="p-4 mt-20 ">
-    {/* <AdminNavbar /> */}
     
-    <h1 className="font-bold bg-white rounded-md text-2xl w-full h-50 p-3 ">Pending Engineer Approvals</h1>
-    <div className="p-4 mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-0">
+    <div className="p-4 mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      
       {/* <AdminNavbar /> */}
 
       {engineers.map((engineer) => (
@@ -78,7 +72,6 @@ const AdminEngineerApproval = () => {
           </div>
         </div>
       ))}
-    </div>
     </div>
   );
 };

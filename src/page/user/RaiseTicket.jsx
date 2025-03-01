@@ -23,12 +23,13 @@ const TicketForm = () => {
   const Raisetickets = useSelector((state) => state.Raisetickets);
   const user = useSelector((state) => state.auth.user);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log("djabfkalnsdlmfasdfasdf", email)
-  if (!email) {
-    toast.error("User email not found!");
-    return;
+  const handleSubmit = async (e) => {
+    const email = sessionStorage.getItem('email');
+    e.preventDefault();
+    console.log("djabfkalnsdlmfasdfasdf", email)
+    if (!email) {
+      toast.error("User email not found!");
+      return;
   }
 
   try {

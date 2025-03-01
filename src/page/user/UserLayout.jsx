@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 
 
 
-const AdminLayout = () => {
+const UserLayout = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [sidebarvisble, SetSidebarvisble] = useState(false);
@@ -61,5 +61,5 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default UserLayout;
 //mt-10 ml-50 md:ml-20 transition-all duration-300 change width transition here transition

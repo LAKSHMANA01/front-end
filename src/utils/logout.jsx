@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "./apiClient";
+import apiClientUser from "./apiClientUser";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -9,7 +9,7 @@ const Logout = () => {
 
   const handleLogout = useCallback(async () => {
     try {
-      await apiClient.post("/users/logout");
+      // await apiClientUser.post("/users/logout");
 
       // Clear both sessionStorage & localStorage
       ["token", "role", "email"].forEach((item) => {

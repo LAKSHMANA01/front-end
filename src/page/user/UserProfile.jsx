@@ -106,7 +106,7 @@ const UserProfile = () => {
                   value={user.name}
                   icon={<User className="w-5 h-5" />}
                 />
-                <ProfileField
+                  <ProfileField
                   label="Email"
                   value={user.email}
                   icon={<Mail className="w-5 h-5" />}

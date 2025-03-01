@@ -94,6 +94,7 @@ const AdminSidebar = ({ isopen , onSidebarClose}) => {
     >
       {/* Toggle Button */}
       <button
+        data-testid="toggle-sidebar"
         onClick={toggleSidebar}
         className="absolute -right-3 top-8 bg-blue-500 text-white 
           rounded-full p-2 hover:bg-blue-600 transition-colors 
@@ -103,7 +104,7 @@ const AdminSidebar = ({ isopen , onSidebarClose}) => {
       </button>
 
       {/* Logo Section */}
-      <div className="p-4 flex items-center justify-center h-16 border-b border-gray-300 ">
+      <div className="p-4 flex items-center justify-center h-16 border-b border-gray-300">
         {isExpanded ? (
           <h1 className="text-2xl font-bold text-blue-600">
             Admin Panel
