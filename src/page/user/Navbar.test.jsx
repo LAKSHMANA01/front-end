@@ -1,44 +1,129 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom'; // For additional jest matchers
 import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
 import Navbar from './Navbar';
 
-// Mock lucide-react icons
-jest.mock('lucide-react', () => ({
-  Bell: () => <div data-testid="bell-icon">Bell Icon</div>,
-  Search: () => <div data-testid="search-icon">Search Icon</div>,
-  Sun: () => <div data-testid="sun-icon">Sun Icon</div>,
-  Moon: () => <div data-testid="moon-icon">Moon Icon</div>,
-  Menu: () => <div data-testid="menu-icon">Menu Icon</div>,
-  LogOut: () => <div data-testid="logout-icon">Logout Icon</div>
-}));
+describe('Navbar component tests', () => {
+  let toggleSidebarMock;
+  let consoleLogSpy;
 
-const mockStore = configureStore([]);
-let store; // Define store globally
+  beforeEach(() => {
+    // Mock the sidebar toggle function
+    toggleSidebarMock = jest.fn();
 
-beforeEach(() => {
-  store = mockStore({
-    auth: {
-      user: { email: "test@example.com" }
-    }
+    // Mock console.log to track calls
+    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    // Clear sessionStorage before each test
+    sessionStorage.clear();
   });
 
-  // Mock sessionStorage
-  Storage.prototype.getItem = jest.fn(() => "test@example.com");
-});
+  afterEach(() => {
+    // Restore original console.log
+    consoleLogSpy.mockRestore();
+  });
 
-test('renders navbar with all icons', () => {
-  render(
-    <Provider store={store}>
+  test('renders Telecom Services text and logs username from sessionStorage', () => {
+    // By default, sessionStorage is empty => userName = ""
+    render(
       <BrowserRouter>
-        <Navbar />
+        <Navbar toggleSidebar={toggleSidebarMock} />
       </BrowserRouter>
-    </Provider>
-  );
+    );
 
-  expect(screen.getByTestId('menu-icon')).toBeInTheDocument();
-  expect(screen.getByTestId('search-icon')).toBeInTheDocument();
-  expect(screen.getByTestId('bell-icon')).toBeInTheDocument();
+    // Check the header text
+    expect(screen.getByText(/telecom services/i)).toBeInTheDocument();
+
+    // Check console.log for " userName: "
+    expect(consoleLogSpy).toHaveBeenCalledWith(' userName: ');
+  });
+
+  test('shows "Guest" when no user is in sessionStorage', () => {
+    render(
+      <BrowserRouter>
+        <Navbar toggleSidebar={toggleSidebarMock} />
+      </BrowserRouter>
+    );
+
+    // Guest should appear if no email in sessionStorage
+    expect(screen.getByText('Guest')).toBeInTheDocument();
+  });
+
+  test('shows user name when user is in sessionStorage', () => {
+    sessionStorage.setItem('email', 'testuser@example.com');
+
+    render(
+      <BrowserRouter>
+        <Navbar toggleSidebar={toggleSidebarMock} />
+      </BrowserRouter>
+    );
+
+    // The userName is derived by splitting at '@' -> "testuser"
+    expect(screen.getByText('testuser')).toBeInTheDocument();
+    // Check console.log for the stored user
+    expect(consoleLogSpy).toHaveBeenCalledWith(' userName: testuser@example.com');
+  });
+
+  test('calls toggleSidebar when menu button is clicked', () => {
+    render(
+      <BrowserRouter>
+        <Navbar toggleSidebar={toggleSidebarMock} />
+      </BrowserRouter>
+    );
+
+    // The menu button uses the <Menu> icon. 
+    // For accessibility, add an aria-label or test by role if needed:
+    // e.g. <button aria-label="Toggle sidebar" ...>
+    const menuButton = screen.getByRole('button', { hidden: true }); 
+    // Using { hidden: true } helps find elements without explicit text/label.
+    
+    fireEvent.click(menuButton);
+    expect(toggleSidebarMock).toHaveBeenCalledTimes(1);
+  });
+
+  test('toggles profile dropdown when the user icon is clicked', () => {
+    render(
+      <BrowserRouter>
+        <Navbar toggleSidebar={toggleSidebarMock} />
+      </BrowserRouter>
+    );
+
+    // Initially, "Logout" should not be in the document
+    expect(screen.queryByText(/logout/i)).not.toBeInTheDocument();
+
+    // Click the profile button
+    const profileButton = screen.getByText('Guest');
+    fireEvent.click(profileButton);
+
+    // Now the dropdown with "Logout" should appear
+    expect(screen.getByText(/logout/i)).toBeInTheDocument();
+
+    // Clicking profile button again should hide the dropdown
+    fireEvent.click(profileButton);
+    expect(screen.queryByText(/logout/i)).not.toBeInTheDocument();
+  });
+
+  test('clicking logout triggers console log and has correct link', () => {
+    render(
+      <BrowserRouter>
+        <Navbar toggleSidebar={toggleSidebarMock} />
+      </BrowserRouter>
+    );
+
+    // Open the dropdown
+    const profileButton = screen.getByText('Guest');
+    fireEvent.click(profileButton);
+
+    // The logout button is present now
+    const logoutButton = screen.getByRole('button', { name: /logout/i });
+    fireEvent.click(logoutButton);
+
+    // Check console log
+    expect(consoleLogSpy).toHaveBeenCalledWith('Logout clicked');
+
+    // Verify the link points to /logout
+    const logoutLink = screen.getByRole('link', { name: /logout/i });
+    expect(logoutLink).toHaveAttribute('href', '/logout');
+  });
 });

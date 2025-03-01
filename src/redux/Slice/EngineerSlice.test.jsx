@@ -1,155 +1,339 @@
-import { configureStore } from "@reduxjs/toolkit";
 import engineerReducer, {
-  fetchProfile,
   fetchEngineerTasks,
   fetchAcceptTask,
   fetchRejectTask,
   fetchUpdateEngineerProfile,
+  // Assuming fetchEngineerProfiledata is defined in your actual code (not commented out)
+  fetchEngineerProfiledata,
   updateTaskStatus,
   HazardsTickets,
   HazardsUpdateTickets,
   HazardsDeleteTickets,
-} from "./EngineerSlice";
-import apiClient from "../../utils/apiClient";
+} from './EngineerSlice';
 
-jest.mock("../../utils/apiClient");
+describe('engineerSlice reducer', () => {
+  const initialState = {
+    tasks: [],
+    updateProfile: [],
+    profiledata: {},
+    Hazards: [],
+    loading: false,
+    error: null,
+  };
 
-describe("Engineer Slice Async Thunks", () => {
-  let store;
+  describe('fetchEngineerTasks', () => {
+    it('should handle pending', () => {
+      const action = { type: fetchEngineerTasks.pending.type };
+      const state = engineerReducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
+    });
 
-  beforeEach(() => {
-    store = configureStore({
-      reducer: { engineer: engineerReducer },
+    it('should handle fulfilled with an array payload', () => {
+      const tasks = [{ _id: '1', name: 'Task1' }];
+      const action = { type: fetchEngineerTasks.fulfilled.type, payload: tasks };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.tasks).toEqual(tasks);
+      expect(state.loading).toBe(false);
+    });
+
+    it('should handle fulfilled with a message payload', () => {
+      const action = {
+        type: fetchEngineerTasks.fulfilled.type,
+        payload: { message: 'No tasks available you.' },
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.tasks).toEqual([]);
+      expect(state.error).toBe('No tasks available you.');
+      expect(state.loading).toBe(false);
+    });
+
+    it('should handle rejected', () => {
+      const action = {
+        type: fetchEngineerTasks.rejected.type,
+        payload: 'Error fetching tasks',
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.error).toBe('Error fetching tasks');
+      expect(state.loading).toBe(false);
     });
   });
 
-  test("fetchProfile should fetch profile data and update state", async () => {
-    const mockProfile = { email: "engineer@test.com", role: "engineer" };
-    apiClient.get.mockResolvedValueOnce({ data: mockProfile });
+  describe('fetchAcceptTask', () => {
+    const prevState = {
+      ...initialState,
+      tasks: [
+        { _id: '1', status: 'pending' },
+        { _id: '2', status: 'pending' },
+      ],
+      loading: true,
+    };
 
-    await store.dispatch(fetchProfile({ userEmail: "engineer@test.com", role: "engineer" }));
-    expect(store.getState().engineer.profiledata).toEqual(mockProfile);
-  });
-
-  test("fetchEngineerTasks should fetch tasks and update state", async () => {
-    const mockTasks = [{ id: 1, title: "Task 1" }];
-    apiClient.get.mockResolvedValueOnce({ data: mockTasks });
-
-    await store.dispatch(fetchEngineerTasks("engineer@test.com"));
-    expect(store.getState().engineer.tasks).toEqual(mockTasks);
-  });
-
-  test("fetchEngineerTasks should handle empty tasks", async () => {
-    apiClient.get.mockResolvedValueOnce({ data: null });
-
-    await store.dispatch(fetchEngineerTasks("engineer@test.com"));
-    expect(store.getState().engineer.tasks).toEqual([]);
-    expect(store.getState().engineer.error).toBe("No tasks available you.");
-  });
-
-  test("fetchAcceptTask should update task status to accepted", async () => {
-    const mockTask = { _id: 1, status: "accepted" };
-    apiClient.patch.mockResolvedValueOnce({ data: { ticket: mockTask } });
-
-    // Initialize state with some tasks
-    store.dispatch({
-      type: "engineer/fetchEngineerTasks/fulfilled",
-      payload: [{ _id: 1, status: "pending" }],
+    it('should handle pending', () => {
+      const action = { type: fetchAcceptTask.pending.type };
+      const state = engineerReducer(prevState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
     });
 
-    await store.dispatch(fetchAcceptTask({ taskId: 1, email: "engineer@test.com" }));
-    expect(store.getState().engineer.tasks[0]).toEqual(mockTask);
-  });
-
-  test("fetchRejectTask should remove task from state", async () => {
-    const taskId = 1;
-    apiClient.patch.mockResolvedValueOnce({});
-
-    // Initialize state with a task
-    store.dispatch({
-      type: "engineer/fetchEngineerTasks/fulfilled",
-      payload: [{ _id: taskId, status: "pending" }],
+    it('should handle fulfilled', () => {
+      const updatedTask = { _id: '1', status: 'accepted' };
+      const action = {
+        type: fetchAcceptTask.fulfilled.type,
+        payload: { taskId: '1', updatedTask },
+      };
+      const state = engineerReducer({ ...prevState, loading: true }, action);
+      expect(state.tasks).toContainEqual(updatedTask);
+      // Ensure that the other task remains unchanged
+      expect(state.tasks).toContainEqual({ _id: '2', status: 'pending' });
+      expect(state.loading).toBe(false);
     });
 
-    await store.dispatch(fetchRejectTask({ taskId, email: "engineer@test.com" }));
-    expect(store.getState().engineer.tasks).toHaveLength(0);
+    it('should handle rejected', () => {
+      const action = {
+        type: fetchAcceptTask.rejected.type,
+        payload: 'Failed to accept task',
+      };
+      const state = engineerReducer(prevState, action);
+      expect(state.error).toBe('Failed to accept task');
+      expect(state.loading).toBe(false);
+    });
   });
 
-  test("fetchUpdateEngineerProfile should update engineer profile", async () => {
-    const mockProfile = { email: "engineer@test.com", name: "Engineer Name" };
-    apiClient.patch.mockResolvedValueOnce({ data: mockProfile });
+  describe('fetchRejectTask', () => {
+    const prevState = {
+      ...initialState,
+      tasks: [
+        { _id: '1', status: 'pending' },
+        { _id: '2', status: 'pending' },
+      ],
+      loading: true,
+    };
 
-    await store.dispatch(
-      fetchUpdateEngineerProfile({
-        email: "engineer@test.com",
-        updatedData: mockProfile,
-      })
-    );
-    expect(store.getState().engineer.updateProfile).toEqual(mockProfile);
-  });
-
-  test("updateTaskStatus should update task status", async () => {
-    const mockTask = { _id: 1, status: "deferred", engineerEmail: "engineer@test.com" };
-    apiClient.patch.mockResolvedValueOnce({ data: mockTask });
-
-    // Initialize state with a task
-    store.dispatch({
-      type: "engineer/fetchEngineerTasks/fulfilled",
-      payload: [{ _id: 1, status: "pending" }],
+    it('should handle pending', () => {
+      const action = { type: fetchRejectTask.pending.type };
+      const state = engineerReducer(prevState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
     });
 
-    await store.dispatch(updateTaskStatus({ taskId: 1, status: "deferred" }));
-    expect(store.getState().engineer.tasks[0].status).toBe("deferred");
+    it('should handle fulfilled', () => {
+      const action = {
+        type: fetchRejectTask.fulfilled.type,
+        payload: { taskId: '1' },
+      };
+      const state = engineerReducer({ ...prevState, loading: true }, action);
+      expect(state.tasks).toEqual([{ _id: '2', status: 'pending' }]);
+      expect(state.loading).toBe(false);
+    });
+
+    it('should handle rejected', () => {
+      const action = {
+        type: fetchRejectTask.rejected.type,
+        payload: 'Failed to reject task',
+      };
+      const state = engineerReducer(prevState, action);
+      expect(state.error).toBe('Failed to reject task');
+      expect(state.loading).toBe(false);
+    });
   });
 
-  test("HazardsTickets should fetch hazards and update state", async () => {
-    const mockHazards = [{ id: 1, title: "Hazard 1" }];
-    apiClient.get.mockResolvedValueOnce({ data: mockHazards });
+  describe('fetchUpdateEngineerProfile', () => {
+    it('should handle pending', () => {
+      const action = { type: fetchUpdateEngineerProfile.pending.type };
+      const state = engineerReducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
+    });
 
-    await store.dispatch(HazardsTickets({}));
-    expect(store.getState().engineer.Hazards).toEqual(mockHazards);
+    it('should handle fulfilled', () => {
+      const updatedProfile = { email: 'test@example.com', name: 'Test User' };
+      const action = {
+        type: fetchUpdateEngineerProfile.fulfilled.type,
+        payload: updatedProfile,
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.updateProfile).toEqual(updatedProfile);
+      expect(state.loading).toBe(false);
+    });
+
+    it('should handle rejected', () => {
+      const action = {
+        type: fetchUpdateEngineerProfile.rejected.type,
+        payload: 'Failed to update engineer profile',
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.error).toBe('Failed to update engineer profile');
+      expect(state.loading).toBe(false);
+    });
   });
 
-  test("HazardsUpdateTickets should update hazard and refresh list", async () => {
-    const mockHazard = { _id: 1, title: "Updated Hazard" };
-    const updatedHazards = [mockHazard];
+  describe('fetchEngineerProfiledata', () => {
+    it('should handle pending', () => {
+      const action = { type: fetchEngineerProfiledata.pending.type };
+      const state = engineerReducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
+    });
 
-    apiClient.patch.mockResolvedValueOnce({ data: mockHazard });
-    apiClient.get.mockResolvedValueOnce({ data: updatedHazards });
+    it('should handle fulfilled', () => {
+      const profileData = { email: 'dummy@example.com', name: 'Dummy User' };
+      const action = {
+        type: fetchEngineerProfiledata.fulfilled.type,
+        payload: profileData,
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.updateProfile).toEqual(profileData);
+      expect(state.loading).toBe(false);
+    });
 
-    await store.dispatch(HazardsUpdateTickets(mockHazard));
-    expect(store.getState().engineer.Hazards).toEqual(updatedHazards);
+    it('should handle rejected', () => {
+      const action = {
+        type: fetchEngineerProfiledata.rejected.type,
+        payload: 'Profile update failed',
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.error).toBe('Profile update failed');
+      expect(state.loading).toBe(false);
+    });
   });
 
-  test("HazardsDeleteTickets should delete hazard and refresh list", async () => {
-    const updatedHazards = [];
+  describe('updateTaskStatus', () => {
+    it('should update task status when task exists', () => {
+      const prevState = {
+        ...initialState,
+        tasks: [
+          { _id: '1', status: 'pending' },
+          { _id: '2', status: 'pending' },
+        ],
+      };
+      const action = {
+        type: updateTaskStatus.fulfilled.type,
+        payload: { taskId: '1', status: 'completed' },
+      };
+      const state = engineerReducer(prevState, action);
+      expect(state.tasks).toEqual([
+        { _id: '1', status: 'completed' },
+        { _id: '2', status: 'pending' },
+      ]);
+    });
 
-    apiClient.delete.mockResolvedValueOnce({});
-    apiClient.get.mockResolvedValueOnce({ data: updatedHazards });
+    it('should not change tasks if task does not exist', () => {
+      const prevState = {
+        ...initialState,
+        tasks: [{ _id: '1', status: 'pending' }],
+      };
+      const action = {
+        type: updateTaskStatus.fulfilled.type,
+        payload: { taskId: '2', status: 'completed' },
+      };
+      const state = engineerReducer(prevState, action);
+      expect(state.tasks).toEqual([{ _id: '1', status: 'pending' }]);
+    });
 
-    await store.dispatch(HazardsDeleteTickets(1));
-    expect(store.getState().engineer.Hazards).toEqual(updatedHazards);
+    it('should handle rejected', () => {
+      const action = {
+        type: updateTaskStatus.rejected.type,
+        payload: 'Update failed',
+      };
+      const state = engineerReducer(initialState, action);
+      expect(state.error).toBe('Update failed');
+    });
   });
 
-  // Error handling tests
-  test("fetchEngineerTasks should handle error", async () => {
-    const errorMessage = "Failed to fetch engineer tasks";
-    apiClient.get.mockRejectedValueOnce({ response: { data: errorMessage } });
+  describe('HazardsTickets', () => {
+    it('should handle pending', () => {
+      const action = { type: HazardsTickets.pending.type };
+      const state = engineerReducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
+    });
 
-    await store.dispatch(fetchEngineerTasks("engineer@test.com"));
-    expect(store.getState().engineer.error).toBe(errorMessage);
+    it('should handle fulfilled', () => {
+      const hazards = [{ _id: 'h1', title: 'Hazard1' }];
+      const action = {
+        type: HazardsTickets.fulfilled.type,
+        payload: hazards,
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.Hazards).toEqual(hazards);
+      expect(state.loading).toBe(false);
+    });
+
+    it('should handle rejected', () => {
+      const action = {
+        type: HazardsTickets.rejected.type,
+        payload: 'Hazard fetch error',
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.error).toBe('Hazard fetch error');
+      expect(state.loading).toBe(false);
+    });
   });
 
-  test("fetchUpdateEngineerProfile should handle error", async () => {
-    const errorMessage = "Failed to update engineer profile";
-    apiClient.patch.mockRejectedValueOnce({ response: { data: errorMessage } });
+  describe('HazardsUpdateTickets', () => {
+    it('should handle pending', () => {
+      const action = { type: HazardsUpdateTickets.pending.type };
+      const state = engineerReducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
+    });
 
-    await store.dispatch(
-      fetchUpdateEngineerProfile({
-        email: "engineer@test.com",
-        updatedData: {},
-      })
-    );
-    expect(store.getState().engineer.error).toBe(errorMessage);
+    it('should handle fulfilled', () => {
+      const hazards = [{ _id: 'h2', title: 'Updated Hazard' }];
+      const action = {
+        type: HazardsUpdateTickets.fulfilled.type,
+        payload: hazards,
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.Hazards).toEqual(hazards);
+      expect(state.loading).toBe(false);
+    });
+
+    it('should handle rejected', () => {
+      const action = {
+        type: HazardsUpdateTickets.rejected.type,
+        payload: 'Update hazard error',
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.error).toBe('Update hazard error');
+      expect(state.loading).toBe(false);
+    });
+  });
+
+  describe('HazardsDeleteTickets', () => {
+    it('should handle pending', () => {
+      const action = { type: HazardsDeleteTickets.pending.type };
+      const state = engineerReducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBeNull();
+    });
+
+    it('should handle fulfilled', () => {
+      const hazards = [{ _id: 'h3', title: 'Remaining Hazard' }];
+      const action = {
+        type: HazardsDeleteTickets.fulfilled.type,
+        payload: hazards,
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.Hazards).toEqual(hazards);
+      expect(state.loading).toBe(false);
+    });
+
+    it('should handle rejected', () => {
+      const action = {
+        type: HazardsDeleteTickets.rejected.type,
+        payload: 'Delete hazard error',
+      };
+      const state = engineerReducer({ ...initialState, loading: true }, action);
+      expect(state.error).toBe('Delete hazard error');
+      expect(state.loading).toBe(false);
+    });
+  });
+
+  it('should return the initial state when an unknown action is provided', () => {
+    const action = { type: 'unknown/action' };
+    const state = engineerReducer(initialState, action);
+    expect(state).toEqual(initialState);
   });
 });

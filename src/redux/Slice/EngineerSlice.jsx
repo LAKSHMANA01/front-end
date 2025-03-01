@@ -86,7 +86,7 @@ export const fetchUpdateEngineerProfile = createAsyncThunk(
 
 // AsyncThunk for updating engineer profile
 export const fetchEngineerProfiledata = createAsyncThunk(
-  'engineerfetchEngineerProfiledata',
+  'engineer/fetchEngineerProfiledata',
   async (updatedData, { rejectWithValue }) => {
     console.log(`updatedData inside fetchUpdateEngineerProfile: ${updatedData}`);
     try {

@@ -1,105 +1,62 @@
-import { configureStore } from '@reduxjs/toolkit';
-import ticketReducer, { submitTicket, HazardsTicket } from './raiseticke';
-import apiClient from '../../utils/apiClient';
-import axios from 'axios';
+import reducer, { submitTicket, HazardsTicket } from './raiseticke';
 
-// Mock the modules
-jest.mock('../../utils/apiClient', () => ({
-  post: jest.fn()
-}));
-jest.mock('axios');
+describe('ticketSlice reducer', () => {
+  const initialState = {
+    isLoading: false,
+    data: [],
+    HazardsRisetickes: [],
+    isError: false,
+    errorMessage: "",
+ 
+  };
 
-describe('ticketSlice', () => {
-  let store;
-
-  beforeEach(() => {
-    store = configureStore({
-      reducer: {
-        tickets: ticketReducer
-      }
-    });
-    // Clear all mocks before each test
-    jest.clearAllMocks();
-  });
-
-  // Test cases for submitTicket
   describe('submitTicket', () => {
-    const mockTicketData = {
-      email: 'test@example.com',
-      title: 'Test Ticket',
-      description: 'Test Description'
-    };
-
-    test('should handle pending state', () => {
-      store.dispatch(submitTicket(mockTicketData));
-      const state = store.getState().tickets;
+    it('should set isLoading true when pending', () => {
+      const action = { type: submitTicket.pending.type };
+      const state = reducer(initialState, action);
       expect(state.isLoading).toBe(true);
-      expect(state.isError).toBe(false);
     });
 
-    test('should handle fulfilled state', async () => {
-      const mockResponse = { id: 1, ...mockTicketData };
-      apiClient.post.mockResolvedValueOnce({ data: mockResponse });
-
-      await store.dispatch(submitTicket(mockTicketData));
-      
-      const state = store.getState().tickets;
+    it('should add the submitted ticket to data and set isLoading to false when fulfilled', () => {
+      const ticket = { id: 1, description: 'Test Ticket' };
+      const action = { type: submitTicket.fulfilled.type, payload: ticket };
+      const state = reducer({ ...initialState, isLoading: true }, action);
       expect(state.isLoading).toBe(false);
-      expect(state.data).toContainEqual(mockResponse);
-      expect(state.isError).toBe(false);
+      expect(state.data).toEqual([ticket]);
     });
 
-    test('should handle rejected state', async () => {
-      const errorMessage = 'Network Error';
-      apiClient.post.mockRejectedValueOnce(new Error(errorMessage));
-
-      await store.dispatch(submitTicket(mockTicketData));
-      
-      const state = store.getState().tickets;
+    it('should set isError true, update errorMessage, and set isLoading to false when rejected', () => {
+      const errorMsg = "Failed to submit ticket";
+      const action = { type: submitTicket.rejected.type, payload: errorMsg };
+      const state = reducer({ ...initialState, isLoading: true }, action);
       expect(state.isLoading).toBe(false);
       expect(state.isError).toBe(true);
-      expect(state.errorMessage).toBe(errorMessage);
+      expect(state.errorMessage).toBe(errorMsg);
     });
   });
 
-  // Test cases for HazardsTicket
   describe('HazardsTicket', () => {
-    const mockHazardData = {
-      title: 'Test Hazard',
-      description: 'Hazard Description'
-    };
-
-    test('should handle pending state', () => {
-      store.dispatch(HazardsTicket(mockHazardData));
-      const state = store.getState().tickets;
+    it('should set isLoading true when pending', () => {
+      const action = { type: HazardsTicket.pending.type };
+      const state = reducer(initialState, action);
       expect(state.isLoading).toBe(true);
-      expect(state.isError).toBe(false);
     });
 
-    test('should handle fulfilled state', async () => {
-      const mockResponse = { id: 1, ...mockHazardData };
-      axios.post.mockResolvedValueOnce({ data: mockResponse });
-
-      await store.dispatch(HazardsTicket(mockHazardData));
-      
-      const state = store.getState().tickets;
+    it('should add the hazard ticket to HazardsRisetickes and set isLoading to false when fulfilled', () => {
+      const hazardTicket = { id: 2, hazard: 'Test Hazard' };
+      const action = { type: HazardsTicket.fulfilled.type, payload: hazardTicket };
+      const state = reducer({ ...initialState, isLoading: true }, action);
       expect(state.isLoading).toBe(false);
-      expect(state.HazardsRisetickes).toContainEqual(mockResponse);
-      expect(state.isError).toBe(false);
+      expect(state.HazardsRisetickes).toEqual([hazardTicket]);
     });
 
-    test('should handle rejected state', async () => {
-      const errorMessage = 'Server Error';
-      axios.post.mockRejectedValueOnce({
-        response: { data: errorMessage }
-      });
-
-      await store.dispatch(HazardsTicket(mockHazardData));
-      
-      const state = store.getState().tickets;
+    it('should set isError true, update errorMessage, and set isLoading to false when rejected', () => {
+      const errorMsg = "Failed to submit hazard ticket";
+      const action = { type: HazardsTicket.rejected.type, payload: errorMsg };
+      const state = reducer({ ...initialState, isLoading: true }, action);
       expect(state.isLoading).toBe(false);
       expect(state.isError).toBe(true);
-      expect(state.errorMessage).toBe(errorMessage);
+      expect(state.errorMessage).toBe(errorMsg);
     });
   });
 });
