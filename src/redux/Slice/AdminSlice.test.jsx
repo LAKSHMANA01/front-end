@@ -1,170 +1,262 @@
-import { configureStore } from "@reduxjs/toolkit";
-import adminReducer, {
-  fetchAllTasks,
-  fetchAllUsers,
-  fetchAllApprovedEngineers,
-  fetchAllEngineers,
-  approveEngineer,
-  fetchDeferredTasks,
-  fetchAvailableEngineers,
-  reassignTicket,
-  fetchEngineerTasks,
-} from "./AdminSlice";
-import apiClient from "../../utils/apiClient";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from 'axios';
+import apiClientAdmin from "../../utils/apiClientAdmin";
 
+// Fetch all tasks
+export const fetchAllTasks = createAsyncThunk(
+  'admin/tasks/fetchAll',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClientAdmin.get('/admin/tasks'); 
+      return response.data.tasks;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch tasks");
+    }
+  }
+);
 
-jest.mock("../../utils/apiClient");
+// Fetch all users
+export const fetchAllUsers = createAsyncThunk(
+  'admin/users/fetchAll',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClientAdmin.get('/admin/users'); 
+      return response.data.users;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch users");
+    }
+  }
+);
 
-describe("Admin Slice Async Thunks", () => {
-  let store;
+export const fetchAllApprovedEngineers = createAsyncThunk(
+  "admin/fetchAllApprovedEngineers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClientAdmin.get("/admin/engineers"); 
+      return response.data.users;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch engineers");
+    }
+  }
+);
 
-  beforeEach(() => {
-    store = configureStore({
-      reducer: { admin: adminReducer }
-    });
-  });
+export const fetchAllEngineers = createAsyncThunk(
+  "admin/fetchAllEngineers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClientAdmin.get("/admin/approval/engineers");
+      return response.data.engineers;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch engineers");
+    }
+  }
+);
 
-  test("fetchAllTasks should fetch tasks and update state", async () => {
-    const mockTasks = [{ id: 1, name: "Task 1" }];
-    apiClient.get.mockResolvedValueOnce({ data: mockTasks });
+export const approveEngineer = createAsyncThunk(
+  "admin/approveEngineer",
+  async ({ engineerEmail, approve }, { rejectWithValue }) => {
+    try {
+      const response = await apiClientAdmin.patch(`/admin/approve-engineer/${engineerEmail}`, {
+        email: engineerEmail,
+        approve,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update engineer approval");
+    }
+  }
+);
 
-    await store.dispatch(fetchAllTasks());
-    expect(store.getState().admin.tasks).toEqual(mockTasks);
-  });
+export const fetchDeferredTasks = createAsyncThunk(
+  "admin/deferredTasks/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiClientAdmin.get("/admin/status/deferred"); 
+      return response.data.tickets;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch deferred tasks");
+    }
+  }
+);
 
-  test("fetchAllTasks should handle error when fetching tasks fails", async () => {
-    const errorResponse = { response: { data: "Failed to fetch tasks" } };
-    apiClient.get.mockRejectedValueOnce(errorResponse);
-    await store.dispatch(fetchAllTasks());
-    expect(store.getState().admin.error).toEqual("Failed to fetch tasks");
-  });
+// Fetch available engineers
+export const fetchAvailableEngineers = createAsyncThunk(
+  'tasks/fetchAvailableEngineers',
+  async () => {
+    try {
+      const response = await apiClientAdmin.get('/api/engineers/available');
+      return response.data.engineers;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message); 
+    }
+  }
+);
 
-  test("fetchAllUsers should fetch users and update state", async () => {
-    const mockUsers = [{ id: 1, name: "User 1" }];
-    apiClient.get.mockResolvedValueOnce({ data: mockUsers });
+// Reassign ticket to an engineer
+export const reassignTicket = createAsyncThunk(
+  'tasks/reassignTicket',
+  async ({ ticketId, engineerId }) => {
+    try {
+      const response = await apiClientAdmin.patch(
+        `/api/reassign/${ticketId}/${engineerId}`,
+        {},
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      return response.data; // reassigned ticket
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message);
+    }
+  }
+);
 
-    await store.dispatch(fetchAllUsers());
-    expect(store.getState().admin.users).toEqual(mockUsers);
-  });
+export const fetchEngineerTasks = createAsyncThunk(
+  "admin/fetchEngineerTasks",
+  async (engineerEmail, { rejectWithValue }) => {
+    try {
+      const response = await apiClientAdmin.get(`/tasks/engineer/${engineerEmail}`); 
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error fetching tasks");
+    }
+  }
+);
 
-  test("fetchAllUsers should handle error when fetching users fails", async () => {
-    const errorResponse = { response: { data: "Failed to fetch users" } };
-    apiClient.get.mockRejectedValueOnce(errorResponse);
-    await store.dispatch(fetchAllUsers());
-    expect(store.getState().admin.error).toEqual("Failed to fetch users");
-  });
-
-  test("fetchAllApprovedEngineers should update state with engineers", async () => {
-    const mockEngineers = [{ email: "engineer@test.com", approved: true }];
-    apiClient.get.mockResolvedValueOnce({ data: mockEngineers });
-
-    await store.dispatch(fetchAllApprovedEngineers());
-    expect(store.getState().admin.approvedEngineers).toEqual(mockEngineers);
-  });
-
-  test("fetchAllApprovedEngineers should handle error when fetching engineers fails", async () => {
-    const errorResponse = { response: { data: "Failed to fetch engineers" } };
-    apiClient.get.mockRejectedValueOnce(errorResponse);
-    await store.dispatch(fetchAllApprovedEngineers());
-    expect(store.getState().admin.error).toEqual("Failed to fetch engineers");
-  });
-
-  test("fetchAllEngineers should update state with engineers", async () => {
-    const mockEngineers = [{ email: "engineer@test.com", approved: false }];
-    apiClient.get.mockResolvedValueOnce({ data: { approvalEngineers: mockEngineers } });
-
-    await store.dispatch(fetchAllEngineers());
-    expect(store.getState().admin.engineers).toEqual(mockEngineers);
-  });
-
-  test("fetchAllEngineers should handle error when fetching engineers fails", async () => {
-    const errorResponse = { response: { data: "Failed to fetch engineers" } };
-    apiClient.get.mockRejectedValueOnce(errorResponse);
-    await store.dispatch(fetchAllEngineers());
-    expect(store.getState().admin.error).toEqual("Failed to fetch engineers");
-  });
-
-  test("approveEngineer should update state correctly", async () => {
-    const mockEngineer = { email: "engineer@test.com", approved: true };
-    apiClient.patch.mockResolvedValueOnce({ data: { engineer: mockEngineer } });
-
-    await store.dispatch(approveEngineer({ engineerEmail: "engineer@test.com", approve: true }));
-    expect(store.getState().admin.approvedEngineers).toContainEqual(mockEngineer);
-  });
-
-  test("approveEngineer should handle error when approving engineer fails", async () => {
-    const errorResponse = { response: { data: "Failed to update engineer approval" } };
-    apiClient.patch.mockRejectedValueOnce(errorResponse);
-    await store.dispatch(approveEngineer({ engineerEmail: "engineer@test.com", approve: true }));
-    expect(store.getState().admin.error).toEqual("Failed to update engineer approval");
-  });
-
-  test("fetchDeferredTasks should update deferredTasks in state", async () => {
-    const mockDeferredTasks = [{ id: 1, status: "deferred" }];
-    apiClient.get.mockResolvedValueOnce({ data: mockDeferredTasks });
-
-    await store.dispatch(fetchDeferredTasks());
-    expect(store.getState().admin.deferredTasks).toEqual(mockDeferredTasks);
-  });
-
-  test("fetchDeferredTasks should handle error when fetching deferred tasks fails", async () => {
-    const errorResponse = { response: { data: "Failed to fetch deferred tasks" } };
-    apiClient.get.mockRejectedValueOnce(errorResponse);
-    await store.dispatch(fetchDeferredTasks());
-    expect(store.getState().admin.error).toEqual("Failed to fetch deferred tasks");
-  });
-
-  test("fetchAvailableEngineers should update availableEngineers in state", async () => {
-    const mockEngineers = [{ id: 1, name: "Engineer 1" }];
-    apiClient.get.mockResolvedValueOnce({ data: { engineers: mockEngineers } });
-
-    await store.dispatch(fetchAvailableEngineers());
-    expect(store.getState().admin.availableEngineers).toEqual(mockEngineers);
-  });
-
-  test("fetchAvailableEngineers should handle error when fetching available engineers fails", async () => {
-    const error = new Error("Failed to fetch available engineers");
-    apiClient.get.mockRejectedValueOnce(error);
-    await store.dispatch(fetchAvailableEngineers());
-    expect(store.getState().admin.error).toEqual("Failed to fetch available engineers");
-  });
-
-  test("reassignTicket should reassign a ticket successfully", async () => {
-    const mockResponse = { success: true };
-    apiClient.patch.mockResolvedValueOnce({ data: mockResponse });
-
-    await store.dispatch(reassignTicket({ ticketId: 1, engineerId: 2 }));
-    expect(apiClient.patch).toHaveBeenCalledWith(
-      "/api/reassign/1/2",
-      {},
-      { headers: { "Content-Type": "application/json" } }
-    );
-  });
-
-  test("reassignTicket should handle error when reassigning ticket fails", async () => {
-    const error = new Error("Failed to reassign ticket");
-    apiClient.patch.mockRejectedValueOnce(error);
-    
-    await expect(store.dispatch(reassignTicket({ ticketId: 1, engineerId: 2 }))).rejects.toThrow("Failed to reassign ticket");
-    expect(apiClient.patch).toHaveBeenCalledWith(
-      "/api/reassign/1/2",
-      {},
-      { headers: { "Content-Type": "application/json" } }
-    );
-  });
-
-  test("fetchEngineerTasks should update engineerTasks in state", async () => {
-    const mockTasks = [{ id: 1, title: "Task for Engineer" }];
-    apiClient.get.mockResolvedValueOnce({ data: mockTasks });
-
-    await store.dispatch(fetchEngineerTasks("engineer@test.com"));
-    expect(store.getState().admin.engineerTasks).toEqual(mockTasks);
-  });
-
-  test("fetchEngineerTasks should handle error when fetching engineer tasks fails", async () => {
-    const errorResponse = { response: { data: "Error fetching tasks" } };
-    apiClient.get.mockRejectedValueOnce(errorResponse);
-    await store.dispatch(fetchEngineerTasks("engineer@test.com"));
-    expect(store.getState().admin.error).toEqual("Error fetching tasks");
-  });
+const adminSlice = createSlice({
+  name: 'admin',
+  initialState: {
+    tasks: [],
+    engineerTasks: [],
+    completedTasks: [],
+    deferredTasks: [],
+    users: [],
+    engineers: [],
+    approvedEngineers: [],
+    availableEngineers: [],
+    loading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      // fetchAllTasks
+      .addCase(fetchAllTasks.pending, (state) => { state.loading = true; })
+      .addCase(fetchAllTasks.fulfilled, (state, action) => {
+        state.tasks = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchAllTasks.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      // fetchAllUsers
+      .addCase(fetchAllUsers.pending, (state) => { state.loading = true; })
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.users = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchAllUsers.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      // fetchAllApprovedEngineers
+      .addCase(fetchAllApprovedEngineers.pending, (state) => { state.loading = true; })
+      .addCase(fetchAllApprovedEngineers.fulfilled, (state, action) => {
+        state.approvedEngineers = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchAllApprovedEngineers.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      // fetchDeferredTasks
+      .addCase(fetchDeferredTasks.pending, (state) => { state.loading = true; })
+      .addCase(fetchDeferredTasks.fulfilled, (state, action) => {
+        state.deferredTasks = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchDeferredTasks.rejected, (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      })
+      // fetchEngineerTasks
+      .addCase(fetchEngineerTasks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.engineerTasks = action.payload;
+      })
+      .addCase(fetchEngineerTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Error fetching tasks.";
+      })
+      // fetchAvailableEngineers
+      .addCase(fetchAvailableEngineers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchAvailableEngineers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.availableEngineers = action.payload;
+      })
+      .addCase(fetchAvailableEngineers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      // fetchAllEngineers
+      .addCase(fetchAllEngineers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllEngineers.fulfilled, (state, action) => {
+        state.engineers = Array.isArray(action.payload) ? action.payload : [];
+        state.loading = false;
+      })
+      .addCase(fetchAllEngineers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // approveEngineer
+      .addCase(approveEngineer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(approveEngineer.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedEngineer = action.payload.engineer;
+        if (!updatedEngineer) return;
+        state.engineers = state.engineers.map((engineer) =>
+          engineer.email === updatedEngineer.email ? updatedEngineer : engineer
+        );
+        if (!state.approvedEngineers) {
+          state.approvedEngineers = [];
+        }
+        const exists = state.approvedEngineers.some(e => e.email === updatedEngineer.email);
+        if (!exists) {
+          state.approvedEngineers.push(updatedEngineer);
+        }
+      })
+      .addCase(approveEngineer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // reassignTicket (newly added)
+      .addCase(reassignTicket.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(reassignTicket.fulfilled, (state, action) => {
+        const updatedTicket = action.payload;
+        const index = state.tasks.findIndex(ticket => ticket.id === updatedTicket.id);
+        if (index !== -1) {
+          state.tasks[index] = updatedTicket;
+        }
+        state.loading = false;
+      })
+      .addCase(reassignTicket.rejected, (state, action) => {
+        state.error = action.payload || action.error.message;
+        state.loading = false;
+      });
+  },
 });
+
+export default adminSlice.reducer;

@@ -8,7 +8,7 @@ import { debounce } from 'lodash';  // Lodash is a utility library that provides
 
 
 
-const EngineerDashboard = () => {
+const EngineerHarzards = () => {
   const { Hazards, loading, error } = useSelector((state) => state.engineer);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -230,7 +230,7 @@ const EngineerDashboard = () => {
   );
 };
 
-export default EngineerDashboard;
+export default EngineerHarzards;
 
 
 
