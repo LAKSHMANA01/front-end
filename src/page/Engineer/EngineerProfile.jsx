@@ -8,7 +8,7 @@ const userEmail = sessionStorage.getItem("email");
 const role = sessionStorage.getItem("role");
 const EngineerProfile = () => {
   const dispatch = useDispatch();
-  const { profile } = useSelector((state) => state.tickets);
+  const { profile } = useSelector((state) => state.engineer?.profile) || {};
 
   // Initialize engineer state
   const [engineer, setEngineer] = useState({
@@ -29,10 +29,10 @@ const EngineerProfile = () => {
 });
 
   useEffect(() => {
-    if (!profile.email) {
+    if (!profile?.email) {
       dispatch(fetchProfile({ userEmail, role }));
     }
-  }, [dispatch, profile.email, userEmail, role]);
+  }, [dispatch, profile?.email, userEmail, role]);
 
   const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 

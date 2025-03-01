@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import apiClient from '../../utils/apiClientUser';
+import apiClientUser from '../../utils/apiClientUser';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,7 +16,7 @@ const ResetPassword = () => {
     // reusable API request function
     const sendResetRequest = async (data, onSuccess, errorMessage) => {
         try {
-            const response = await apiClient.post('/users/reset', data);
+            const response = await apiClientUser.post('/users/reset', data);
             if (response.data.success) {
                 onSuccess(response.data);
             } else {
@@ -76,8 +76,9 @@ const ResetPassword = () => {
                 {/* Step 1: Verify Email */}
                 {step === 1 && (
                     <form onSubmit={handleEmailSubmit}>
-                        <label className="block mb-2">Enter Email</label>
-                        <input 
+                        <label htmlFor="email" className="block mb-2">Enter Email</label>
+                        <input
+                            id='email'
                             type="email" 
                             className="w-full p-2 border rounded" 
                             value={email} 
@@ -94,7 +95,9 @@ const ResetPassword = () => {
                 {step === 2 && (
                     <form onSubmit={handleSecurityAnswerSubmit}>
                         <p className="mb-2">{securityQuestion}</p>
-                        <input 
+                        <label htmlFor="securityAnswer" className="block mb-2">Security Answer</label>
+                        <input
+                            id='securityAnswer' 
                             type="text" 
                             className="w-full p-2 border rounded" 
                             value={securityAnswer} 
@@ -110,16 +113,18 @@ const ResetPassword = () => {
                 {/* Step 3: Reset Password */}
                 {step === 3 && (
                     <form onSubmit={handlePasswordReset}>
-                        <label className="block mb-2">New Password</label>
+                        <label htmlFor='newPassword' className="block mb-2">New Password</label>
                         <input 
+                            id='newPassword'
                             type="password" 
                             className="w-full p-2 border rounded" 
                             value={newPassword} 
                             onChange={(e) => setNewPassword(e.target.value)} 
                             required 
                         />
-                        <label className="block mb-2 mt-4">Confirm Password</label>
+                        <label htmlFor='confirmPassword' className="block mb-2 mt-4">Confirm Password</label>
                         <input 
+                            id='confirmPassword'
                             type="password" 
                             className="w-full p-2 border rounded" 
                             value={confirmPassword} 

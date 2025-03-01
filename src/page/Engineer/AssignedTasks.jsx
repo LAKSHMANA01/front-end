@@ -23,7 +23,9 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
         //     console.log('inside atjsx -', user.email);
         //     dispatch(fetchEngineerTasks(user.email));
         // }
+        if (user?.email) {
         dispatch(fetchEngineerTasks(user.email))
+    }
     }, [user?.email, user.role, dispatch]);
 
     useEffect(() => {
@@ -162,8 +164,9 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
                         </div>
 
                         <div className="mb-4">
-                            <label className="font-medium">Change Task Status:</label>
+                            <label htmlFor='task-status' className="font-medium">Change Task Status:</label>
                             <select
+                            id="task-status"
                                 value={newStatus}
                                 onChange={handleStatusChange}
                                 className="block w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

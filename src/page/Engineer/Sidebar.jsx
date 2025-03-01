@@ -16,10 +16,7 @@ import { MdOutlinePendingActions } from 'react-icons/md';
 
 const Sidebar = ({ activePath = "/" , isopen ,  onSidebarClose})  => {
   const UserName = sessionStorage.getItem("email") ;
-<<<<<<< HEAD
   const firstName  =  UserName?.split('@')[0];
-=======
->>>>>>> be6046f8c90c26d607a344686e078d140577d083
       
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);

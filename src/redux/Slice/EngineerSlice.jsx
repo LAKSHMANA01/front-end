@@ -7,7 +7,7 @@ import apiClientNH from '../../utils/apiClientNH';
 // AsyncThunk for fetching engineer tasks
 
 export const fetchProfile = createAsyncThunk(
-  'tickets/fetchProfile',
+  'engineer/fetchProfile',
   async ({ userEmail, role }) => {
     console.log(`Fetching ${userEmail}`);
     console.log(`userId inside fetchProfile ticketSlice: ${userEmail}`);
@@ -86,7 +86,7 @@ export const fetchUpdateEngineerProfile = createAsyncThunk(
 
 // AsyncThunk for updating engineer profile
 export const fetchEngineerProfiledata = createAsyncThunk(
-  'engineerfetchEngineerProfiledata',
+  'engineer/fetchEngineerProfiledata',
   async (updatedData, { rejectWithValue }) => {
     console.log(`updatedData inside fetchUpdateEngineerProfile: ${updatedData}`);
     try {

@@ -2,15 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Users,
-<<<<<<< HEAD
-  HardHat,
-  ClipboardList,
-  ShieldAlert,
-  ChevronRight,
-  ChevronLeft,
-  UserCheck,
-  LogOut
-=======
   Wrench,
   HardHat,
   ClipboardList,
@@ -23,7 +14,6 @@ import {
   UserCheck,
   LogOut,
   FileClock
->>>>>>> be6046f8c90c26d607a344686e078d140577d083
 } from "lucide-react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MdOutlinePendingActions } from 'react-icons/md';
@@ -63,11 +53,7 @@ const AdminSidebar = ({ isopen , onSidebarClose}) => {
     { path: '/admin/engineer-approval', icon: UserCheck, label: 'EngineersApproval' },
     { path: '/admin/users', icon: Users, label: 'Users' },
     { path: '/admin/hazards', icon:ShieldAlert, label: 'Hazards' },
-<<<<<<< HEAD
     { path: '/admin/deferred', icon:MdOutlinePendingActions, label: 'Deferred Tasks' }
-=======
-    { path: '/admin/deferred', icon:FileX, label: 'Deferred Tasks' }
->>>>>>> be6046f8c90c26d607a344686e078d140577d083
   ];
 
   // Determine active menu item
