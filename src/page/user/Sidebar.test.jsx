@@ -1,55 +1,81 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import Sidebar from './Sidebar';
-import { BrowserRouter } from 'react-router-dom';
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import Sidebar from "./Sidebar";
+import { BrowserRouter } from "react-router-dom";
 
-// Mock useNavigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: jest.fn(),
 }));
 
-describe('Sidebar', () => {
-  test('renders Sidebar component', () => {
-    render(
-      <BrowserRouter>
-        <Sidebar />
-      </BrowserRouter>
-    );
-    const sidebarElement = screen.getByRole('navigation');
-    expect(sidebarElement).toBeInTheDocument();
+describe("Sidebar Component", () => {
+  beforeEach(() => {
+    sessionStorage.setItem("email", "test@example.com");
+    localStorage.setItem("isSidebarExpanded", JSON.stringify(true));
   });
 
-  test('toggles sidebar expansion', () => {
-    render(
-      <BrowserRouter>
-        <Sidebar />
-      </BrowserRouter>
-    );
-
-    const toggleButton = screen.getByRole('button'); // Finding first button
-
-    // Click to collapse sidebar
-    fireEvent.click(toggleButton);
-    expect(localStorage.getItem('isSidebarExpanded')).toBe('false');
-
-    // Click again to expand sidebar
-    fireEvent.click(toggleButton);
-    expect(localStorage.getItem('isSidebarExpanded')).toBe('true');
+  afterEach(() => {
+    sessionStorage.clear();
+    localStorage.clear();
   });
 
-  test('navigates to the correct path', () => {
+  it("renders sidebar correctly", () => {
     render(
       <BrowserRouter>
-        <Sidebar activePath="/User" />
+        <Sidebar activePath="/User" isopen={true} onSidebarClose={jest.fn()} />
       </BrowserRouter>
     );
 
-    const dashboardItems = screen.getAllByText('Dashboard'); // Get all Dashboard elements
-    fireEvent.click(dashboardItems[0]); // Click first "Dashboard" button
+    expect(screen.getByText("test")).toBeInTheDocument();
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("MyTicket")).toBeInTheDocument();
+    expect(screen.getByText("RaiseTickets")).toBeInTheDocument();
+    expect(screen.getByText("Profile")).toBeInTheDocument();
+  });
 
-    // Expect navigation to be called with the correct path
-    expect(mockNavigate).toHaveBeenCalledWith('/User');
+  it("handles sidebar toggle", () => {
+    render(
+      <BrowserRouter>
+        <Sidebar activePath="/User" isopen={true} onSidebarClose={jest.fn()} />
+      </BrowserRouter>
+    );
+
+    const toggleButton = screen.getByRole("button");
+    fireEvent.click(toggleButton);
+    
+    expect(JSON.parse(localStorage.getItem("isSidebarExpanded"))).toBe(false);
+  });
+
+  it("navigates correctly on menu click", () => {
+    const mockNavigate = require("react-router-dom").useNavigate;
+    mockNavigate.mockImplementation(jest.fn());
+
+    render(
+      <BrowserRouter>
+        <Sidebar activePath="/User" isopen={true} onSidebarClose={jest.fn()} />
+      </BrowserRouter>
+    );
+
+    const dashboardButton = screen.getByText("Dashboard");
+    fireEvent.click(dashboardButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith("/User");
+  });
+
+  it("closes sidebar on mobile navigation", () => {
+    global.innerWidth = 500;
+    global.dispatchEvent(new Event("resize"));
+    const mockOnSidebarClose = jest.fn();
+
+    render(
+      <BrowserRouter>
+        <Sidebar activePath="/User" isopen={true} onSidebarClose={mockOnSidebarClose} />
+      </BrowserRouter>
+    );
+
+    const dashboardButton = screen.getByText("Dashboard");
+    fireEvent.click(dashboardButton);
+    
+    expect(mockOnSidebarClose).toHaveBeenCalled();
   });
 });

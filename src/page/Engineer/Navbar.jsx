@@ -11,6 +11,7 @@ const EngineerNavbar = ({toggleSidebar}) => {
   const UserName = sessionStorage.getItem("email")
   const ProfileName = UserName?.split("@")[0]
   console.log("ProfileNamesdsd: " + ProfileName)
+
   const dispatch = useDispatch();
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -19,8 +20,15 @@ const EngineerNavbar = ({toggleSidebar}) => {
   
   
   useEffect(() => {
+    console.log(" isProfileOpen")
     dispatch(fetchNotifications());
+      const interval = setInterval(() => {
+        dispatch(fetchNotifications(UserName))
+      }, 5000);
+      return () => clearInterval(interval);
+    
   }, [dispatch]);
+
   const { notifications } = useSelector((state) => state.notifications);
   const notificationsCount = notifications?.filter(notification => notification.isRead === false).length;
 

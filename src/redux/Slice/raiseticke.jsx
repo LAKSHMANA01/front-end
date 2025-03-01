@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import apiClientUser from '../../utils/apiClientUser';
+import apiClientNH from '../../utils/apiClientNH';
 
 export const submitTicket = createAsyncThunk(
   'tickets/submitTicket',
@@ -12,7 +13,6 @@ export const submitTicket = createAsyncThunk(
       const response = await apiClientUser.post(
         `/users/raiseTicket/${email}`, 
         rest, // Send the rest of the ticket data
-    
       );
       console.log("Response data:", response.data);
       return response.data;
@@ -29,8 +29,8 @@ export const HazardsTicket = createAsyncThunk(
   async (ticketData, { rejectWithValue }) => {
     try {
       console.log("ticket Data", ticketData);
-      const response = await axios.post(
-        'https://localhost:8000/api/hazards/addNewHazard',
+      const response = await apiClientNH.post(
+        '/hazards/addNewHazard',
         ticketData,
         {
           headers: {
@@ -41,9 +41,9 @@ export const HazardsTicket = createAsyncThunk(
       console.log("Response data:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error submitting ticket:", error);
+      console.error("Error submitting Hazard:", error);
       return rejectWithValue(
-        error.response?.data || 'Failed to submit ticket'
+        error.response?.data || 'Failed to add hazard'
       );
     }
   }

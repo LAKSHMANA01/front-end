@@ -4,7 +4,7 @@ import { useSelector, useDispatch} from 'react-redux';
 
 import { Link } from 'react-router-dom';
 import  Notification from './notification';
-import { fetchNotifications} from "./../redux/Slice/notificationSlice"
+import { fetchNotifications } from "../redux/Slice/notificationSlice"
 import Sidebar from '../page/Admin/Sidebar';
 
 
@@ -28,13 +28,21 @@ const Navbar = ( {toggleSidebar}) => {
    const userName = sessionStorage.getItem("email") || "";
    console.log(" userName: " + userName);
 
-   const Name = userName ? userName.split("@")[0] : "Guest";
+  const Name = userName ? userName.split("@")[0] : "Guest";
+  
    useEffect(() => {
+    console.log("notification")
+     dispatch(fetchNotifications("vikas07@gmail.com"));
 
-    dispatch(fetchNotifications());
+     const interval = setInterval(() => {
+        dispatch(fetchNotifications("vikas07@gmail.com"))
+      }, 5000);
+      return () => clearInterval(interval);
   }, [dispatch]);
   
+
   const { notifications } = useSelector((state) => state.notifications);
+
   const NotificationsCount = notifications.filter(notification => notification.isRead === false).length;
   const handleSidbar = () => {
     setIsMenuOpen(!isMenuOpen);

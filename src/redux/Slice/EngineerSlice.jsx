@@ -40,9 +40,9 @@ export const fetchAcceptTask = createAsyncThunk(
   async ({ taskId, email }, { rejectWithValue }) => {
     try {
       console.log(`fetchAcceptTask: ${taskId}`);
-      const response = await apiClientEngineer.patch(`/engineer/tasks/${taskId}/accept/${email}`);
-      console.log("response.data.ticket", response.data.ticket)
-      return { taskId, updatedTask: response.data.ticket };
+      const response = await apiClientEngineer.patch(`/tasks/${taskId}/accept/${email}`);
+      console.log("response.data.ticket", response.data.result.ticket)
+      return { taskId, updatedTask: response.data.result.ticket };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to accept task');
     }
@@ -53,7 +53,7 @@ export const fetchRejectTask = createAsyncThunk(
   'engineer/fetchRejectTask',
   async ({ taskId, email }, { rejectWithValue }) => {
     try {
-      await apiClientEngineer.patch(`/engineer/tasks/${taskId}/reject/${email}`);
+      await apiClientEngineer.patch(`/tasks/${taskId}/reject/${email}`);
       return { taskId };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to reject task');
@@ -65,10 +65,11 @@ export const fetchRejectTask = createAsyncThunk(
 export const fetchUpdateEngineerProfile = createAsyncThunk(
   'engineer/fetchUpdateEngineerProfile',
   async ({ email, updatedData }, { rejectWithValue }) => {
+    const role = sessionStorage.getItem('role');
     console.log('updatedData inside fetchUpdateEngineerProfile: ',updatedData);
     try {
-      const response = await apiClientEngineer.patch(
-        `/updateProfile/engineer/${email}`, 
+      const response = await apiClientUser.patch(
+        `/users/updateProfile/${role}/${email}`, 
         updatedData, 
         {
           headers: {
@@ -112,9 +113,9 @@ export const updateTaskStatus = createAsyncThunk(
   async ({ taskId, status }, { rejectWithValue, dispatch }) => {
     try {
       const response = await apiClientEngineer.patch(`/tasks/updateTicketStatus/${taskId}`, { status });
-      
+      console.log(response.data)
       if (status === "deferred") {
-        const userEmail = response.data.engineerEmail; // Get engineer's email from response
+        const userEmail = response.data.task.engineerEmail; // Get engineer's email from response
         dispatch(fetchEngineerTasks(userEmail)); // Dispatch fetchEngineerTasks if status is 'deferred'
       }
 

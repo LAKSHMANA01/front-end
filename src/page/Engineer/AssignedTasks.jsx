@@ -57,21 +57,23 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
             messageTOSend: `Task with ID: ${selectedTask._id} has been deferred by ${user.email}`, 
             isRead: false 
         }) 
-        // if (newStatus === "deferred" || newStatus === "failed") {
-        //     const notificationPayload = {
-        //          // Ensure this exists
-        //         messageToSend: `Task "${selectedTask._id}" has been deferred by ${user.email}`,
-        //         isRead: false,
-        //     };
+            if (newStatus === "deferred" || newStatus === "failed") {
+                const notificationPayload = {
+                    // Ensure this exists
+                    email: "vikas07@gmail.com",
+                    message: `Task "${selectedTask._id}" has been deferred by ${user.email}`,
+                    isRead: false,
+                };
+                dispatch(sendNotification(notificationPayload))
+                   .then((response) => {
+                       console.log("Notification sent:", response);
+                   })
+                   .catch((error) => {
+                        console.error("Error sending notification:", error);
+                   });
+                
+            }
     
-        //     dispatch(sendNotification(notificationPayload))
-        //         .then((response) => {
-        //             console.log("Notification sent:", response);
-        //         })
-        //         .catch((error) => {
-        //             console.error("Error sending notification:", error);
-        //         });
-        // }
             // Update local state for instant UI change
             setLocalTasks((prevTasks) =>
                 prevTasks.map((task) =>
