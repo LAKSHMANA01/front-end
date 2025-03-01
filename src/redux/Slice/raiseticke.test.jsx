@@ -7,8 +7,11 @@ describe('ticketSlice reducer', () => {
     HazardsRisetickes: [],
     isError: false,
     errorMessage: "",
- 
   };
+
+  it('should return the initial state', () => {
+    expect(reducer(undefined, {})).toEqual(initialState);
+  });
 
   describe('submitTicket', () => {
     it('should set isLoading true when pending', () => {
@@ -25,13 +28,21 @@ describe('ticketSlice reducer', () => {
       expect(state.data).toEqual([ticket]);
     });
 
-    it('should set isError true, update errorMessage, and set isLoading to false when rejected', () => {
+    it('should handle rejected action when error has a response', () => {
       const errorMsg = "Failed to submit ticket";
       const action = { type: submitTicket.rejected.type, payload: errorMsg };
       const state = reducer({ ...initialState, isLoading: true }, action);
       expect(state.isLoading).toBe(false);
       expect(state.isError).toBe(true);
       expect(state.errorMessage).toBe(errorMsg);
+    });
+
+    it('should handle rejected action when error has no response', () => {
+      const action = { type: submitTicket.rejected.type, payload: undefined };
+      const state = reducer({ ...initialState, isLoading: true }, action);
+      expect(state.isLoading).toBe(false);
+      expect(state.isError).toBe(true);
+      expect(state.errorMessage).toBe(undefined);
     });
   });
 
@@ -50,13 +61,21 @@ describe('ticketSlice reducer', () => {
       expect(state.HazardsRisetickes).toEqual([hazardTicket]);
     });
 
-    it('should set isError true, update errorMessage, and set isLoading to false when rejected', () => {
+    it('should handle rejected action when error has a response', () => {
       const errorMsg = "Failed to submit hazard ticket";
       const action = { type: HazardsTicket.rejected.type, payload: errorMsg };
       const state = reducer({ ...initialState, isLoading: true }, action);
       expect(state.isLoading).toBe(false);
       expect(state.isError).toBe(true);
       expect(state.errorMessage).toBe(errorMsg);
+    });
+
+    it('should handle rejected action when error has no response', () => {
+      const action = { type: HazardsTicket.rejected.type, payload: undefined };
+      const state = reducer({ ...initialState, isLoading: true }, action);
+      expect(state.isLoading).toBe(false);
+      expect(state.isError).toBe(true);
+      expect(state.errorMessage).toBe(undefined);
     });
   });
 });

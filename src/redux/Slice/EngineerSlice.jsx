@@ -201,10 +201,7 @@ const engineerSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
-      //   state.tasks = Array.isArray(action.payload) ? action.payload : [];
-      //   state.loading = false;
-      // })
+ 
       .addCase(fetchEngineerTasks.fulfilled, (state, action) => {
         if (Array.isArray(action.payload)) {
           state.tasks = action.payload;
