@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> face1ee69a1a5b05902a4e61c4859240cb2c35a1
 import React, { useEffect, useState } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import Dashbord from "./../../compoents/Dashbord";
@@ -99,6 +95,8 @@ const UserDashboard = ({ debouncedSearchTerm = "", statusFilter = "", priorityFi
     pendingTasks: tasks.filter(task => task.status === "pending"),
     totalTasks: tasks.filter(task => task.status === "open"),
     failedTasks: tasks.filter(task => task.status==="failed"),
+    inprogressTasks: tasks.filter(task => task.status==="in-progress"),
+
   };
   
   return <Dashbord role="user" ticketStatusData={ticketStatusData} taskPriorityData={taskPriorityData} loading={loading} error={error} data={userData}/>;

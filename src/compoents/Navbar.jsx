@@ -4,8 +4,7 @@ import { useSelector, useDispatch} from 'react-redux';
 
 import { Link } from 'react-router-dom';
 import  Notification from './notification';
-import { fetchNotifications} from "./../redux/Slice/notificationSlice"
-
+import { fetchNotifications } from "../redux/Slice/notificationSlice"
 
 
 

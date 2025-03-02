@@ -38,7 +38,6 @@ const TicketForm = () => {
     const ticketData = ticket.payload.ticket.ticket
     console.log("ahdkjfkaldsf", ticketData);
     toast.success("Ticket submitted successfully!");
-  //}
     
     // Reset form on success
     setTicketForm({

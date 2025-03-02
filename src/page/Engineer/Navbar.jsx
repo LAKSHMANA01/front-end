@@ -10,7 +10,7 @@ import { fetchNotifications} from "./../../redux/Slice/notificationSlice"
 const EngineerNavbar = ({toggleSidebar}) => {
   const UserName = sessionStorage.getItem("email")
   const ProfileName = UserName?.split("@")[0]
-  //console.log("ProfileNamesdsd: " + ProfileName)
+  console.log("ProfileNamesdsd: " + ProfileName)
 
   const dispatch = useDispatch();
   
