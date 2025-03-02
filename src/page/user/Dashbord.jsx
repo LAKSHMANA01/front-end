@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> face1ee69a1a5b05902a4e61c4859240cb2c35a1
 import React, { useEffect, useState } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import Dashbord from "./../../compoents/Dashbord";

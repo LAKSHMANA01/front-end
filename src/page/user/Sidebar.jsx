@@ -89,10 +89,10 @@ const Sidebar = ({ activePath = '/', isopen, onSidebarClose }) => {
         {isExpanded ? (
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent">
-            {firstName}
+            User Panel
           </h1>
         ) : (
-          <h1 className="text-2xl font-bold text-blue-600">{firstName?.charAt(0).toUpperCase()}</h1>
+          <h1 className="text-2xl font-bold text-blue-600">U</h1>
         )}
       </div>
 
@@ -122,9 +122,7 @@ const Sidebar = ({ activePath = '/', isopen, onSidebarClose }) => {
                   {item.label}
                 </span>
               )}
-              {/* <div className="absolute left-1/3 transform -translate-x-1/4 mt-2 w-20 bg-white dark:bg-gray-800 text-center text-sm font-medium text-gray-700 dark:text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity sm:hidden">
-                {item.label}
-              </div> */}
+          
             </button>
           );
         })}

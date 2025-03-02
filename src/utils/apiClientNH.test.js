@@ -1,12 +1,12 @@
-// __tests__/apiClientAdmin.test.js
+// __tests__/apiClientNH.test.js
 
 let apiClient;
 let originalSessionStorage;
 let originalLocation;
 
-describe('apiClient interceptors', () => {
+describe('apiClientNH interceptors', () => {
   beforeEach(() => {
-    // Reset the module cache to ensure module-level variables (like isRedirecting) are reinitialized.
+    // Reset the module cache so that module-level variables (like isRedirecting) are reset.
     jest.resetModules();
     originalSessionStorage = window.sessionStorage;
     originalLocation = window.location;
@@ -37,8 +37,8 @@ describe('apiClient interceptors', () => {
     window.location = { href: '' };
 
     // Import your axios client module.
-    // Adjust the path as necessary for your project structure.
-    apiClient = require('./apiClientAdmin').default;
+    // Adjust the path as necessary (e.g., './apiClientNH' if in the same folder).
+    apiClient = require('./apiClientNH').default;
   });
 
   afterEach(() => {
@@ -50,7 +50,7 @@ describe('apiClient interceptors', () => {
   describe('Request interceptor', () => {
     beforeEach(() => {
       // Override the adapter so that axios calls trigger the interceptor chain.
-      // Here, the adapter simply returns the final config in the "data" field.
+      // The adapter returns the final config (inside "data") so we can inspect it.
       apiClient.defaults.adapter = (config) =>
         Promise.resolve({
           data: config,
@@ -64,40 +64,39 @@ describe('apiClient interceptors', () => {
     it('should attach token, email, and role headers when available', async () => {
       // Set sessionStorage values.
       window.sessionStorage.getItem.mockImplementation((key) => {
-        if (key === 'token') return 'testToken';
-        if (key === 'email') return 'user@example.com';
-        if (key === 'role') return 'admin';
+        if (key === 'token') return 'nhToken';
+        if (key === 'email') return 'nh@example.com';
+        if (key === 'role') return 'nhRole';
         return null;
       });
 
       const response = await apiClient({ headers: {} });
       const config = response.data;
-      expect(config.headers['Authorization']).toBe('Bearer testToken');
-      expect(config.headers['X-User-Email']).toBe('user@example.com');
-      expect(config.headers['X-User-Role']).toBe('admin');
+      expect(config.headers['Authorization']).toBe('Bearer nhToken');
+      expect(config.headers['X-User-Email']).toBe('nh@example.com');
+      expect(config.headers['X-User-Role']).toBe('nhRole');
     });
 
     it('should remove email and role headers when they are not available', async () => {
       // Only token is available.
       window.sessionStorage.getItem.mockImplementation((key) => {
-        if (key === 'token') return 'testToken';
+        if (key === 'token') return 'nhToken';
         return null;
       });
 
-      // Pre-populate headers to check if they get removed.
+      // Pre-populate headers to verify removal.
       const response = await apiClient({
-        headers: { 'X-User-Email': 'old@example.com', 'X-User-Role': 'user' },
+        headers: { 'X-User-Email': 'old@example.com', 'X-User-Role': 'oldRole' },
       });
       const config = response.data;
-      expect(config.headers['Authorization']).toBe('Bearer testToken');
+      expect(config.headers['Authorization']).toBe('Bearer nhToken');
       expect(config.headers).not.toHaveProperty('X-User-Email');
       expect(config.headers).not.toHaveProperty('X-User-Role');
     });
 
     it('should handle errors thrown when accessing sessionStorage', async () => {
-      // Spy on console.error.
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      // Force sessionStorage.getItem to throw an error.
+      // Force an error when sessionStorage.getItem is called.
       window.sessionStorage.getItem.mockImplementation(() => {
         throw new Error('Storage error');
       });
@@ -106,7 +105,7 @@ describe('apiClient interceptors', () => {
       const response = await apiClient(originalConfig);
       const config = response.data;
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error accessing sessionStorage:', expect.any(Error));
-      // The original config should remain unchanged if an error occurs.
+      // The original config should be returned unchanged.
       expect(config).toEqual(originalConfig);
       consoleErrorSpy.mockRestore();
     });
@@ -152,7 +151,7 @@ describe('apiClient interceptors', () => {
       expect(window.sessionStorage.clear).toHaveBeenCalled();
       expect(window.location.href).toBe('/login');
 
-      // For the second call, do not reset window.location.href so it remains '/login'.
+      // For the second call, do not reset window.location.href so that it remains '/login'.
       window.sessionStorage.clear.mockClear();
       await expect(apiClient({ headers: {} })).rejects.toMatchObject({ response: { status: 401 } });
       expect(window.sessionStorage.clear).not.toHaveBeenCalled();
