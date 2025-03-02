@@ -11,8 +11,7 @@ import Navbar from "../../compoents/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import AdminTaskList from "./AdminTaskList"; // Import AdminTaskList
 import AdminNavbar from "./NavBar";
-import AdminSearch from "./AdminSearch";
-import Footer from "../../compoents/Footer"
+
 
 function AdminDashboard() {
   const location = useLocation();

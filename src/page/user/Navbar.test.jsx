@@ -1,44 +1,66 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Navbar from './Navbar';
+import { MemoryRouter } from 'react-router-dom';
 
-// Mock lucide-react icons
-jest.mock('lucide-react', () => ({
-  Bell: () => <div data-testid="bell-icon">Bell Icon</div>,
-  Search: () => <div data-testid="search-icon">Search Icon</div>,
-  Sun: () => <div data-testid="sun-icon">Sun Icon</div>,
-  Moon: () => <div data-testid="moon-icon">Moon Icon</div>,
-  Menu: () => <div data-testid="menu-icon">Menu Icon</div>,
-  LogOut: () => <div data-testid="logout-icon">Logout Icon</div>
-}));
+describe('Navbar Component', () => {
+  const toggleSidebarMock = jest.fn();
 
-const mockStore = configureStore([]);
-let store; // Define store globally
-
-beforeEach(() => {
-  store = mockStore({
-    auth: {
-      user: { email: "test@example.com" }
-    }
+  beforeEach(() => {
+    // Set an email in sessionStorage so that the component renders a user name.
+    sessionStorage.setItem("email", "test@example.com");
   });
 
-  // Mock sessionStorage
-  Storage.prototype.getItem = jest.fn(() => "test@example.com");
-});
+  afterEach(() => {
+    sessionStorage.clear();
+    jest.clearAllMocks();
+  });
 
-test('renders navbar with all icons', () => {
-  render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <Navbar />
-      </BrowserRouter>
-    </Provider>
-  );
+  const renderComponent = () =>
+    render(
+      <MemoryRouter>
+        <Navbar toggleSidebar={toggleSidebarMock} />
+      </MemoryRouter>
+    );
 
-  expect(screen.getByTestId('menu-icon')).toBeInTheDocument();
-  expect(screen.getByTestId('search-icon')).toBeInTheDocument();
-  expect(screen.getByTestId('bell-icon')).toBeInTheDocument();
+  it('renders the Navbar with the Telecom Services heading', () => {
+    renderComponent();
+    expect(screen.getByText(/Telecom Services/i)).toBeInTheDocument();
+  });
+
+  it('displays the correct user name based on sessionStorage email', () => {
+    renderComponent();
+    // The name is derived by splitting the email at "@" so it should be "test"
+    expect(screen.getByText('test')).toBeInTheDocument();
+  });
+
+  it('calls toggleSidebar when the mobile menu button is clicked', () => {
+    // Render the component and grab the container so we can query by class
+    const { container, getAllByRole } = renderComponent();
+
+    // The mobile menu button is the one with the "md:hidden" class.
+    // You can select it by querying all buttons and assuming the first one is the mobile menu button.
+    const buttons = getAllByRole('button');
+    fireEvent.click(buttons[0]);
+    expect(toggleSidebarMock).toHaveBeenCalled();
+  });
+
+  it('toggles the profile dropdown when the profile button is clicked', () => {
+    renderComponent();
+
+    // Initially, the dropdown with the logout link should not be visible.
+    expect(screen.queryByText(/logout/i)).not.toBeInTheDocument();
+
+    // Find the profile button using the displayed user name.
+    const profileButton = screen.getByText('test').closest('button');
+    expect(profileButton).toBeInTheDocument();
+
+    // Click the profile button to open the dropdown.
+    fireEvent.click(profileButton);
+    expect(screen.getByText(/logout/i)).toBeInTheDocument();
+
+    // Click again to close the dropdown.
+    fireEvent.click(profileButton);
+    expect(screen.queryByText(/logout/i)).not.toBeInTheDocument();
+  });
 });

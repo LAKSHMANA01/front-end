@@ -1,58 +1,143 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
 
-// Mock the child components
+// Mock child components
 jest.mock('./Sidebar', () => {
-  return function MockSidebar() {
-    return <div data-testid="admin-sidebar">Mock Sidebar</div>;
+  return function MockSidebar({ isopen, onSidebarClose }) {
+    return (
+      <div data-testid="admin-sidebar" data-isopen={isopen}>
+        <button 
+          data-testid="close-sidebar-button"
+          onClick={onSidebarClose}
+        >
+          Close Sidebar
+        </button>
+      </div>
+    );
   };
 });
 
 jest.mock('./../../compoents/Navbar', () => {
-  return function MockNavbar() {
-    return <div data-testid="admin-navbar">Mock Navbar</div>;
+  return function MockNavbar({ toggleSidebar }) {
+    return (
+      <div data-testid="admin-navbar">
+        <button 
+          data-testid="toggle-sidebar-button"
+          onClick={toggleSidebar}
+        >
+          Toggle Sidebar
+        </button>
+      </div>
+    );
   };
 });
 
-describe('AdminLayout Component', () => {
-  // Helper function to create a mock store
-  const createMockStore = (initialState) => {
-    return createStore(() => initialState);
-  };
+// Mock Outlet component from react-router-dom
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Outlet: () => <div data-testid="outlet-content">Mock Outlet Content</div>
+}));
 
-  // Helper function to render with providers
-  const renderWithProviders = (component, store) => {
+describe('AdminLayout Component', () => {
+  // Helper function to render with MemoryRouter
+  const renderWithRouter = (component) => {
     return render(
       <MemoryRouter>
-        <Provider store={store}>{component}</Provider>
+        {component}
       </MemoryRouter>
     );
   };
 
-  test('renders navbar correctly', () => {
-    const store = createMockStore({});
-    renderWithProviders(<AdminLayout />, store);
+  test('renders AdminLayout component correctly', () => {
+    renderWithRouter(<AdminLayout />);
+    
+    // Check if all main components are rendered
     expect(screen.getByTestId('admin-navbar')).toBeInTheDocument();
-  });
-
-  test('renders sidebar correctly', () => {
-    const store = createMockStore({});
-    renderWithProviders(<AdminLayout />, store);
     expect(screen.getByTestId('admin-sidebar')).toBeInTheDocument();
+    expect(screen.getByTestId('outlet-content')).toBeInTheDocument();
   });
 
-  test('renders outlet correctly', () => {
-    const store = createMockStore({});
-    renderWithProviders(
-      <AdminLayout>
-        <div data-testid="admin-outlet">Mock Outlet Content</div>
-      </AdminLayout>,
-      store
-    );
-    expect(screen.getByTestId('admin-outlet')).toBeInTheDocument();
+  test('sidebar is initially closed', () => {
+    renderWithRouter(<AdminLayout />);
+    
+    // Check initial state of sidebar
+    const sidebar = screen.getByTestId('admin-sidebar');
+    expect(sidebar).toHaveAttribute('data-isopen', 'false');
+  });
+
+  test('toggles sidebar when toggle button is clicked', () => {
+    renderWithRouter(<AdminLayout />);
+    
+    const toggleButton = screen.getByTestId('toggle-sidebar-button');
+    const sidebar = screen.getByTestId('admin-sidebar');
+    
+    // Initial state
+    expect(sidebar).toHaveAttribute('data-isopen', 'false');
+    
+    // Click toggle button
+    fireEvent.click(toggleButton);
+    
+    // Sidebar should now be open
+    expect(sidebar).toHaveAttribute('data-isopen', 'true');
+    
+    // Click toggle button again
+    fireEvent.click(toggleButton);
+    
+    // Sidebar should now be closed
+    expect(sidebar).toHaveAttribute('data-isopen', 'false');
+  });
+
+  test('closes sidebar when close button is clicked', () => {
+    renderWithRouter(<AdminLayout />);
+    
+    const toggleButton = screen.getByTestId('toggle-sidebar-button');
+    const sidebar = screen.getByTestId('admin-sidebar');
+    const closeButton = screen.getByTestId('close-sidebar-button');
+    
+    // Open sidebar first
+    fireEvent.click(toggleButton);
+    expect(sidebar).toHaveAttribute('data-isopen', 'true');
+    
+    // Click close button
+    fireEvent.click(closeButton);
+    
+    // Sidebar should now be closed
+    expect(sidebar).toHaveAttribute('data-isopen', 'false');
+  });
+
+  test('main content has correct styling based on sidebar state', () => {
+    renderWithRouter(<AdminLayout />);
+    
+    // Get main content div (parent of outlet)
+    const mainContent = screen.getByTestId('outlet-content').parentElement;
+    
+    // Check initial classes
+    expect(mainContent).toHaveClass('mt-7');
+    expect(mainContent).toHaveClass('lg:ml-20');
+    expect(mainContent).toHaveClass('ms:ml-0');
+    expect(mainContent).toHaveClass('transition-all');
+    expect(mainContent).toHaveClass('duration-300');
+  });
+
+  test('component handles multiple sidebar toggles correctly', () => {
+    renderWithRouter(<AdminLayout />);
+    
+    const toggleButton = screen.getByTestId('toggle-sidebar-button');
+    const sidebar = screen.getByTestId('admin-sidebar');
+    
+    // Toggle multiple times
+    fireEvent.click(toggleButton); // Open
+    expect(sidebar).toHaveAttribute('data-isopen', 'true');
+    
+    fireEvent.click(toggleButton); // Close
+    expect(sidebar).toHaveAttribute('data-isopen', 'false');
+    
+    fireEvent.click(toggleButton); // Open
+    expect(sidebar).toHaveAttribute('data-isopen', 'true');
+    
+    fireEvent.click(toggleButton); // Close
+    expect(sidebar).toHaveAttribute('data-isopen', 'false');
   });
 });

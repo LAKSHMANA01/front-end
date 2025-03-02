@@ -5,8 +5,6 @@ import { Link, useNavigate} from 'react-router-dom';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import EngineerDashBoard from '../Engineer/Hazards'
-
 const AdminHazards = () => {
   const { Hazards, loading, error } = useSelector((state) => state.engineer);
   const dispatch = useDispatch();

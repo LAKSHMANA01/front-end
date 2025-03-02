@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./../../compoents/footers";
+import {sendNotification} from '../../redux/Slice/notificationSlice';
 
 const email = sessionStorage.getItem('email');
 
@@ -33,10 +34,11 @@ const TicketForm = () => {
   }
 
   try {
-    if(email){
-    await dispatch(submitTicket({ ...ticketForm, email })); 
+    const ticket = await dispatch(submitTicket({ ...ticketForm, email })); ;
+    const ticketData = ticket.payload.ticket.ticket
+    console.log("ahdkjfkaldsf", ticketData);
     toast.success("Ticket submitted successfully!");
-  }
+  //}
     
     // Reset form on success
     setTicketForm({
@@ -45,6 +47,22 @@ const TicketForm = () => {
       description: "",
       pincode: "",
     });
+    if (ticketData.engineerEmail) {
+      const notificationPayload = {
+        // Ensure this exists
+        email: ticketData.engineerEmail,
+        message: `Task ${ticketData._id} has been raised by ${ticketData.userEmail}`,
+        isRead: false,
+      };
+      console.log("notificationPayload:", notificationPayload);
+      await dispatch(sendNotification(notificationPayload))
+        .then((response) => {
+          console.log("Notification sent:", response);
+        })
+        .catch((error) => {
+          console.error("Error sending notification:", error);
+        });
+    }      
   } catch (err) {
     console.error("Failed to submit ticket:", err);
     toast.error("Failed to submit ticket!");
@@ -162,19 +180,3 @@ const TicketForm = () => {
 };
 
 export default TicketForm;
-
-// import "react-toastify/dist/ReactToastify.css";
-// import Footer from "./../../compoents/footers";
-// toast.success("Ticket submitted successfully!");
-// toast.success("Ticket submitted successfully!");
-// <ToastContainer 
-// position="top-right"
-// autoClose={5000}
-// hideProgressBar={false}
-// newestOnTop={false}
-// closeOnClick
-// rtl={false}
-// pauseOnFocusLoss
-// draggable
-// pauseOnHover
-// />

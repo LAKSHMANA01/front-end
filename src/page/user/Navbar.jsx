@@ -4,11 +4,6 @@ import {  Menu, LogOut ,User } from "lucide-react";
 import { Link } from 'react-router-dom';
 
 
-
-
-         
-
-
 const Navbar = ({ toggleSidebar}) => {
  
    const [isProfileOpen, setIsProfileOpen] = useState(false);

@@ -94,7 +94,8 @@ const ResetPassword = () => {
                 {/* Step 2: Verify Security Answer */}
                 {step === 2 && (
                     <form onSubmit={handleSecurityAnswerSubmit}>
-                        <p className="mb-2">Security Question : {securityQuestion}</p>
+                        <label htmlFor="securityAnswer" className="block mb-2">Security Question</label>
+                        <p className="mb-2 text-gray-700 font-semibold">{securityQuestion}</p>
                         <label htmlFor="securityAnswer" className="block mb-2">Security Answer</label>
                         <input
                             id='securityAnswer' 

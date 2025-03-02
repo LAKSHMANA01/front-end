@@ -63,6 +63,8 @@ const AdminHazardsTickets = () => {
       console.error("Failed to submit Hazard:");
     }
   };
+    const inputStyles =
+    "w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent justify-center";
 
   return (
     <CustomCard title="Add New Hazards" icon={AlertTriangle}>
@@ -156,18 +158,21 @@ const AdminHazardsTickets = () => {
         <div className="flex justify-between">
         <button
             onClick={handleCancel}
-          className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-colors"
+           className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-colors"
         >
           <X size={16} />
-          cancel
+          Cancel
         </button>
         <button
           type="submit"
-          className="w-40 flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
+          className="w-40 flex items-center justify-center bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
         >
-          <Send size={16} />
-          Submit Hazard
+          <span className="flex items-center justify-center w-full gap-2">
+            <Send size={16} />
+            Submit
+          </span>
         </button>
+
         
         </div>
       </form>
