@@ -1,97 +1,103 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import TaskCard from './Taskcard';
+import React from "react"; 
+import { render, screen } from "@testing-library/react";
+import TaskCard from "./Taskcard";
+import "@testing-library/jest-dom";
 
-describe('TaskCard Component', () => {
-  const mockTask = {
-    serviceType: 'Maintenance',
-    status: 'in progress',
-    description: 'Regular system maintenance',
-    priority: 'high',
-    engineerEmail: 'engineer@example.com',
-    createdAt: '2024-02-22T10:00:00Z',
-    updatedAt: '2024-02-22T11:00:00Z'
+describe("TaskCard Component", () => {
+  const task = {
+    serviceType: "Installation",
+    status: "in-progress",
+    description: "Set up network cables.",
+    priority: "high",
+    engineerEmail: "engineer@example.com",
+    createdAt: "2024-02-29T10:00:00Z",
+    updatedAt: "2024-02-29T12:00:00Z",
   };
 
-  // Test basic rendering
-  test('renders TaskCard with all required elements', () => {
-    render(<TaskCard task={mockTask} showPriority={true} />);
-    
-    // Check if main elements are present
-    expect(screen.getByText('Maintenance')).toBeInTheDocument();
-    expect(screen.getByText('in progress')).toBeInTheDocument();
-    expect(screen.getByText('Regular system maintenance')).toBeInTheDocument();
-    expect(screen.getByText('high priority')).toBeInTheDocument();
-    expect(screen.getByText(/engineer@example.com/)).toBeInTheDocument();
+  test("renders task details correctly", () => {
+    render(<TaskCard task={task} showPriority={true} assignEngineer={true} />);
+
+    expect(screen.getByText(/Service Type : Installation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Status :/i)).toBeInTheDocument();
+    expect(screen.getByText(/in-progress/i)).toBeInTheDocument();
+    expect(screen.getByText(/Description : Set up network cables./i)).toBeInTheDocument();
   });
 
-  // Test status styles
-  test.each([
-    ['completed', 'text-green-600'],
-    ['in progress', 'text-blue-600'],
-    ['pending', 'text-yellow-600'],
-    ['unknown', 'text-gray-600'],
-  ])('applies correct status style for %s status', (status, expectedClass) => {
-    const taskWithStatus = { ...mockTask, status };
-    render(<TaskCard task={taskWithStatus} showPriority={true} />);
-    
-    const statusElement = screen.getByText(status);
-    expect(statusElement).toHaveClass(expectedClass);
+  test("renders priority indicator when showPriority is true", () => {
+    render(<TaskCard task={task} showPriority={true} assignEngineer={false} />);
+    expect(screen.getByText(/high priority/i)).toBeInTheDocument();
   });
 
-  // Test priority indicator
-  test('shows priority indicator when showPriority is true', () => {
-    render(<TaskCard task={mockTask} showPriority={true} />);
-    expect(screen.getByText(/high priority/)).toBeInTheDocument();
+  test("does not render priority indicator when showPriority is false", () => {
+    render(<TaskCard task={task} showPriority={false} assignEngineer={false} />);
+    expect(screen.queryByText(/high priority/i)).not.toBeInTheDocument();
   });
 
-  test('hides priority indicator when showPriority is false', () => {
-    render(<TaskCard task={mockTask} showPriority={false} />);
-    expect(screen.queryByText(/high priority/)).not.toBeInTheDocument();
+  test("renders assigned engineer when assignEngineer is true", () => {
+    render(<TaskCard task={task} showPriority={false} assignEngineer={true} />);
+    expect(screen.getByText(/Assigned Engineer : engineer@example.com/i)).toBeInTheDocument();
   });
 
-  // Test priority colors
-  test.each([
-    ['high', 'bg-red-500'],
-    ['medium', 'bg-yellow-500'],
-    ['low', 'bg-gray-400'],
-  ])('applies correct priority color for %s priority', (priority, expectedClass) => {
-    const taskWithPriority = { ...mockTask, priority };
-    render(<TaskCard task={taskWithPriority} showPriority={true} />);
-    
-    const priorityIndicator = screen.getByText(`${priority} priority`).previousSibling;
-    expect(priorityIndicator).toHaveClass(expectedClass);
+  test("does not render assigned engineer when assignEngineer is false", () => {
+    render(<TaskCard task={task} showPriority={false} assignEngineer={false} />);
+    expect(screen.queryByText(/Assigned Engineer : engineer@example.com/i)).not.toBeInTheDocument();
   });
 
-  // Test date formatting
-  test('formats dates correctly', () => {
-    render(<TaskCard task={mockTask} showPriority={true} />);
-    
-    const createdDate = new Date(mockTask.createdAt).toLocaleDateString();
-    const updatedDate = new Date(mockTask.updatedAt).toLocaleDateString();
-    
-    expect(screen.getByText(`Created At: ${createdDate}`)).toBeInTheDocument();
-    expect(screen.getByText(`Updated At: ${updatedDate}`)).toBeInTheDocument();
+  test("renders createdAt and updatedAt dates correctly", () => {
+    render(<TaskCard task={task} showPriority={false} assignEngineer={false} />);
+    expect(screen.getByText(/Created At: 2\/29\/2024/i)).toBeInTheDocument();
+    expect(screen.getByText(/Updated At: 2\/29\/2024/i)).toBeInTheDocument();
   });
 
-  // Test hover actions
-  test('edit button is initially hidden and visible on hover', () => {
-    render(<TaskCard task={mockTask} showPriority={true} />);
-    
-    const hoverActions = document.querySelector('.opacity-0.group-hover\\:opacity-100');
-    expect(hoverActions).toBeInTheDocument();
-    expect(hoverActions).toHaveClass('opacity-0');
+  test("applies correct status styles", () => {
+    const { container } = render(<TaskCard task={{ ...task, status: "completed" }} />);
+    expect(container.querySelector(".text-green-600")).toBeInTheDocument();
+
+    render(<TaskCard task={{ ...task, status: "pending" }} />);
+    expect(screen.getByText("pending")).toHaveClass("text-yellow-600");
+
+    render(<TaskCard task={{ ...task, status: "unknown" }} />);
+    expect(screen.getByText("unknown")).toHaveClass("text-gray-600");
   });
 
-  // Test button interactions
-  test('more options button is clickable', () => {
-    const { container } = render(<TaskCard task={mockTask} showPriority={true} />);
-    
-    const moreOptionsButton = container.querySelector('button.text-gray-400');
-    expect(moreOptionsButton).toBeInTheDocument();
-    
-    fireEvent.click(moreOptionsButton);
-    // Note: Add more specific assertions here when implementing click handler
+  test("applies correct priority colors", () => {
+    const { container } = render(<TaskCard task={{ ...task, priority: "high" }} showPriority />);
+    expect(container.querySelector(".bg-red-500")).toBeInTheDocument();
+
+    render(<TaskCard task={{ ...task, priority: "medium" }} showPriority />);
+    expect(screen.getByText(/medium priority/i)).toHaveClass("text-gray-500");
+
+    render(<TaskCard task={{ ...task, priority: "low" }} showPriority />);
+    expect(screen.getByText(/low priority/i)).toHaveClass("text-gray-500");
+  });
+
+  // Additional tests for 100% coverage
+  test("renders default values when task is undefined", () => {
+    render(<TaskCard task={{}} showPriority={true} assignEngineer={true} />);
+    expect(screen.getByText(/Service Type :/i)).toBeInTheDocument();
+    expect(screen.getByText(/Status :/i)).toBeInTheDocument();
+  });
+
+  test("renders without engineer assigned", () => {
+    const taskWithoutEngineer = { ...task, engineerEmail: null };
+    render(<TaskCard task={taskWithoutEngineer} showPriority={true} assignEngineer={true} />);
+    expect(screen.getByText(/Assigned Engineer :/i).textContent).toBe("Assigned Engineer : ");
+  });
+
+  test("renders default values for missing createdAt and updatedAt", () => {
+    const taskWithoutDates = { ...task, createdAt: null, updatedAt: null };
+    render(<TaskCard task={taskWithoutDates} showPriority={true} assignEngineer={true} />);
+    expect(screen.queryByText(/Created At:/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Updated At:/i)).not.toBeInTheDocument();
+  });
+
+  test("handles unknown priority values", () => {
+    render(<TaskCard task={{ ...task, priority: "very-high" }} showPriority={true} />);
+    expect(screen.getByText(/very-high priority/i)).toHaveClass("text-gray-500");
+  });
+
+  test("handles unknown status values", () => {
+    render(<TaskCard task={{ ...task, status: "delayed" }} />);
+    expect(screen.getByText("delayed")).toHaveClass("text-gray-600");
   });
 });

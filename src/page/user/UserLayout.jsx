@@ -25,7 +25,6 @@ const UserLayout = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // const bodyBackgroundStyle = scrollY > 100 ? 'bg-blue-white' : 'bg-white';
 
   return (
  
