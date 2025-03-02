@@ -150,6 +150,7 @@ const EngineerDashboard = ({ debouncedSearchTerm="", statusFilter="", priorityFi
   const engineerData = {
     allTasks: tasks.filter(task => task.status === "open"),
     pendingResponse: tasks.filter(task => task.status === "pending response"),
+    inprogressTasks:tasks.filter(task=>task.status==="in-progress"),
     resolvedTickets: tasks.filter(task => task.status === "completed"),
     allHazards:Hazards,
   };

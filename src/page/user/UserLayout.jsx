@@ -25,7 +25,6 @@ const UserLayout = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // const bodyBackgroundStyle = scrollY > 100 ? 'bg-blue-white' : 'bg-white';
 
   return (
  
@@ -35,7 +34,7 @@ const UserLayout = () => {
        
 
         {/* Main Content Area */}
-        <div className="flex flex-1 mt-16 relative">
+        <div className="flex flex-1 mt-14 relative">
           {/* Fixed Sidebar */}
           <Sidebar 
           isopen = { sidebarvisble}

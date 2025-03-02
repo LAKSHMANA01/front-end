@@ -95,6 +95,8 @@ const UserDashboard = ({ debouncedSearchTerm = "", statusFilter = "", priorityFi
     pendingTasks: tasks.filter(task => task.status === "pending"),
     totalTasks: tasks.filter(task => task.status === "open"),
     failedTasks: tasks.filter(task => task.status==="failed"),
+    inprogressTasks: tasks.filter(task => task.status==="in-progress"),
+
   };
   
   return <Dashbord role="user" ticketStatusData={ticketStatusData} taskPriorityData={taskPriorityData} loading={loading} error={error} data={userData}/>;

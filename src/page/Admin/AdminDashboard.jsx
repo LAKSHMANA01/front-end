@@ -22,8 +22,7 @@ function AdminDashboard() {
         <Sidebar />
         <AdminNavbar/>
         
-        <div className="grow ml-16 md:ml-64 h-full lg:h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6">
-          {/* Show Navbar only when not on /admin/tasks */}
+        <div className="flex-1 mt-10 ml-10 md:ml-20 transition-all duration-300 bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white p-6">          {/* Show Navbar only when not on /admin/tasks */}
           {location.pathname !== "/admin/tasks" && <Navbar />}
 
           {/* Render tasks when visiting the /admin/tasks route */}
