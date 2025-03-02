@@ -33,8 +33,10 @@ const TicketForm = () => {
   }
 
   try {
+    if(email){
     await dispatch(submitTicket({ ...ticketForm, email })); 
     toast.success("Ticket submitted successfully!");
+  }
     
     // Reset form on success
     setTicketForm({

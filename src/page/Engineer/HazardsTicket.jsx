@@ -227,8 +227,9 @@ const TicketForm = () => {
     <CustomCard title="Add New Hazards" icon={AlertTriangle}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className={labelStyles}>Hazards Type</label>
+          <label htmlFor="hazard-type" className={labelStyles}>Hazards Type</label>
           <input
+          id="hazard-type"
             type="text"
             className={inputStyles}
             placeholder="Enter Hazards Type"
@@ -240,8 +241,9 @@ const TicketForm = () => {
           />
         </div>
         <div>
-          <label className={labelStyles}>Address</label>
+          <label htmlFor="hazard-address" className={labelStyles}>Address</label>
           <input
+          id="hazard-address"
             type="text"
             className={inputStyles}
             placeholder="Address"
@@ -253,8 +255,9 @@ const TicketForm = () => {
           />
         </div>
         <div>
-          <label className={labelStyles}>Description</label>
+          <label htmlFor="hazard-description" className={labelStyles}>Description</label>
           <textarea
+          id="hazard-description"
             className={inputStyles}
             rows={4}
             placeholder="Describe your issue or request in detail"
@@ -284,8 +287,9 @@ const TicketForm = () => {
        
 
         <div>
-          <label className={labelStyles}>Enter Pincode</label>
+          <label htmlFor="hazard-pincode" className={labelStyles}>Enter Pincode</label>
           <input
+          id="hazard-pincode"
             type="text"
             className={inputStyles}
             value={ticketForm.pincode}

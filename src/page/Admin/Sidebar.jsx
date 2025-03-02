@@ -53,7 +53,7 @@ const AdminSidebar = ({ isopen , onSidebarClose}) => {
     { path: '/admin/engineer-approval', icon: UserCheck, label: 'EngineersApproval' },
     { path: '/admin/users', icon: Users, label: 'Users' },
     { path: '/admin/hazards', icon:ShieldAlert, label: 'Hazards' },
-    { path: '/admin/deferred', icon:FileX, label: 'Deferred Tasks' }
+    { path: '/admin/deferred', icon:MdOutlinePendingActions, label: 'Deferred Tasks' }
   ];
 
   // Determine active menu item

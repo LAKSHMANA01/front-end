@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../../utils/apiClientUser";
+import apiClientUser from "../../utils/apiClientUser";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -78,7 +78,7 @@ function Signup() {
     }
 
     try {
-      const response = await apiClient.post("/users/newUser", {
+      const response = await apiClientUser.post("/users/newUser", {
         // name: formData.name,
         // email: formData.email,
         // phone: formData.phone,
@@ -173,8 +173,9 @@ function Signup() {
               )}
 
               <div className="mb-4">
-                <label className="block text-lg font-medium mb-2">Role</label>
+                <label htmlFor="role" className="block text-lg font-medium mb-2">Role</label>
                 <select
+                  id="role"
                   className="w-full px-4 py-2 border rounded-md"
                   name="role"
                   value={formData.role}
@@ -194,10 +195,11 @@ function Signup() {
               {formData.role === "engineer" && (
                 <React.Fragment>
                   <div className="mb-4">
-                    <label className="block text-lg font-medium mb-2">
+                    <label htmlFor="specialization" className="block text-lg font-medium mb-2">
                       Specialization
                     </label>
                     <select
+                      id="specialization"
                       className="w-full px-4 py-2 border rounded-md"
                       name="specialization"
                       value={formData.specialization}

@@ -103,7 +103,6 @@ const Sidebar = ({ activePath = '/', isopen, onSidebarClose }) => {
           return (
             <button
               key={item.path}
-              title={item.label}
               onClick={() => handleNavigation(item.path)}
               className={`
                 flex items-center px-4 py-3 mb-2 w-full rounded-lg transition-all duration-200
