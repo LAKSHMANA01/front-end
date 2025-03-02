@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import ForgotPwd from './ForgotPwd';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import ResetPassword from './ForgotPwd';
 import apiClientUser from '../../utils/apiClientUser';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 // Mock dependencies
 jest.mock('../../utils/apiClientUser');
@@ -19,557 +19,325 @@ jest.mock('react-toastify', () => ({
   ToastContainer: () => <div data-testid="toast-container" />,
 }));
 
-describe('ForgotPwd Component', () => {
-  let mockNavigate;
-  let user;
-
+describe('ResetPassword Component', () => {
+  const mockNavigate = jest.fn();
+  
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockNavigate = jest.fn();
     useNavigate.mockReturnValue(mockNavigate);
-    user = userEvent.setup();
-    //jest.useFakeTimers();
+    jest.clearAllMocks();
   });
 
-  // Helper function to render component and get common elements
-  const setupComponent = () => {
-    render(<ForgotPwd />);
-    return {
-      emailInput: () => screen.getByLabelText(/Enter Email/i),
-      submitButton: () => screen.getByRole('button'),
-    };
+  // Helper function to advance to step 2
+  const advanceToStep2 = async () => {
+    apiClientUser.post.mockResolvedValueOnce({
+      data: {
+        user: {
+          success: true,
+          securityQuestion: 'What is your favorite color?'
+        }
+      }
+    });
+
+    render(<ResetPassword />);
+    
+    const emailInput = screen.getByLabelText(/Enter Email/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    
+    const verifyButton = screen.getByRole('button', { name: /Verify Email/i });
+    fireEvent.click(verifyButton);
+    
+    await waitFor(() => expect(screen.getByText(/Security Question/i)).toBeInTheDocument());
   };
 
-  test('renders initial email verification form', () => {
-    setupComponent();
-    expect(screen.getByText('Reset Password')).toBeInTheDocument();
+  // Helper function to advance to step 3
+  const advanceToStep3 = async () => {
+    await advanceToStep2();
+    
+    apiClientUser.post.mockResolvedValueOnce({
+      data: {
+        user: {
+          success: true,
+          message: 'Security answer verified. Proceed to reset password.'
+        }
+      }
+    });
+    
+    const securityAnswerInput = screen.getByLabelText(/Security Answer/i);
+    fireEvent.change(securityAnswerInput, { target: { value: 'blue' } });
+    
+    const verifyAnswerButton = screen.getByRole('button', { name: /Verify Answer/i });
+    fireEvent.click(verifyAnswerButton);
+    
+    await waitFor(() => expect(screen.getByLabelText(/New Password/i)).toBeInTheDocument());
+  };
+
+  test('renders initial email input form', () => {
+    render(<ResetPassword />);
+    
+    expect(screen.getByText(/Reset Password/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Enter Email/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Verify Email/i })).toBeInTheDocument();
   });
 
-  test('handles email input change', async () => {
-    const { emailInput } = setupComponent();
-    await act(async () => {
-      await user.type(emailInput(), 'test@example.com');
-    });
-    expect(emailInput().value).toBe('test@example.com');
-  });
-
-  test('handles successful email verification and moves to step 2', async () => {
-    const { emailInput, submitButton } = setupComponent();
-    
+  test('handles email verification successfully', async () => {
     apiClientUser.post.mockResolvedValueOnce({
       data: {
-        success: true,
-        securityQuestion: 'What is your favorite color?'
+        user: {
+          success: true,
+          securityQuestion: 'What is your favorite color?'
+        }
       }
     });
 
-    await act(async () => {
-      await user.type(emailInput(), 'test@example.com');
-    });
+    render(<ResetPassword />);
     
-    await act(async () => {
-      fireEvent.click(submitButton());
-    });
-
+    const emailInput = screen.getByLabelText(/Enter Email/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    
+    const verifyButton = screen.getByRole('button', { name: /Verify Email/i });
+    fireEvent.click(verifyButton);
+    
     await waitFor(() => {
       expect(apiClientUser.post).toHaveBeenCalledWith('/users/reset', { email: 'test@example.com' });
-      expect(screen.getByText('What is your favorite color?')).toBeInTheDocument();
-      expect(screen.getByLabelText(/Security Answer/i)).toBeInTheDocument();
+      expect(screen.getByText(/What is your favorite color/i)).toBeInTheDocument();
     });
   });
 
-  test('handles failed email verification with API error', async () => {
-    const { emailInput, submitButton } = setupComponent();
-    
-    apiClientUser.post.mockRejectedValueOnce({
-      response: { data: { message: 'Email not found' } }
+  test('handles email verification error', async () => {
+    apiClientUser.post.mockResolvedValueOnce({
+      data: {
+        user: {
+          success: false,
+          message: 'Email not found'
+        }
+      }
     });
 
-    await act(async () => {
-      await user.type(emailInput(), 'nonexistent@example.com');
-    });
+    render(<ResetPassword />);
     
-    await act(async () => {
-      fireEvent.click(submitButton());
-    });
-
+    const emailInput = screen.getByLabelText(/Enter Email/i);
+    fireEvent.change(emailInput, { target: { value: 'nonexistent@example.com' } });
+    
+    const verifyButton = screen.getByRole('button', { name: /Verify Email/i });
+    fireEvent.click(verifyButton);
+    
     await waitFor(() => {
-      expect(apiClientUser.post).toHaveBeenCalledWith('/users/reset', { email: 'nonexistent@example.com' });
       expect(toast.error).toHaveBeenCalledWith('Email not found');
     });
   });
 
-  test('handles failed email verification with general error', async () => {
-    const { emailInput, submitButton } = setupComponent();
-    
-    apiClientUser.post.mockRejectedValueOnce(new Error('Network error'));
-
-    await act(async () => {
-      await user.type(emailInput(), 'test@example.com');
-    });
-    
-    await act(async () => {
-      fireEvent.click(submitButton());
-    });
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Error verifying email');
-    });
-  });
-
-  test('handles security answer verification and moves to step 3', async () => {
-    render(<ForgotPwd />);
-    
-    // Mock first API call for email verification
-    apiClientUser.post.mockResolvedValueOnce({
-      data: {
-        success: true,
-        securityQuestion: 'What is your favorite color?'
+  test('handles network error during email verification', async () => {
+    apiClientUser.post.mockRejectedValueOnce({
+      response: {
+        data: {
+          message: 'Network error'
+        }
       }
     });
 
-    // Fill and submit email form
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Enter Email/i), 'test@example.com');
-    });
+    render(<ResetPassword />);
     
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Email/i }));
-    });
-
-    // Wait for transition to step 2
+    const emailInput = screen.getByLabelText(/Enter Email/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    
+    const verifyButton = screen.getByRole('button', { name: /Verify Email/i });
+    fireEvent.click(verifyButton);
+    
     await waitFor(() => {
-      expect(screen.getByText('What is your favorite color?')).toBeInTheDocument();
+      expect(toast.error).toHaveBeenCalledWith('Network error');
     });
+  });
 
-    // Mock second API call for security answer verification
+  test('handles security answer verification successfully', async () => {
+    await advanceToStep2();
+    
     apiClientUser.post.mockResolvedValueOnce({
-      data: { success: true }
-    });
-
-    // Fill and submit security answer form
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Security Answer/i), 'blue');
+      data: {
+        user: {
+          success: true,
+          message: 'Security answer verified. Proceed to reset password.'
+        }
+      }
     });
     
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Answer/i }));
-    });
-
-    // Check for transition to step 3
+    const securityAnswerInput = screen.getByLabelText(/Security Answer/i);
+    fireEvent.change(securityAnswerInput, { target: { value: 'blue' } });
+    
+    const verifyAnswerButton = screen.getByRole('button', { name: /Verify Answer/i });
+    fireEvent.click(verifyAnswerButton);
+    
     await waitFor(() => {
-      expect(apiClientUser.post).toHaveBeenCalledWith('/users/reset', { 
-        email: 'test@example.com', 
-        securityAnswer: 'blue' 
+      expect(apiClientUser.post).toHaveBeenCalledWith('/users/reset', {
+        email: 'test@example.com',
+        securityAnswer: 'blue'
       });
       expect(screen.getByLabelText(/New Password/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/Confirm Password/i)).toBeInTheDocument();
     });
   });
 
-  test('handles failed security answer verification', async () => {
-    render(<ForgotPwd />);
+  test('handles security answer verification error', async () => {
+    await advanceToStep2();
     
-    // Mock first API call
     apiClientUser.post.mockResolvedValueOnce({
       data: {
-        success: true,
-        securityQuestion: 'What is your favorite color?'
+        user: {
+          success: false,
+          message: 'Incorrect security answer'
+        }
       }
     });
-
-    // Fill and submit email form
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Enter Email/i), 'test@example.com');
-    });
     
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Email/i }));
-    });
-
-    // Wait for transition to step 2
+    const securityAnswerInput = screen.getByLabelText(/Security Answer/i);
+    fireEvent.change(securityAnswerInput, { target: { value: 'wrong answer' } });
+    
+    const verifyAnswerButton = screen.getByRole('button', { name: /Verify Answer/i });
+    fireEvent.click(verifyAnswerButton);
+    
     await waitFor(() => {
-      expect(screen.getByText('What is your favorite color?')).toBeInTheDocument();
+      expect(toast.error).toHaveBeenCalledWith('Incorrect security answer');
     });
+  });
 
-    // Mock failed security answer verification
+  test('handles network error during security answer verification', async () => {
+    await advanceToStep2();
+    
     apiClientUser.post.mockRejectedValueOnce({
-      response: { data: { message: 'Incorrect answer' } }
-    });
-
-    // Fill and submit security answer form
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Security Answer/i), 'wrong answer');
-    });
-    
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Answer/i }));
-    });
-
-    // Check error toast was shown
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Incorrect answer');
-    });
-  });
-
-  test('checks password matching during reset', async () => {
-    render(<ForgotPwd />);
-    
-    // Mock API calls to move through steps
-    apiClientUser.post.mockResolvedValueOnce({
-      data: {
-        success: true,
-        securityQuestion: 'What is your favorite color?'
+      response: {
+        data: {
+          message: 'Network error'
+        }
       }
     });
     
-    // Step 1: Email verification
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Enter Email/i), 'test@example.com');
+    const securityAnswerInput = screen.getByLabelText(/Security Answer/i);
+    fireEvent.change(securityAnswerInput, { target: { value: 'blue' } });
+    
+    const verifyAnswerButton = screen.getByRole('button', { name: /Verify Answer/i });
+    fireEvent.click(verifyAnswerButton);
+    
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Network error');
     });
-    
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Email/i }));
-    });
-    
-    await waitFor(() => expect(screen.getByText('What is your favorite color?')).toBeInTheDocument());
-    
-    // Move to step 3
-    apiClientUser.post.mockResolvedValueOnce({
-      data: { success: true }
-    });
-    
-    // Step 2: Security answer
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Security Answer/i), 'blue');
-    });
-    
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Answer/i }));
-    });
-    
-    await waitFor(() => expect(screen.getByLabelText(/New Password/i)).toBeInTheDocument());
-    
-    // Fill password fields with different values
-    await act(async () => {
-      await user.type(screen.getByLabelText(/New Password/i), 'password123');
-    });
-    
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Confirm Password/i), 'password456');
-    });
-    
-    // Submit form
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Reset Password/i }));
-    });
-    
-    // Check error toast for password mismatch
-    expect(toast.error).toHaveBeenCalledWith('Passwords do not match');
-    expect(apiClientUser.post).toHaveBeenCalledTimes(2); // Only 2 calls so far, not 3
   });
 
-//   test('successfully resets password and navigates to login', async () => {
-//     render(<ForgotPwd />);
+  test('shows error when passwords do not match', async () => {
+    await advanceToStep3();
     
-//     // Mock API calls
-//     apiClientUser.post.mockResolvedValueOnce({
-//       data: {
-//         success: true,
-//         securityQuestion: 'What is your favorite color?'
-//       }
-//     });
+    const newPasswordInput = screen.getByLabelText(/New Password/i);
+    const confirmPasswordInput = screen.getByLabelText(/Confirm Password/i);
     
-//     // Step 1: Email verification
-//     await act(async () => {
-//       await user.type(screen.getByLabelText(/Enter Email/i), 'test@example.com');
-//     });
+    fireEvent.change(newPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'password456' } });
     
-//     await act(async () => {
-//       fireEvent.click(screen.getByRole('button', { name: /Verify Email/i }));
-//     });
+    const resetButton = screen.getByRole('button', { name: /Reset Password/i });
+    fireEvent.click(resetButton);
     
-//     await waitFor(() => expect(screen.getByText('What is your favorite color?')).toBeInTheDocument());
-    
-//     // Move to step 3
-//     apiClientUser.post.mockResolvedValueOnce({
-//       data: { success: true }
-//     });
-    
-//     // Step 2: Security answer
-//     await act(async () => {
-//       await user.type(screen.getByLabelText(/Security Answer/i), 'blue');
-//     });
-    
-//     await act(async () => {
-//       fireEvent.click(screen.getByRole('button', { name: /Verify Answer/i }));
-//     });
-    
-//     await waitFor(() => expect(screen.getByLabelText(/New Password/i)).toBeInTheDocument());
-    
-//     // Mock successful password reset
-//     apiClientUser.post.mockResolvedValueOnce({
-//       data: { success: true }
-//     });
-    
-//     // Fill password fields with matching values
-//     await act(async () => {
-//       await user.type(screen.getByLabelText(/New Password/i), 'password123');
-//     });
-    
-//     await act(async () => {
-//       await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
-//     });
-    
-//     // Submit form
-//     await act(async () => {
-//       fireEvent.click(screen.getByRole('button', { name: /Reset Password/i }));
-//     });
-    
-//     // Check success toast and navigation
-//     await waitFor(() => {
-//       expect(apiClientUser.post).toHaveBeenCalledWith('/users/reset', { 
-//         email: 'test@example.com', 
-//         newPassword: 'password123' 
-//       });
-//       expect(toast.success).toHaveBeenCalledWith('Password reset successfully!');
-//     });
-    
-//     // Mock timer
-//     jest.useFakeTimers();
-//     await act(async () => {
-//       jest.advanceTimersByTime(2000);
-//     });
-    
-//     expect(mockNavigate).toHaveBeenCalledWith('/login');
-//     jest.useRealTimers();
-//   });
+    expect(toast.error).toHaveBeenCalledWith('Passwords do not match');
+    expect(apiClientUser.post).not.toHaveBeenCalledWith('/users/reset', {
+      email: 'test@example.com',
+      newPassword: 'password123'
+    });
+  });
 
-// test('successfully resets password and navigates to login', async () => {
-//     render(<ForgotPwd />);
-//     apiClientUser.post.mockResolvedValueOnce({
-//       data: { success: true, securityQuestion: 'What is your favorite color?' }
-//     });
-
-//     await act(async () => {
-//       await user.type(screen.getByLabelText(/Enter Email/i), 'test@example.com');
-//       fireEvent.click(screen.getByRole('button', { name: /Verify Email/i }));
-//     });
-
-//     await waitFor(() => expect(screen.getByText('What is your favorite color?')).toBeInTheDocument());
-//     apiClientUser.post.mockResolvedValueOnce({ data: { success: true } });
-
-//     await act(async () => {
-//       await user.type(screen.getByLabelText(/Security Answer/i), 'blue');
-//       fireEvent.click(screen.getByRole('button', { name: /Verify Answer/i }));
-//     });
-
-//     await waitFor(() => expect(screen.getByLabelText(/New Password/i)).toBeInTheDocument());
-//     apiClientUser.post.mockResolvedValueOnce({ data: { success: true } });
-
-//     await act(async () => {
-//       await user.type(screen.getByLabelText(/New Password/i), 'password123');
-//       await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
-//       fireEvent.click(screen.getByRole('button', { name: /Reset Password/i }));
-//     });
-
-//     await waitFor(() => {
-//       expect(toast.success).toHaveBeenCalledWith('Password reset successfully!');
-//     });
-
-//     await act(async () => {
-//       jest.advanceTimersByTime(2000);
-//     });
-
-//     expect(mockNavigate).toHaveBeenCalledWith('/login');
-//   });
-
-test('successfully resets password and navigates to login', async () => {
-    render(<ForgotPwd />);
+  test('handles password reset successfully', async () => {
+    jest.useFakeTimers();
+    await advanceToStep3();
+    
     apiClientUser.post.mockResolvedValueOnce({
-      data: { success: true, securityQuestion: 'What is your favorite color?' }
+      data: {
+        user: {
+          success: true,
+          message: 'Password reset successfully'
+        }
+      }
     });
-
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Enter Email/i), 'test@example.com');
-      fireEvent.click(screen.getByRole('button', { name: /Verify Email/i }));
-    });
-
-    await waitFor(() => expect(screen.getByText('What is your favorite color?')).toBeInTheDocument());
-    apiClientUser.post.mockResolvedValueOnce({ data: { success: true } });
-
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Security Answer/i), 'blue');
-      fireEvent.click(screen.getByRole('button', { name: /Verify Answer/i }));
-    });
-
-    await waitFor(() => expect(screen.getByLabelText(/New Password/i)).toBeInTheDocument());
-    apiClientUser.post.mockResolvedValueOnce({ data: { success: true } });
-
-    await act(async () => {
-      await user.type(screen.getByLabelText(/New Password/i), 'password123');
-      await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
-      fireEvent.click(screen.getByRole('button', { name: /Reset Password/i }));
-    });
-
+    
+    const newPasswordInput = screen.getByLabelText(/New Password/i);
+    const confirmPasswordInput = screen.getByLabelText(/Confirm Password/i);
+    
+    fireEvent.change(newPasswordInput, { target: { value: 'newPassword123' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'newPassword123' } });
+    
+    const resetButton = screen.getByRole('button', { name: /Reset Password/i });
+    fireEvent.click(resetButton);
+    
     await waitFor(() => {
+      expect(apiClientUser.post).toHaveBeenCalledWith('/users/reset', {
+        email: 'test@example.com',
+        newPassword: 'newPassword123'
+      });
       expect(toast.success).toHaveBeenCalledWith('Password reset successfully!');
     });
-
-    act(() => {
-      jest.advanceTimersByTime(2000);
-    });
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledTimes(1);
-      expect(mockNavigate).toHaveBeenCalledWith('/login');
-    });
+    
+    jest.advanceTimersByTime(2000);
+    expect(mockNavigate).toHaveBeenCalledWith('/login');
+    jest.useRealTimers();
   });
 
-  test('handles failed password reset', async () => {
-    render(<ForgotPwd />);
+  test('handles password reset error', async () => {
+    await advanceToStep3();
     
-    // Mock API calls
     apiClientUser.post.mockResolvedValueOnce({
       data: {
-        success: true,
-        securityQuestion: 'What is your favorite color?'
+        user: {
+          success: false,
+          message: 'Error resetting password'
+        }
       }
     });
     
-    // Step 1
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Enter Email/i), 'test@example.com');
-    });
+    const newPasswordInput = screen.getByLabelText(/New Password/i);
+    const confirmPasswordInput = screen.getByLabelText(/Confirm Password/i);
     
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Email/i }));
-    });
+    fireEvent.change(newPasswordInput, { target: { value: 'newPassword123' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'newPassword123' } });
     
-    await waitFor(() => expect(screen.getByText('What is your favorite color?')).toBeInTheDocument());
+    const resetButton = screen.getByRole('button', { name: /Reset Password/i });
+    fireEvent.click(resetButton);
     
-    // Step 2
-    apiClientUser.post.mockResolvedValueOnce({
-      data: { success: true }
-    });
-    
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Security Answer/i), 'blue');
-    });
-    
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Answer/i }));
-    });
-    
-    await waitFor(() => expect(screen.getByLabelText(/New Password/i)).toBeInTheDocument());
-    
-    // Mock failed password reset
-    apiClientUser.post.mockRejectedValueOnce({
-      response: { data: { message: 'Password reset failed' } }
-    });
-    
-    // Fill password fields
-    await act(async () => {
-      await user.type(screen.getByLabelText(/New Password/i), 'password123');
-    });
-    
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
-    });
-    
-    // Submit form
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Reset Password/i }));
-    });
-    
-    // Check error toast
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Password reset failed');
-    });
-  });
-
-  test('handles failed reset with server error', async () => {
-    render(<ForgotPwd />);
-    
-    // Mock API calls
-    apiClientUser.post.mockResolvedValueOnce({
-      data: {
-        success: true,
-        securityQuestion: 'What is your favorite color?'
-      }
-    });
-    
-    // Step 1
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Enter Email/i), 'test@example.com');
-    });
-    
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Email/i }));
-    });
-    
-    await waitFor(() => expect(screen.getByText('What is your favorite color?')).toBeInTheDocument());
-    
-    // Step 2
-    apiClientUser.post.mockResolvedValueOnce({
-      data: { success: true }
-    });
-    
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Security Answer/i), 'blue');
-    });
-    
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Verify Answer/i }));
-    });
-    
-    await waitFor(() => expect(screen.getByLabelText(/New Password/i)).toBeInTheDocument());
-    
-    // Mock server error (no response data)
-    apiClientUser.post.mockRejectedValueOnce(new Error('Server error'));
-    
-    // Fill password fields
-    await act(async () => {
-      await user.type(screen.getByLabelText(/New Password/i), 'password123');
-    });
-    
-    await act(async () => {
-      await user.type(screen.getByLabelText(/Confirm Password/i), 'password123');
-    });
-    
-    // Submit form
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Reset Password/i }));
-    });
-    
-    // Check generic error toast
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Error resetting password');
     });
   });
 
-  test('handles API success but with error message', async () => {
-    const { emailInput, submitButton } = setupComponent();
+  test('handles network error during password reset', async () => {
+    await advanceToStep3();
     
-    apiClientUser.post.mockResolvedValueOnce({
-      data: {
-        success: false,
-        message: 'Email not registered'
+    apiClientUser.post.mockRejectedValueOnce({
+      response: {
+        data: {
+          message: 'Network error'
+        }
       }
     });
-
-    await act(async () => {
-      await user.type(emailInput(), 'test@example.com');
-    });
     
-    await act(async () => {
-      fireEvent.click(submitButton());
-    });
-
+    const newPasswordInput = screen.getByLabelText(/New Password/i);
+    const confirmPasswordInput = screen.getByLabelText(/Confirm Password/i);
+    
+    fireEvent.change(newPasswordInput, { target: { value: 'newPassword123' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'newPassword123' } });
+    
+    const resetButton = screen.getByRole('button', { name: /Reset Password/i });
+    fireEvent.click(resetButton);
+    
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Email not registered');
+      expect(toast.error).toHaveBeenCalledWith('Network error');
+    });
+  });
+
+  test('handles default error message when there is no response data', async () => {
+    apiClientUser.post.mockRejectedValueOnce({});
+    
+    render(<ResetPassword />);
+    
+    const emailInput = screen.getByLabelText(/Enter Email/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    
+    const verifyButton = screen.getByRole('button', { name: /Verify Email/i });
+    fireEvent.click(verifyButton);
+    
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Error verifying email');
     });
   });
 });
