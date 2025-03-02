@@ -16,6 +16,7 @@ import { MdOutlinePendingActions } from 'react-icons/md';
 
 const Sidebar = ({ activePath = "/" , isopen ,  onSidebarClose})  => {
   const UserName = sessionStorage.getItem("email") ;
+  const firstName  =  UserName?.split('@')[0];
       
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -103,10 +104,10 @@ const Sidebar = ({ activePath = "/" , isopen ,  onSidebarClose})  => {
             className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 
             bg-clip-text text-transparent"
           >
-           {UserName?.split('@')[0].toUpperCase()}
+           Engineer Panel
           </h1>
         ) : (
-          <h1 className="text-2xl font-bold text-blue-600"> {UserName?.charAt(0).toUpperCase()}</h1>
+          <h1 className="text-2xl font-bold text-blue-600">E</h1>
         )}
       </div>
 
@@ -120,6 +121,7 @@ const Sidebar = ({ activePath = "/" , isopen ,  onSidebarClose})  => {
           return (
             <button
               key={item.path}
+              title={item.label}
               onClick={() =>{ navigate(item.path) 
                  closeSidebar()
                  if (isMobile && onSidebarClose) {

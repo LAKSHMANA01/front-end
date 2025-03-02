@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
     if (!token) {
       toast.error("Please log in to access this page."); // Display error toast message
-      setTimeout(() => navigate("/login"),1000 );
+      setTimeout(() => navigate("/login"),200 );
       //navigate("/login"); // Redirect to login if no token
     } else if (!allowedRoles.includes(role)) {
       toast.error("Please log in to access this page."); // Display

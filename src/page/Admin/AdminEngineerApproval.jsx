@@ -45,11 +45,11 @@ const AdminEngineerApproval = () => {
           <p className="text-gray-600">Email: {engineer.email}</p>
           <p className="text-gray-600">Phone: {engineer.phone}</p>
           <p className="text-gray-600">Specialization: {engineer.specialization}</p>
-          <div className="flex gap-4 mt-4">
+          <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-4">
             <button
               onClick={() => handleApproval(engineer.email, true)}
               disabled={engineer.isEngineer}
-              className={`px-4 py-2 font-semibold rounded-md transition duration-300
+              className={`w-full sm:w-auto px-4 py-2 font-semibold rounded-md transition duration-300
                 ${engineer.isEngineer 
                   ? "bg-gray-400 text-white cursor-not-allowed" 
                   : "bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg"
@@ -60,7 +60,7 @@ const AdminEngineerApproval = () => {
             <button
               onClick={() => handleApproval(engineer.email, false)}
               disabled={!engineer.isEngineer}
-              className={`px-4 py-2 font-semibold rounded-md transition duration-300
+              className={`w-full sm:w-auto px-4 py-2 font-semibold rounded-md transition duration-300
                 ${!engineer.isEngineer
                   ? "bg-gray-400 text-white cursor-not-allowed"
                   : "bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg"

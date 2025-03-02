@@ -8,7 +8,7 @@ import { debounce } from 'lodash';  // Lodash is a utility library that provides
 
 
 
-const EngineerDashboard = () => {
+const EngineerHazards = () => {
   const { Hazards, loading, error } = useSelector((state) => state.engineer);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -33,9 +33,21 @@ const EngineerDashboard = () => {
     dispatch(HazardsTickets({})); // Fetch hazard tickets on mount
   }, [dispatch]);
   
+
   useEffect(() => {
-    setFilteredTasks(Hazards);  // Show all hazards initially
+    if (Hazards && Hazards.length > 0) {
+      setFilteredTasks((prev) => {
+        // Only update if Hazards changed
+        if (JSON.stringify(prev) !== JSON.stringify(Hazards)) {
+          return Hazards;
+        }
+        return prev;
+      });
+    }
   }, [Hazards]);
+  // useEffect(() => {
+  //   setFilteredTasks(Hazards);  // Show all hazards initially
+  // }, [Hazards]);
 
   const handleDebouncedUpdate = useCallback(
     debounce((value) => {
@@ -220,7 +232,7 @@ const EngineerDashboard = () => {
   );
 };
 
-export default EngineerDashboard;
+export default EngineerHazards;
 
 
 
