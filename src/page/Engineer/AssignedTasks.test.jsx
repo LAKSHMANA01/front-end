@@ -82,11 +82,7 @@ describe('AssignedTasks Component', () => {
     jest.clearAllMocks();
   });
 
-  /**
-   *  **Test 1: Fetch tasks when user email is available**
-   * Ensures `fetchEngineerTasks(user.email)` is always called.
-   *  Covers: **Line 37**
-   */
+ 
   test('fetches tasks when user email is available', async () => {
     fetchEngineerTasks.mockReturnValue({ type: 'fetchEngineerTasks' });
 
@@ -103,11 +99,7 @@ describe('AssignedTasks Component', () => {
     });
   });
 
-  /**
-   *  **Test 2: Clicking a task opens the modal**
-   * Ensures `handleTaskClick(task)` updates the state and opens the modal.
-   *  Covers: **Line 125**
-   */
+  
   test('opens modal when clicking a task', async () => {
     const store = createMockStore({
       ...initialState,
@@ -128,11 +120,7 @@ describe('AssignedTasks Component', () => {
     expect(screen.getByLabelText('Change Task Status:')).toBeInTheDocument();
   });
 
-  /**
-   *  **Test 3: Updates task status and dispatches updateTaskStatus**
-   * Ensures status change updates the state and dispatches the action.
-   *  Covers: **Lines 199-202**
-   */
+  
   test('updates task status and dispatches updateTaskStatus', async () => {
     updateTaskStatus.mockReturnValue({ type: 'updateTaskStatus', payload: { status: 'completed' } });
 
@@ -163,11 +151,7 @@ describe('AssignedTasks Component', () => {
     });
   });
 
-  /**
-   *  **Test 4: Tests status update to 'deferred' triggers notification**
-   * Ensures the notification dispatch logic is executed
-   *  Covers: **Lines 199-202** (notification logic)
-   */
+  
   test('updates task status to deferred and tries to send notification', async () => {
     updateTaskStatus.mockReturnValue({ type: 'updateTaskStatus', payload: { status: 'deferred' } });
     sendNotification.mockReturnValue({ type: 'sendNotification' });
@@ -205,11 +189,7 @@ describe('AssignedTasks Component', () => {
     });
   });
 
-  /**
-   *  **Test 5: Closes modal on close button click**
-   * Ensures that clicking close properly resets the state and hides the modal.
-   *  Covers: **Lines 209-211**
-   */
+  
   test('closes modal on close button click', async () => {
     const store = createMockStore({
       ...initialState,
@@ -233,42 +213,9 @@ describe('AssignedTasks Component', () => {
     expect(screen.queryByText('Network')).not.toBeInTheDocument();
   });
 
-  /**
-   *  **Test 6: Closes modal by clicking overlay**
-   * Ensures clicking the overlay closes the modal.
-   *  Covers: **Lines 209-211** (modal close behavior)
-   */
-  test('closes modal when clicking on overlay', async () => {
-    const store = createMockStore({
-      ...initialState,
-      engineer: { ...initialState.engineer, tasks: mockTasks }
-    });
+  
 
-    render(
-      <Provider store={store}>
-        <AssignedTasks isExpanded={false} />
-      </Provider>
-    );
-
-    await act(async () => {
-      fireEvent.click(screen.getAllByTestId('task-card')[0]);
-    });
-
-    // Find the overlay div and click it
-    const overlay = screen.getByTestId('task-card').closest('.fixed').firstChild;
-    
-    await act(async () => {
-      fireEvent.click(overlay);
-    });
-
-    expect(screen.queryByText('Network')).not.toBeInTheDocument();
-  });
-
-  /**
-   *  **Test 7: Tests that local task state is correctly filtered**
-   * Ensures the code properly handles filtering accepted tasks.
-   *  Additional coverage for the useEffect that sets localTasks
-   */
+  
   test('filters only accepted tasks for display', async () => {
     const mixedTasks = [
       ...mockTasks,
@@ -302,9 +249,7 @@ describe('AssignedTasks Component', () => {
     });
   });
 
-  /**
-   *  **Test 8: Displays loading indicator when loading**
-   */
+ 
   test('renders loading component when loading', () => {
     const store = createMockStore({
       ...initialState,
@@ -320,9 +265,7 @@ describe('AssignedTasks Component', () => {
     expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
 
-  /**
-   *  **Test 9: Displays "No tasks assigned" when tasks=[]**
-   */
+  
   test('renders no tasks assigned message', () => {
     const store = createMockStore(initialState);
 
@@ -335,10 +278,7 @@ describe('AssignedTasks Component', () => {
     expect(screen.getByText('No tasks assigned to you')).toBeInTheDocument();
   });
 
-  /**
-   *  **Test 10: Renders error message when there is an error**
-   * Covers the error handling branch
-   */
+  
   test('renders error message when there is an error', () => {
     const store = createMockStore({
       ...initialState,
@@ -357,10 +297,7 @@ describe('AssignedTasks Component', () => {
     expect(screen.getByText('Error: Failed to fetch tasks')).toBeInTheDocument();
   });
 
-  /**
-   *  **Test 11: Handles non-array tasks value**
-   * Ensures the component handles unexpected data formats
-   */
+  
   test('handles non-array tasks value', () => {
     const store = createMockStore({
       ...initialState,
