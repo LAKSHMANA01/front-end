@@ -1,72 +1,84 @@
-// src/page/user/UserTickets.test.jsx
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import UserTicketList from './UserTickets';
-import Notasksimage from '../../assets/NoTasks.png';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import configureMockStore from "redux-mock-store";
+import thunk from "redux-thunk";
+import { fetchTickets } from "../../redux/Slice/UserSlice";
+import UserTicketList from "./UserTickets";
 
+// Mock store with thunk middleware
+const mockStore = configureMockStore([thunk]);
 
-const mockStore = configureStore([]);
-
-describe('UserTicketList Component', () => {
-  const initialState = {
-    auth: { 
-      user: { email: 'test@example.com', role: 'user' } 
-    },
-    tickets: { 
-      tasks: [], 
-      loading: false, 
-      error: null 
-    }
-  };
-
+describe("UserTicketList Component", () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore(initialState);
+    store = mockStore({
+      auth: { user: { email: "test@example.com", role: "user" } },
+      tickets: { tasks: [], loading: false, error: null },
+    });
+
+    store.dispatch = jest.fn(); // Mock dispatch
   });
 
-  test('renders loading state', () => {
-    const loadingState = {
-      ...initialState,
-      tickets: { ...initialState.tickets, loading: true }
-    };
-    store = mockStore(loadingState);
+  test("renders loading state initially", () => {
+    store = mockStore({
+      auth: { user: { email: "test@example.com", role: "user" } },
+      tickets: { tasks: [], loading: true, error: null },
+    });
 
     render(
       <Provider store={store}>
         <UserTicketList />
       </Provider>
     );
-    
-    expect(screen.getByTestId('loading')).toBeInTheDocument();
+
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
-  test('renders error state', () => {
-    const errorState = {
-      ...initialState,
-      tickets: { ...initialState.tickets, error: 'Error message' }
-    };
-    store = mockStore(errorState);
+  test("renders error message if error occurs", () => {
+    store = mockStore({
+      auth: { user: { email: "test@example.com", role: "user" } },
+      tickets: { tasks: [], loading: false, error: "Something went wrong" },
+    });
 
     render(
       <Provider store={store}>
         <UserTicketList />
       </Provider>
     );
-    
-    expect(screen.getByText(/Error:/)).toBeInTheDocument();
+
+    expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
   });
 
-  test('renders empty state', () => {
+  test("renders tasks when available", () => {
+    store = mockStore({
+      auth: { user: { email: "test@example.com", role: "user" } },
+      tickets: {
+        tasks: [{ _id: "1", title: "Task 1" }],
+        loading: false,
+        error: null,
+      },
+    });
+
     render(
       <Provider store={store}>
         <UserTicketList />
       </Provider>
     );
-    
-    expect(screen.getByAltText('No Tasks')).toBeInTheDocument();
+
+    expect(screen.getByText(/task 1/i)).toBeInTheDocument();
+  });
+
+  test("dispatches fetchTickets on mount if email exists", () => {
+    render(
+      <Provider store={store}>
+        <UserTicketList />
+      </Provider>
+    );
+
+    expect(store.dispatch).toHaveBeenCalledWith(
+      fetchTickets({ userEmail: "test@example.com", role: "user" })
+    );
   });
 });
-module.exports = 'test-file-stub';

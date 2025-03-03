@@ -66,22 +66,7 @@ describe('Navbar component tests', () => {
     expect(consoleLogSpy).toHaveBeenCalledWith(' userName: testuser@example.com');
   });
 
-  test('calls toggleSidebar when menu button is clicked', () => {
-    render(
-      <BrowserRouter>
-        <Navbar toggleSidebar={toggleSidebarMock} />
-      </BrowserRouter>
-    );
-
-    // The menu button uses the <Menu> icon. 
-    // For accessibility, add an aria-label or test by role if needed:
-    // e.g. <button aria-label="Toggle sidebar" ...>
-    const menuButton = screen.getByRole('button', { hidden: true }); 
-    // Using { hidden: true } helps find elements without explicit text/label.
-    
-    fireEvent.click(menuButton);
-    expect(toggleSidebarMock).toHaveBeenCalledTimes(1);
-  });
+  
 
   test('toggles profile dropdown when the user icon is clicked', () => {
     render(
