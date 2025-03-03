@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Clock, AlertTriangle, User } from "lucide-react";
 import apiClient from "../../utils/apiClientAdmin";
-import { fetchDeferredTasks } from "../../redux/Slice/AdminSlice";
+import { fetchAllTasks } from "../../redux/Slice/AdminSlice";
 import { useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,14 +20,14 @@ const AdminTaskCard = ({ task = {} }) => {
 
   useEffect(() => {
     if (showAssigneeDropdown) {
-      fetchAvailableEngineers();
+      fetchEligibleEngineers();
     }
     if (location.pathname === "/admin/deferred") {
       SetButton(true);
     }
   }, [showAssigneeDropdown, location]);
 
-  const fetchAvailableEngineers = async () => {
+  const fetchEligibleEngineers = async () => {
     setLoading(true);
     try {
       const days = [
@@ -40,39 +40,34 @@ const AdminTaskCard = ({ task = {} }) => {
         "Saturday",
       ];
       const currentDay = days[new Date().getDay()];
+      
+      // Updated API endpoint to get eligible engineers for this specific ticket
       const response = await apiClient.get(
-        `/admin/engineers/availability/${currentDay}`
+        `/admin/engineers/eligible/${task._id}/${currentDay}`
       );
+
+      console.log("eligible response data:", response.data);
+      
       if (!response.data) {
         throw new Error("Failed to fetch engineers");
       }
 
-      const data = response.data;
-      console.log("data", data);
-      // if (data && Array.isArray(data.engineers)) {
-      //   const formattedEngineers = data.engineers.map(engineer => ({
-      //     id: engineer._id,
-      //     name: engineer.name,
-      //     email: engineer.email,t
-
-      //     currentTasks: engineer.currentTasks,
-      //     availability: engineer.availability,
-      //     specialization: engineer.specialization,
-      //     location: engineer.location
-      //   }));
-
-      const approvedEngineers = response.data?.engineers.filter(
-        (engineer) => engineer.isEngineer
-      );
-      setAvailableEngineers(approvedEngineers);
+      if (response.data.success) {
+        setAvailableEngineers(response.data.engineers);
+        
+        // If no eligible engineers are available
+        if (response.data.engineers.length === 0) {
+          toast.warning(`No eligible engineers available with ${task.serviceType} specialization for today`);
+        }
+      } else {
+        throw new Error(response.data.message || "Failed to fetch eligible engineers");
+      }
+      
       setError(null);
-
-      // else {
-      //   throw new Error('Invalid data format received from server');
-      // }
     } catch (err) {
-      // setError(err.message || 'Failed to fetch available engineers');
+      setError(err.message || "Failed to fetch eligible engineers");
       console.error("Error fetching engineers:", err);
+      toast.error("Failed to fetch eligible engineers");
     } finally {
       setLoading(false);
     }
@@ -81,8 +76,7 @@ const AdminTaskCard = ({ task = {} }) => {
   const handleReassignEngineer = async (email) => {
     setLoading(true);
     setError(null);
-    console.log("task all", task);
-
+    
     try {
       // Validate inputs
       if (!task || !task._id) {
@@ -95,20 +89,14 @@ const AdminTaskCard = ({ task = {} }) => {
 
       // Make the API call
       const response = await apiClient.patch(
-        `/admin/reassign/${task._id}/${email}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        `/admin/reassign/${task._id}/${email}`
       );
-      console.log("response: ", response);
-      if (!response) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Failed to reassign engineer");
+      
+      if (!response || !response.data || !response.data.success) {
+        const errorMessage = response?.data?.message || "Failed to reassign engineer";
+        throw new Error(errorMessage);
       }
-      console.log(`email: ${email}`);
-
+      
       const selectedEngineer = availableEngineers.find(
         (eng) => eng.email === email
       );
@@ -119,29 +107,18 @@ const AdminTaskCard = ({ task = {} }) => {
         );
       }
 
-      // Update the UI
-      // setCurrentAssignee({
-      //   name: selectedEngineer.name,
-      //   initials: selectedEngineer.name.split(' ').map(n => n[0]).join(''),
-      // });
-
-      // Add reassignment comment
-      const comment = {
-        id: Date.now(),
-        text: `Ticket reassigned to ${selectedEngineer.name}`,
-        timestamp: new Date().toISOString(),
-        author: "Admin",
-      };
-      // setComments(prevComments => [...prevComments, comment]);
-
       // Close the dropdown
       setShowAssigneeDropdown(false);
-      // Show success message if needed
-      // You could add a success state here if desired
-      dispatch(fetchDeferredTasks()); // update diferred tasks list
+      
+      // Show success toast message
+      toast.success(`Task reassigned to ${selectedEngineer.name} successfully!`);
+      
+      // Update the tasks list after reassignment
+      dispatch(fetchAllTasks());
     } catch (err) {
       console.error("Error reassigning engineer:", err);
       setError(err.message || "Failed to reassign engineer");
+      toast.error(err.message || "Failed to reassign engineer");
     } finally {
       setLoading(false);
     }
@@ -153,7 +130,7 @@ const AdminTaskCard = ({ task = {} }) => {
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">
-            {task.serviceType.toUpperCase()}
+            {task.serviceType}
           </h3>
           <span className={getStatusStyle(task.status)}>{task.status}</span>
           <span className={getPriorityStyle(task.priority)}>
@@ -167,6 +144,7 @@ const AdminTaskCard = ({ task = {} }) => {
         <p className="text-gray-600 ">Description : {task.description}</p>
         <p className="text-gray-600 ">Address : {task.address}</p>
         <p className="text-gray-600 ">Pincode : {task.pincode}</p>
+        
 
         {/* Current Assignee */}
         <div className="flex items-center justify-between">
@@ -217,7 +195,7 @@ const AdminTaskCard = ({ task = {} }) => {
               <div className="max-h-60 overflow-y-auto">
                 {availableEngineers.length === 0 ? (
                   <div className="p-4 text-center text-gray-500">
-                    No engineers available
+                    No eligible engineers available with {task.serviceType} specialization
                   </div>
                 ) : (
                   availableEngineers.map((engineer) => (
@@ -264,25 +242,8 @@ const AdminTaskCard = ({ task = {} }) => {
             )}
           </div>
         )}
-
-        {/* Comments Section */}
-        {/* <div className="mt-4">
-          <h4 className="font-medium mb-2">Comments</h4>
-          <div className="space-y-2">
-            {comments.map((comment) => (
-              <div key={comment.id} className="bg-gray-50 p-2 rounded">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">{comment.author}</span>
-                  <span className="text-gray-500">
-                    {new Date(comment.timestamp).toLocaleString()}
-                  </span>
-                </div>
-                <p className="mt-1">{comment.text}</p>
-              </div>
-            ))}
-          </div>
-        </div> */}
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
@@ -294,11 +255,13 @@ const getStatusStyle = (status) => {
     pending: "bg-yellow-100 text-yellow-800",
     deferred: "bg-gray-100 text-gray-800",
     failed: "bg-red-100 text-red-800",
+    open: "bg-yellow-100 text-yellow-800"
   };
   return `px-3 py-1 rounded-full text-sm ${
     styles[status?.toLowerCase()] || styles.pending
   }`;
 };
+
 const getPriorityStyle = (priority) => {
   const styles = {
     high: "bg-red-100 text-red-800", // High priority - Red
