@@ -1,18 +1,12 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { fetchDeferredTasks } from "../../redux/Slice/AdminSlice";
-import AdminNavbar from "./NavBar";
 import AdminTaskCard from "./AdminTaskCard";
-import Loading from "../../compoents/Loadingpage"
+import Loading from "../../compoents/Loadingpage";
 import { fetchAllTasks } from "../../redux/Slice/AdminSlice";
+
 const AdminDeferredTasks = () => {
   const dispatch = useDispatch();
-  // const { deferredTasks, loading, error } = useSelector((state) => state.admin);
   const { tasks, loading, error } = useSelector((state) => state.admin);
-
-  // useEffect(() => {
-  //   dispatch(fetchDeferredTasks()); // Fetch deferred tasks on mount
-  // }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchAllTasks()); // Fetch all tasks on mount
@@ -26,32 +20,20 @@ const AdminDeferredTasks = () => {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
-  if (!tasks || tasks.length === 0) {
-    return <p className="mt-20 text-center text-gray-500">No deferred tasks available.</p>;
-  }
+  // Filter tasks to show only deferred, unassigned, or failed tasks
+  const filteredTasks = tasks?.filter(task => 
+    task.status.toLowerCase() === 'deferred' || 
+    task.engineerEmail === null || 
+    task.status.toLowerCase() === "failed"
+  ) || [];
 
-  const filteredTasks = tasks.filter(task => {
-
-    const matchesStatusFilter = task.status.toLowerCase() === 'deferred' || task.
-      engineerEmail.toLowerCase() === 'not assigned' || task.status.toLowerCase() === "failed"
-
-    return matchesStatusFilter;
-  });
   return (
-    // <div className="space-y-6 p-4">
-
-    //   <div className="flex flex-wrap gap-6 ml-10"> 
-    //   {filteredTasks.map((task) => (
-    //     <AdminTaskCard key={task._id || task.id} task={task} />
-    //   ))}
-    //   </div>
-    // </div>
     <div>
       <h1 className='font-bold bg-white rounded-md justify-start text-2xl w-full ml-6 p-3 mb-6 shadow-sm'>
         <span className="text-black-600">Failed / Deferred Tickets</span>
       </h1>
       <div className="space-y-6 p-4">
-        {filteredTasks?.length > 0 ? (
+        {filteredTasks.length > 0 ? (
           <div className="flex flex-wrap gap-6 ml-10">
             {filteredTasks.map((task) => (
               <AdminTaskCard key={task._id || task.id} task={task} />
@@ -74,8 +56,3 @@ const AdminDeferredTasks = () => {
 };
 
 export default AdminDeferredTasks;
-
-
-
-
-
