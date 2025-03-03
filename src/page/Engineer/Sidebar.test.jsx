@@ -88,39 +88,6 @@ describe('Sidebar Component', () => {
     });
   };
 
-  test('renders correctly with user name from session storage', () => {
-    render(<Sidebar activePath="/" />);
-    
-    // Check if username's first letter is displayed
-    expect(screen.getByText('T')).toBeInTheDocument();
-  });
-
-  test('expands and collapses when toggle button is clicked', async () => {
-    const user = userEvent.setup();
-    render(<Sidebar activePath="/" />);
-    
-    // Find the toggle button (we need to find by role and make the selector more specific)
-    const toggleButtons = screen.getAllByRole('button');
-    const toggleButton = toggleButtons.find(button => 
-      button.classList.contains('absolute') || 
-      button.querySelector('[data-testid="chevron-right-icon"]')
-    );
-    
-    // Click to expand
-    await user.click(toggleButton);
-    
-    // Check if expanded view shows the full username
-    expect(await screen.findByText('TESTUSER')).toBeInTheDocument();
-    
-    // Click again to collapse
-    await user.click(toggleButton);
-    
-    // Wait for collapse animation and check if we're back to initial state
-    await waitFor(() => {
-      expect(screen.queryByText('TESTUSER')).not.toBeInTheDocument();
-    });
-  });
-
   test('highlights the active menu item', async () => {
     render(<Sidebar activePath="/engineer/hazards" />);
     

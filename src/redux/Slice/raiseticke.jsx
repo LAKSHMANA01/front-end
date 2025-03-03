@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+
 import apiClientUser from '../../utils/apiClientUser';
 import apiClientNH from '../../utils/apiClientNH';
 

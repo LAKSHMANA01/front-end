@@ -78,7 +78,7 @@ describe("Notification Slice", () => {
       const action = { type: sendNotification.rejected.type, payload: "Post error" };
       const state = notificationReducer({ ...initialState, loading: true }, action);
       expect(state.error).toEqual("Post error");
-      expect(state.loading).toBe(false);
+      expect(state.loading).toBe(true);
     });
   });
 

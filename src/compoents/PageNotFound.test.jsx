@@ -1,61 +1,83 @@
+// PageNotFound.test.jsx
 import React from "react";
-import { expect } from "chai";
-import { mount } from "enzyme";
-import sinon from "sinon";
-import PageNotFound from "../components/PageNotFound"; // Adjust path if needed
+import { render, screen, act } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import PageNotFound, { __RewireAPI__ as PageNotFoundRewireAPI } from "./PageNotFound";
 
-describe("PageNotFound Component", () => {
-  let wrapper;
-  let historyBackStub, locationReloadStub;
-  let clock;
+// Use fake timers for testing timeouts
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+afterEach(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+  // Reset any rewired dependencies so tests remain isolated
+  PageNotFoundRewireAPI.__ResetDependency__("setIsAnimating");
+});
 
-  before(() => {
-    // Use fake timers to control setTimeout
-    clock = sinon.useFakeTimers();
+describe("PageNotFound Component Render", () => {
+  test("renders the 404 header and description", () => {
+    render(<PageNotFound />);
+    expect(screen.getByText("404")).toBeInTheDocument();
+    expect(screen.getByText("Oops! Page Not Found")).toBeInTheDocument();
   });
 
-  after(() => {
-    clock.restore();
+  test("renders the image with animate-bounce class when isAnimating is true", () => {
+    render(<PageNotFound />);
+    const img = screen.getByAltText("Lost in Space");
+    expect(img).toHaveClass("animate-bounce");
   });
 
-  beforeEach(() => {
-    // Stub window.history.back and window.location.reload to test their calls
-    historyBackStub = sinon.stub(window.history, "back");
-    locationReloadStub = sinon.stub(window.location, "reload");
-    wrapper = mount(<PageNotFound />);
+  test("countdown effect is active (via useEffect)", () => {
+    render(<PageNotFound />);
+    // The countdown state is internal (starting at 10) and not rendered.
+    // We simply advance time to ensure the timeout effects occur without errors.
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+    // Component still renders after countdown updates
+    expect(screen.getByText("404")).toBeInTheDocument();
+  });
+});
+
+describe("Internal Functions", () => {
+  test("handleGoBack calls window.history.back", () => {
+    // Access the internal handleGoBack function via rewire
+    const handleGoBack = PageNotFoundRewireAPI.__get__("handleGoBack");
+    const historyBackSpy = jest.spyOn(window.history, "back").mockImplementation(() => {});
+    act(() => {
+      handleGoBack();
+    });
+    expect(historyBackSpy).toHaveBeenCalled();
+    historyBackSpy.mockRestore();
   });
 
-  afterEach(() => {
-    historyBackStub.restore();
-    locationReloadStub.restore();
-    wrapper.unmount();
-  });
+  test("handleRefresh sets isAnimating and calls window.location.reload", () => {
+    // Create a mock setter for isAnimating
+    const mockSetIsAnimating = jest.fn();
+    // Override the internal setIsAnimating using rewire
+    PageNotFoundRewireAPI.__set__("setIsAnimating", mockSetIsAnimating);
+    const handleRefresh = PageNotFoundRewireAPI.__get__("handleRefresh");
 
-  it("renders the header and message", () => {
-    expect(wrapper.find("h1").text()).to.equal("404");
-    expect(wrapper.find("span").text()).to.equal("Oops! Page Not Found");
-  });
+    const reloadSpy = jest.spyOn(window.location, "reload").mockImplementation(() => {});
 
-  it("displays the image with bounce animation when isAnimating is true", () => {
-    const img = wrapper.find("img");
-    expect(img.hasClass("animate-bounce")).to.be.true;
-  });
+    // Call handleRefresh
+    act(() => {
+      handleRefresh();
+    });
 
-  it("calls handleGoBack when the Go Back button is clicked", () => {
-    wrapper.find('button[data-test="go-back"]').simulate("click");
-    expect(historyBackStub.calledOnce).to.be.true;
-  });
+    // Immediately, setIsAnimating(true) should have been called
+    expect(mockSetIsAnimating).toHaveBeenCalledWith(true);
 
-  it("calls handleRefresh when the Refresh button is clicked", () => {
-    wrapper.find('button[data-test="refresh"]').simulate("click");
-    expect(locationReloadStub.calledOnce).to.be.true;
-  });
+    // Advance timers by 1000ms to trigger the timeout callback
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    // Then setIsAnimating(false) should have been called
+    expect(mockSetIsAnimating).toHaveBeenCalledWith(false);
+    // And window.location.reload should have been called
+    expect(reloadSpy).toHaveBeenCalled();
 
-  it("updates countdown over time", () => {
-    const initialHTML = wrapper.html();
-    clock.tick(3000); // advance 3 seconds
-    wrapper.update();
-    // Even though countdown is not displayed, we verify the component still renders.
-    expect(wrapper.html()).to.not.equal(initialHTML);
+    reloadSpy.mockRestore();
   });
 });

@@ -1,8 +1,5 @@
-// EngineerSlice.full.test.jsx
-import { configureStore } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
-import axios from 'axios';
-import engineerReducer, {
+// engineerSlice.test.js
+import reducer, {
   fetchProfile,
   fetchEngineerTasks,
   fetchAcceptTask,
@@ -13,338 +10,509 @@ import engineerReducer, {
   HazardsTickets,
   HazardsUpdateTickets,
   HazardsDeleteTickets,
-} from './EngineerSlice';
+} from "./EngineerSlice";
 
-import apiClientEngineer from '../../utils/apiClientEngineer';
-import apiClientUser from '../../utils/apiClientUser';
-import apiClientNH from '../../utils/apiClientNH';
+import apiClientUser from "../../utils/apiClientUser";
+import apiClientEngineer from "../../utils/apiClientEngineer";
+import apiClientNH from "../../utils/apiClientNH";
+import axios from "axios";
 
-// MOCK external modules with interceptors for apiClientEngineer
-jest.mock('../../utils/apiClientEngineer', () => ({
-  interceptors: {
-    request: {
-      use: jest.fn(),
-    },
-  },
+jest.mock("../../utils/apiClientUser", () => ({
   get: jest.fn(),
   patch: jest.fn(),
 }));
 
-jest.mock('../../utils/apiClientUser', () => ({
+jest.mock("../../utils/apiClientEngineer", () => ({
   get: jest.fn(),
+  patch: jest.fn(),
 }));
 
-jest.mock('../../utils/apiClientNH', () => ({
+jest.mock("../../utils/apiClientNH", () => ({
   get: jest.fn(),
   patch: jest.fn(),
   delete: jest.fn(),
 }));
 
-jest.mock('axios');
+jest.mock("axios", () => ({
+  patch: jest.fn(),
+}));
 
-// Helper: create a test store with middleware callback
-function setupStore(preloadedState) {
-  const rootReducer = combineReducers({ engineer: engineerReducer });
-  return configureStore({
-    reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
-    preloadedState,
-  });
-}
+// ---------------------------------------------------------------------
+// Reducer tests for extraReducers
+// ---------------------------------------------------------------------
+describe("engineerSlice reducer", () => {
+  const initialState = {
+    tasks: [],
+    updateProfile: [],
+    profiledata: {},
+    Hazards: [],
+    loading: false,
+    error: null,
+  };
 
-// Define the initial state as in your slice
-const initialState = {
-  tasks: [],
-  updateProfile: [],
-  profiledata: {},
-  Hazards: [],
-  loading: false,
-  error: null,
-};
-
-describe('EngineerSlice - Full Coverage', () => {
-  let store;
-  beforeEach(() => {
-    store = setupStore({ engineer: initialState });
-    jest.clearAllMocks();
-  });
-
-  // --- Reducer tests ---
-  describe('Reducer behavior', () => {
-    it('should return the initial state for unknown actions', () => {
-      const action = { type: 'unknown/action' };
-      const state = engineerReducer(initialState, action);
-      expect(state).toEqual(initialState);
+  // --- fetchEngineerTasks ---
+  describe("fetchEngineerTasks reducer cases", () => {
+    it("sets loading true and resets error on pending", () => {
+      const action = { type: fetchEngineerTasks.pending.type };
+      const state = reducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBe(null);
     });
-  });
 
-  // --- Async thunk tests ---
-  describe('fetchProfile thunk', () => {
-    it('dispatches fulfilled when apiClientUser.get succeeds', async () => {
-      const profile = { email: 'eng@example.com', name: 'Engineer' };
-      apiClientUser.get.mockResolvedValueOnce({ data: { profile: { user: profile } } });
-      const result = await store.dispatch(fetchProfile({ userEmail: 'eng@example.com', role: 'engineer' }));
-      expect(result.type).toBe('tickets/fetchProfile/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.updateProfile).toEqual(profile);
+    it("updates tasks when fulfilled with an array payload", () => {
+      const tasksPayload = [{ _id: "1", name: "Task 1" }];
+      const action = {
+        type: fetchEngineerTasks.fulfilled.type,
+        payload: tasksPayload,
+      };
+      const state = reducer(initialState, action);
+      expect(state.tasks).toEqual(tasksPayload);
       expect(state.loading).toBe(false);
     });
 
-    it('dispatches rejected when apiClientUser.get fails', async () => {
-      const errorMsg = 'Profile fetch failed';
-      apiClientUser.get.mockRejectedValueOnce({ response: { data: errorMsg } });
-      const result = await store.dispatch(fetchProfile({ userEmail: 'eng@example.com', role: 'engineer' }));
-      expect(result.type).toBe('tickets/fetchProfile/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
-      expect(state.loading).toBe(false);
-    });
-  });
-
-  describe('fetchEngineerTasks thunk', () => {
-    it('dispatches fulfilled with an array payload', async () => {
-      const tasks = [{ _id: '1', name: 'Task1' }];
-      apiClientEngineer.get.mockResolvedValueOnce({ data: { tasks } });
-      const result = await store.dispatch(fetchEngineerTasks('eng@example.com'));
-      expect(result.type).toBe('engineer/fetchEngineerTasks/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.tasks).toEqual(tasks);
-      expect(state.loading).toBe(false);
-    });
-
-    it('dispatches fulfilled with a message payload when no data returned', async () => {
-      const messagePayload = { message: 'No tasks available you.' };
-      apiClientEngineer.get.mockResolvedValueOnce({ data: null });
-      const result = await store.dispatch(fetchEngineerTasks('eng@example.com'));
-      expect(result.type).toBe('engineer/fetchEngineerTasks/fulfilled');
-      const state = store.getState().engineer;
+    it("sets tasks empty and error when fulfilled payload has a message", () => {
+      const payload = { message: "No tasks available you." };
+      const action = { type: fetchEngineerTasks.fulfilled.type, payload };
+      const state = reducer(initialState, action);
       expect(state.tasks).toEqual([]);
-      expect(state.error).toBe('No tasks available you.');
+      expect(state.error).toEqual("No tasks available you.");
       expect(state.loading).toBe(false);
     });
 
-    it('dispatches rejected when apiClientEngineer.get fails', async () => {
-      const errorMsg = 'Failed to fetch engineer tasks';
-      apiClientEngineer.get.mockRejectedValueOnce({ response: { data: errorMsg } });
-      const result = await store.dispatch(fetchEngineerTasks('eng@example.com'));
-      expect(result.type).toBe('engineer/fetchEngineerTasks/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
-      expect(state.loading).toBe(false);
-    });
-  });
-
-  describe('fetchAcceptTask thunk', () => {
-    const prevState = {
-      ...initialState,
-      tasks: [
-        { _id: '1', status: 'pending' },
-        { _id: '2', status: 'pending' },
-      ],
-      loading: true,
-    };
-
-    it('dispatches fulfilled when patch succeeds', async () => {
-      const updatedTask = { _id: '1', status: 'accepted' };
-      apiClientEngineer.patch.mockResolvedValueOnce({ data: { ticket: updatedTask } });
-      // Use a custom store with preloaded tasks
-      store = setupStore({ engineer: { ...initialState, tasks: prevState.tasks, loading: true } });
-      const result = await store.dispatch(fetchAcceptTask({ taskId: '1', email: 'eng@example.com' }));
-      expect(result.type).toBe('engineer/fetchAcceptTask/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.tasks).toContainEqual(updatedTask);
-      expect(state.tasks).toContainEqual({ _id: '2', status: 'pending' });
+    it("updates error and sets loading false on rejected with payload", () => {
+      const action = { type: fetchEngineerTasks.rejected.type, payload: "Fetch error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Fetch error");
       expect(state.loading).toBe(false);
     });
 
-    it('dispatches rejected when patch fails', async () => {
-      const errorMsg = 'Failed to accept task';
-      apiClientEngineer.patch.mockRejectedValueOnce({ response: { data: errorMsg } });
-      store = setupStore({ engineer: { ...initialState, tasks: [{ _id: '1', status: 'pending' }], loading: true } });
-      const result = await store.dispatch(fetchAcceptTask({ taskId: '1', email: 'eng@example.com' }));
-      expect(result.type).toBe('engineer/fetchAcceptTask/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
+    it("updates error with default message when payload is undefined on rejected", () => {
+      const action = { type: fetchEngineerTasks.rejected.type, payload: undefined };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Error fetching tasks");
       expect(state.loading).toBe(false);
     });
   });
 
-  describe('fetchRejectTask thunk', () => {
-    const prevState = {
-      ...initialState,
-      tasks: [
-        { _id: '1', status: 'pending' },
-        { _id: '2', status: 'pending' },
-      ],
-      loading: true,
-    };
+  // --- fetchAcceptTask ---
+  describe("fetchAcceptTask reducer cases", () => {
+    it("sets loading true and resets error on pending", () => {
+      const action = { type: fetchAcceptTask.pending.type };
+      const state = reducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBe(null);
+    });
 
-    it('dispatches fulfilled when patch succeeds', async () => {
-      store = setupStore({ engineer: { ...initialState, tasks: prevState.tasks, loading: true } });
-      const result = await store.dispatch(fetchRejectTask({ taskId: '1', email: 'eng@example.com' }));
-      expect(result.type).toBe('engineer/fetchRejectTask/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.tasks).toEqual([{ _id: '2', status: 'pending' }]);
+    it("updates the task in tasks array on fulfilled", () => {
+      const initial = {
+        ...initialState,
+        tasks: [
+          { _id: "1", status: "pending" },
+          { _id: "2", status: "pending" },
+        ],
+      };
+      const updatedTask = { _id: "1", status: "accepted" };
+      const action = {
+        type: fetchAcceptTask.fulfilled.type,
+        payload: { taskId: "1", updatedTask },
+      };
+      const state = reducer(initial, action);
+      expect(state.tasks).toEqual([updatedTask, { _id: "2", status: "pending" }]);
       expect(state.loading).toBe(false);
     });
 
-    it('dispatches rejected when patch fails', async () => {
-      const errorMsg = 'Failed to reject task';
-      apiClientEngineer.patch.mockRejectedValueOnce({ response: { data: errorMsg } });
-      store = setupStore({ engineer: { ...initialState, tasks: [{ _id: '1', status: 'pending' }], loading: true } });
-      const result = await store.dispatch(fetchRejectTask({ taskId: '1', email: 'eng@example.com' }));
-      expect(result.type).toBe('engineer/fetchRejectTask/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
-      expect(state.loading).toBe(false);
-    });
-  });
-
-  describe('fetchUpdateEngineerProfile thunk', () => {
-    it('dispatches fulfilled when patch succeeds', async () => {
-      const updatedProfile = { email: 'eng@example.com', name: 'Updated Engineer' };
-      apiClientEngineer.patch.mockResolvedValueOnce({ data: updatedProfile });
-      const result = await store.dispatch(fetchUpdateEngineerProfile({ email: 'eng@example.com', updatedData: updatedProfile }));
-      expect(result.type).toBe('engineer/fetchUpdateEngineerProfile/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.updateProfile).toEqual(updatedProfile);
-      expect(state.loading).toBe(false);
-    });
-
-    it('dispatches rejected when patch fails', async () => {
-      const errorMsg = 'Failed to update engineer profile';
-      apiClientEngineer.patch.mockRejectedValueOnce({ response: { data: errorMsg } });
-      const result = await store.dispatch(fetchUpdateEngineerProfile({ email: 'eng@example.com', updatedData: { name: 'Fail' } }));
-      expect(result.type).toBe('engineer/fetchUpdateEngineerProfile/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
+    it("updates error and sets loading false on rejected", () => {
+      const action = { type: fetchAcceptTask.rejected.type, payload: "Accept task error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Accept task error");
       expect(state.loading).toBe(false);
     });
   });
 
-  describe('fetchEngineerProfiledata thunk', () => {
-    it('dispatches fulfilled when axios.patch succeeds', async () => {
-      const profileData = { email: 'eng@example.com', name: 'Engineer Data' };
-      axios.patch.mockResolvedValueOnce({ data: profileData });
-      const result = await store.dispatch(fetchEngineerProfiledata({ name: 'Engineer Data' }));
-      expect(result.type).toBe('engineer/fetchEngineerProfiledata/fulfilled');
-      const state = store.getState().engineer;
+  // --- fetchRejectTask ---
+  describe("fetchRejectTask reducer cases", () => {
+    it("sets loading true and resets error on pending", () => {
+      const action = { type: fetchRejectTask.pending.type };
+      const state = reducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBe(null);
+    });
+
+    it("removes the task from tasks array on fulfilled", () => {
+      const initial = {
+        ...initialState,
+        tasks: [
+          { _id: "1", name: "Task 1" },
+          { _id: "2", name: "Task 2" },
+        ],
+      };
+      const action = {
+        type: fetchRejectTask.fulfilled.type,
+        payload: { taskId: "1" },
+      };
+      const state = reducer(initial, action);
+      expect(state.tasks).toEqual([{ _id: "2", name: "Task 2" }]);
+      expect(state.loading).toBe(false);
+    });
+
+    it("updates error and sets loading false on rejected", () => {
+      const action = { type: fetchRejectTask.rejected.type, payload: "Reject task error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Reject task error");
+      expect(state.loading).toBe(false);
+    });
+  });
+
+  // --- fetchUpdateEngineerProfile ---
+  describe("fetchUpdateEngineerProfile reducer cases", () => {
+    it("sets loading true and resets error on pending", () => {
+      const action = { type: fetchUpdateEngineerProfile.pending.type };
+      const state = reducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBe(null);
+    });
+
+    it("updates updateProfile on fulfilled", () => {
+      const profilePayload = { name: "Engineer Updated" };
+      const action = { type: fetchUpdateEngineerProfile.fulfilled.type, payload: profilePayload };
+      const state = reducer(initialState, action);
+      expect(state.updateProfile).toEqual(profilePayload);
+      expect(state.loading).toBe(false);
+    });
+
+    it("updates error and sets loading false on rejected", () => {
+      const action = { type: fetchUpdateEngineerProfile.rejected.type, payload: "Update profile error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Update profile error");
+      expect(state.loading).toBe(false);
+    });
+  });
+
+  // --- fetchEngineerProfiledata ---
+  describe("fetchEngineerProfiledata reducer cases", () => {
+    it("sets loading true and resets error on pending", () => {
+      const action = { type: fetchEngineerProfiledata.pending.type };
+      const state = reducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBe(null);
+    });
+
+    it("updates updateProfile on fulfilled", () => {
+      const profileData = { name: "Profile Data" };
+      const action = { type: fetchEngineerProfiledata.fulfilled.type, payload: profileData };
+      const state = reducer(initialState, action);
       expect(state.updateProfile).toEqual(profileData);
       expect(state.loading).toBe(false);
     });
 
-    it('dispatches rejected when axios.patch fails', async () => {
-      const errorMsg = 'Failed to update engineer profile';
-      axios.patch.mockRejectedValueOnce({ response: { data: errorMsg } });
-      const result = await store.dispatch(fetchEngineerProfiledata({ name: 'Fail' }));
-      expect(result.type).toBe('engineer/fetchEngineerProfiledata/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
+    it("updates error and sets loading false on rejected", () => {
+      const action = { type: fetchEngineerProfiledata.rejected.type, payload: "Profile data error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Profile data error");
       expect(state.loading).toBe(false);
     });
   });
 
-  describe('updateTaskStatus thunk', () => {
-    it('updates task status when task exists and status is not deferred', async () => {
-      const task = { _id: '1', status: 'pending' };
-      store = setupStore({ engineer: { ...initialState, tasks: [task] } });
-      const responseData = { taskId: '1', status: 'completed', engineerEmail: 'eng@example.com' };
-      apiClientEngineer.patch.mockResolvedValueOnce({ data: responseData });
-      const result = await store.dispatch(updateTaskStatus({ taskId: '1', status: 'completed' }));
-      expect(result.type).toBe('engineer/updateTaskStatus/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.tasks).toEqual([{ _id: '1', status: 'completed' }]);
+  // --- updateTaskStatus ---
+  describe("updateTaskStatus reducer cases", () => {
+    it("updates task status if task exists on fulfilled", () => {
+      const initial = {
+        ...initialState,
+        tasks: [{ _id: "1", status: "pending" }],
+      };
+      const action = { type: updateTaskStatus.fulfilled.type, payload: { taskId: "1", status: "deferred" } };
+      const state = reducer(initial, action);
+      expect(state.tasks).toEqual([{ _id: "1", status: "deferred" }]);
     });
 
-    it('dispatches extra action when status is "deferred"', async () => {
-      // Test the branch that dispatches fetchEngineerTasks when status is deferred.
-      const responseData = { taskId: '1', status: 'deferred', engineerEmail: 'eng@example.com' };
-      apiClientEngineer.patch.mockResolvedValueOnce({ data: responseData });
-      // Instead of using the store, call the thunk directly with a mocked thunkAPI.
-      const mockDispatch = jest.fn();
-      const thunkAPI = { dispatch: mockDispatch, getState: () => ({}), rejectWithValue: jest.fn() };
-      const result = await updateTaskStatus({ taskId: '1', status: 'deferred' })(thunkAPI);
-      // Check that the result equals the response data
+    it("does not update tasks if task does not exist on fulfilled", () => {
+      const initial = {
+        ...initialState,
+        tasks: [{ _id: "1", status: "pending" }],
+      };
+      const action = { type: updateTaskStatus.fulfilled.type, payload: { taskId: "2", status: "deferred" } };
+      const state = reducer(initial, action);
+      expect(state.tasks).toEqual([{ _id: "1", status: "pending" }]);
+    });
+
+    it("updates error on rejected", () => {
+      const action = { type: updateTaskStatus.rejected.type, payload: "Update status error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Update status error");
+    });
+  });
+
+  // --- HazardsTickets ---
+  describe("HazardsTickets reducer cases", () => {
+    it("sets loading true and resets error on pending", () => {
+      const action = { type: HazardsTickets.pending.type };
+      const state = reducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBe(null);
+    });
+
+    it("updates Hazards on fulfilled", () => {
+      const hazardsPayload = [{ _id: "h1", name: "Hazard 1" }];
+      const action = { type: HazardsTickets.fulfilled.type, payload: hazardsPayload };
+      const state = reducer(initialState, action);
+      expect(state.Hazards).toEqual(hazardsPayload);
+      expect(state.loading).toBe(false);
+    });
+
+    it("updates error and sets loading false on rejected", () => {
+      const action = { type: HazardsTickets.rejected.type, payload: "Hazards error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Hazards error");
+      expect(state.loading).toBe(false);
+    });
+  });
+
+  // --- HazardsUpdateTickets ---
+  describe("HazardsUpdateTickets reducer cases", () => {
+    it("sets loading true and resets error on pending", () => {
+      const action = { type: HazardsUpdateTickets.pending.type };
+      const state = reducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBe(null);
+    });
+
+    it("updates Hazards on fulfilled", () => {
+      const hazardsPayload = [{ _id: "h1", name: "Updated Hazard" }];
+      const action = { type: HazardsUpdateTickets.fulfilled.type, payload: hazardsPayload };
+      const state = reducer(initialState, action);
+      expect(state.Hazards).toEqual(hazardsPayload);
+      expect(state.loading).toBe(false);
+    });
+
+    it("updates error and sets loading false on rejected", () => {
+      const action = { type: HazardsUpdateTickets.rejected.type, payload: "Hazards update error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Hazards update error");
+      expect(state.loading).toBe(false);
+    });
+  });
+
+  // --- HazardsDeleteTickets ---
+  describe("HazardsDeleteTickets reducer cases", () => {
+    it("sets loading true and resets error on pending", () => {
+      const action = { type: HazardsDeleteTickets.pending.type };
+      const state = reducer(initialState, action);
+      expect(state.loading).toBe(true);
+      expect(state.error).toBe(null);
+    });
+
+    it("updates Hazards on fulfilled", () => {
+      const hazardsPayload = [{ _id: "h2", name: "Remaining Hazard" }];
+      const action = { type: HazardsDeleteTickets.fulfilled.type, payload: hazardsPayload };
+      const state = reducer(initialState, action);
+      expect(state.Hazards).toEqual(hazardsPayload);
+      expect(state.loading).toBe(false);
+    });
+
+    it("updates error and sets loading false on rejected", () => {
+      const action = { type: HazardsDeleteTickets.rejected.type, payload: "Hazards delete error" };
+      const state = reducer(initialState, action);
+      expect(state.error).toEqual("Hazards delete error");
+      expect(state.loading).toBe(false);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------
+// Async Thunk tests (covering payload creators)
+// ---------------------------------------------------------------------
+describe("engineer async thunks", () => {
+  const dummyDispatch = jest.fn();
+  const dummyGetState = jest.fn();
+  const dummyExtra = undefined;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // --- fetchProfile ---
+  describe("fetchProfile", () => {
+    it("fetches profile successfully", async () => {
+      const userData = { email: "test@example.com", name: "Test User" };
+      apiClientUser.get.mockResolvedValue({ data: { profile: { user: userData } } });
+      const action = fetchProfile({ userEmail: "test@example.com", role: "engineer" });
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(userData);
+      expect(apiClientUser.get).toHaveBeenCalledWith(`/users/profile/engineer/test@example.com`);
+    });
+  });
+
+  // --- fetchEngineerTasks ---
+  describe("fetchEngineerTasks", () => {
+    it("fetches engineer tasks successfully", async () => {
+      const tasks = [{ _id: "1", name: "Task 1" }];
+      apiClientEngineer.get.mockResolvedValue({ data: { tasks } });
+      const action = fetchEngineerTasks("engineer@example.com");
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(tasks);
+      expect(apiClientEngineer.get).toHaveBeenCalledWith(`/tasks/engineer/engineer@example.com`);
+    });
+
+    it("returns message if no data in fetchEngineerTasks", async () => {
+      apiClientEngineer.get.mockResolvedValue({ data: null });
+      const action = fetchEngineerTasks("engineer@example.com");
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual({ message: "No tasks available you." });
+    });
+
+    it("handles error in fetchEngineerTasks", async () => {
+      const errorResponse = { response: { data: "Failed to fetch engineer tasks" } };
+      apiClientEngineer.get.mockRejectedValue(errorResponse);
+      const action = fetchEngineerTasks("engineer@example.com");
+      await expect(action(dummyDispatch, dummyGetState, dummyExtra).unwrap())
+        .rejects.toEqual("Failed to fetch engineer tasks");
+    });
+  });
+
+  // --- fetchAcceptTask ---
+  describe("fetchAcceptTask", () => {
+    it("accepts task successfully", async () => {
+      const updatedTask = { _id: "1", status: "accepted" };
+      apiClientEngineer.patch.mockResolvedValue({ data: { result: { ticket: updatedTask } } });
+      const action = fetchAcceptTask({ taskId: "1", email: "engineer@example.com" });
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual({ taskId: "1", updatedTask });
+      expect(apiClientEngineer.patch).toHaveBeenCalledWith(`/tasks/1/accept/engineer@example.com`);
+    });
+
+    it("handles error in fetchAcceptTask", async () => {
+      const errorResponse = { response: { data: "Failed to accept task" } };
+      apiClientEngineer.patch.mockRejectedValue(errorResponse);
+      const action = fetchAcceptTask({ taskId: "1", email: "engineer@example.com" });
+      await expect(action(dummyDispatch, dummyGetState, dummyExtra).unwrap())
+        .rejects.toEqual("Failed to accept task");
+    });
+  });
+
+  // --- fetchRejectTask ---
+  describe("fetchRejectTask", () => {
+    it("rejects task successfully", async () => {
+      apiClientEngineer.patch.mockResolvedValue({});
+      const action = fetchRejectTask({ taskId: "1", email: "engineer@example.com" });
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual({ taskId: "1" });
+      expect(apiClientEngineer.patch).toHaveBeenCalledWith(`/tasks/1/reject/engineer@example.com`);
+    });
+
+    it("handles error in fetchRejectTask", async () => {
+      const errorResponse = { response: { data: "Failed to reject task" } };
+      apiClientEngineer.patch.mockRejectedValue(errorResponse);
+      const action = fetchRejectTask({ taskId: "1", email: "engineer@example.com" });
+      await expect(action(dummyDispatch, dummyGetState, dummyExtra).unwrap())
+        .rejects.toEqual("Failed to reject task");
+    });
+  });
+
+
+  // --- fetchEngineerProfiledata ---
+  describe("fetchEngineerProfiledata", () => {
+    it("updates engineer profile data successfully", async () => {
+      const profileData = { name: "Profile Data" };
+      axios.patch.mockResolvedValue({ data: profileData });
+      const action = fetchEngineerProfiledata({ name: "Profile Data" });
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(profileData);
+      expect(axios.patch).toHaveBeenCalledWith(
+        `https://localhost:8000/api/updateProfile/engineer/3`,
+        { name: "Profile Data" },
+        { headers: { "Content-Type": "application/json" } }
+      );
+    });
+
+    it("handles error in fetchEngineerProfiledata", async () => {
+      const errorResponse = { response: { data: "Failed to update engineer profile" } };
+      axios.patch.mockRejectedValue(errorResponse);
+      const action = fetchEngineerProfiledata({});
+      await expect(action(dummyDispatch, dummyGetState, dummyExtra).unwrap())
+        .rejects.toEqual("Failed to update engineer profile");
+    });
+  });
+
+  // --- updateTaskStatus ---
+  describe("updateTaskStatus", () => {
+
+    it("updates task status and dispatches fetchEngineerTasks when status is 'deferred'", async () => {
+      const responseData = { task: { _id: "1", status: "deferred", engineerEmail: "engineer@example.com" } };
+      apiClientEngineer.patch.mockResolvedValue({ data: responseData });
+      const action = updateTaskStatus({ taskId: "1", status: "deferred" });
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
       expect(result).toEqual(responseData);
-      // Verify that dispatch was called at least once (with fetchEngineerTasks)
-      expect(mockDispatch).toHaveBeenCalled();
+      expect(apiClientEngineer.patch).toHaveBeenCalledWith(`/tasks/updateTicketStatus/1`, { status: "deferred" });
+      // When deferred, the thunk dispatches fetchEngineerTasks. We verify dispatch was called.
+      expect(dummyDispatch).toHaveBeenCalled();
     });
 
-    it('dispatches rejected when patch fails', async () => {
-      const errorMsg = 'Update failed';
-      apiClientEngineer.patch.mockRejectedValueOnce({ response: { data: errorMsg } });
-      const result = await store.dispatch(updateTaskStatus({ taskId: '1', status: 'completed' }));
-      expect(result.type).toBe('engineer/updateTaskStatus/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
-    });
-  });
-
-  describe('HazardsTickets thunk', () => {
-    it('dispatches fulfilled when apiClientNH.get succeeds', async () => {
-      const hazards = [{ _id: 'h1', title: 'Hazard1' }];
-      apiClientNH.get.mockResolvedValueOnce({ data: { hazards } });
-      const result = await store.dispatch(HazardsTickets({}));
-      expect(result.type).toBe('engineer/fetchHazardsTickets/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.Hazards).toEqual(hazards);
-      expect(state.loading).toBe(false);
-    });
-
-    it('dispatches rejected when apiClientNH.get fails', async () => {
-      const errorMsg = 'Failed to fetch hazards';
-      apiClientNH.get.mockRejectedValueOnce({ response: { data: errorMsg } });
-      const result = await store.dispatch(HazardsTickets({}));
-      expect(result.type).toBe('engineer/fetchHazardsTickets/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
-      expect(state.loading).toBe(false);
+    it("handles error in updateTaskStatus", async () => {
+      const errorResponse = { response: { data: "Update status error" } };
+      apiClientEngineer.patch.mockRejectedValue(errorResponse);
+      const action = updateTaskStatus({ taskId: "1", status: "completed" });
+      await expect(action(dummyDispatch, dummyGetState, dummyExtra).unwrap())
+        .rejects.toEqual("Update status error");
     });
   });
 
-  describe('HazardsUpdateTickets thunk', () => {
-    it('dispatches fulfilled when patch and subsequent get succeed', async () => {
-      const updatedHazards = [{ _id: 'h2', title: 'Updated Hazard' }];
-      apiClientNH.patch.mockResolvedValueOnce({ data: { some: 'data' } });
-      apiClientNH.get.mockResolvedValueOnce({ data: { hazards: updatedHazards } });
-      const result = await store.dispatch(HazardsUpdateTickets({ _id: 'h2', title: 'Updated Hazard' }));
-      expect(result.type).toBe('engineer/HazardsUpdateTickets/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.Hazards).toEqual(updatedHazards);
-      expect(state.loading).toBe(false);
+  // --- HazardsTickets ---
+  describe("HazardsTickets", () => {
+    it("fetches hazards tickets successfully", async () => {
+      const hazards = [{ _id: "h1", name: "Hazard 1" }];
+      apiClientNH.get.mockResolvedValue({ data: { hazards } });
+      // For this thunk, pass a dummy object with rejectWithValue
+      const action = HazardsTickets({ rejectWithValue: (val) => val });
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(hazards);
+      expect(apiClientNH.get).toHaveBeenCalledWith(`/hazards/getAllHazards`);
     });
 
-    it('dispatches rejected when patch fails', async () => {
-      const errorMsg = 'Failed to HazardsUpdateTickets';
-      apiClientNH.patch.mockRejectedValueOnce({ response: { data: errorMsg } });
-      const result = await store.dispatch(HazardsUpdateTickets({ _id: 'h2', title: 'Fail' }));
-      expect(result.type).toBe('engineer/HazardsUpdateTickets/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
-      expect(state.loading).toBe(false);
+  });
+
+  // --- HazardsUpdateTickets ---
+  describe("HazardsUpdateTickets", () => {
+    it("updates hazards tickets successfully", async () => {
+      const updatedData = { _id: "h1", name: "Updated Hazard" };
+      const hazards = [{ _id: "h1", name: "Updated Hazard" }];
+      apiClientNH.patch.mockResolvedValue({ data: {} });
+      apiClientNH.get.mockResolvedValue({ data: { hazards } });
+      const action = HazardsUpdateTickets(updatedData);
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(hazards);
+      expect(apiClientNH.patch).toHaveBeenCalledWith(`/hazards/updateHazard/${updatedData._id}`, updatedData, { headers: { "Content-Type": "application/json" } });
+      expect(apiClientNH.get).toHaveBeenCalledWith(`/hazards/getAllHazards`);
+    });
+
+    it("handles error in HazardsUpdateTickets", async () => {
+      const updatedData = { _id: "h1", name: "Updated Hazard" };
+      const errorResponse = { response: { data: "Failed to HazardsUpdateTickets" } };
+      apiClientNH.patch.mockRejectedValue(errorResponse);
+      const action = HazardsUpdateTickets(updatedData);
+      await expect(action(dummyDispatch, dummyGetState, dummyExtra).unwrap())
+        .rejects.toEqual("Failed to HazardsUpdateTickets");
     });
   });
 
-  describe('HazardsDeleteTickets thunk', () => {
-    it('dispatches fulfilled when delete and subsequent get succeed', async () => {
-      const remainingHazards = [{ _id: 'h3', title: 'Remaining Hazard' }];
-      apiClientNH.delete.mockResolvedValueOnce({ data: { some: 'data' } });
-      apiClientNH.get.mockResolvedValueOnce({ data: { hazards: remainingHazards } });
-      const result = await store.dispatch(HazardsDeleteTickets('h3'));
-      expect(result.type).toBe('engineer/HazardsDeleteTickets/fulfilled');
-      const state = store.getState().engineer;
-      expect(state.Hazards).toEqual(remainingHazards);
-      expect(state.loading).toBe(false);
+  // --- HazardsDeleteTickets ---
+  describe("HazardsDeleteTickets", () => {
+    it("deletes hazards tickets successfully", async () => {
+      const hazards = [{ _id: "h2", name: "Remaining Hazard" }];
+      apiClientNH.delete.mockResolvedValue({ data: {} });
+      apiClientNH.get.mockResolvedValue({ data: { hazards } });
+      const action = HazardsDeleteTickets("h1");
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(hazards);
+      expect(apiClientNH.delete).toHaveBeenCalledWith(`/hazards/deleteHazard/h1`);
+      expect(apiClientNH.get).toHaveBeenCalledWith(`/hazards/getAllHazards`);
     });
 
-    it('dispatches rejected when delete fails', async () => {
-      const errorMsg = 'Failed to HazardsUpdateTickets';
-      apiClientNH.delete.mockRejectedValueOnce({ response: { data: errorMsg } });
-      const result = await store.dispatch(HazardsDeleteTickets('h3'));
-      expect(result.type).toBe('engineer/HazardsDeleteTickets/rejected');
-      const state = store.getState().engineer;
-      expect(state.error).toBe(errorMsg);
-      expect(state.loading).toBe(false);
+    it("handles error in HazardsDeleteTickets", async () => {
+      const errorResponse = { response: { data: "Failed to HazardsUpdateTickets" } };
+      apiClientNH.delete.mockRejectedValue(errorResponse);
+      const action = HazardsDeleteTickets("h1");
+      await expect(action(dummyDispatch, dummyGetState, dummyExtra).unwrap())
+        .rejects.toEqual("Failed to HazardsUpdateTickets");
     });
   });
 });

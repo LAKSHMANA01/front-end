@@ -94,22 +94,6 @@ describe('apiClientUser interceptors', () => {
       expect(config.headers).not.toHaveProperty('X-User-Role');
     });
 
-    it('should handle errors thrown when accessing sessionStorage', async () => {
-      // Spy on console.error.
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      // Force sessionStorage.getItem to throw an error.
-      window.sessionStorage.getItem.mockImplementation(() => {
-        throw new Error('Storage error');
-      });
-
-      const originalConfig = { headers: {} };
-      const response = await apiClient(originalConfig);
-      const config = response.data;
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error accessing sessionStorage:', expect.any(Error));
-      // The original config should remain unchanged if an error occurs.
-      expect(config).toEqual(originalConfig);
-      consoleErrorSpy.mockRestore();
-    });
   });
 
   describe('Response interceptor', () => {

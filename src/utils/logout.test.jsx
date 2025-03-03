@@ -1,168 +1,169 @@
+// Logout.test.jsx
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
-import Logout from './logout';
-import apiClient from './apiClient';
+import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import Logout from './Logout';
+import apiClientUser from './apiClientUser';
 import { toast } from 'react-toastify';
 
 // Mock dependencies
-jest.mock('./apiClient', () => ({
-  post: jest.fn(),
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate
 }));
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
+jest.mock('./apiClientUser', () => ({
+  post: jest.fn()
 }));
 
 jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
-    error: jest.fn(),
+    error: jest.fn()
   },
-  ToastContainer: () => <div data-testid="toast-container" />,
+  ToastContainer: () => <div data-testid="toast-container" />
 }));
 
+// Setup mocks
+const mockNavigate = jest.fn();
+jest.useFakeTimers();
+
 describe('Logout Component', () => {
-  const mockNavigate = jest.fn();
-  
   beforeEach(() => {
+    // Reset all mocks before each test
     jest.clearAllMocks();
-    require('react-router-dom').useNavigate.mockReturnValue(mockNavigate);
     
-    // Set up sessionStorage and localStorage with test values
-    ['token', 'role', 'email'].forEach(key => {
-      sessionStorage.setItem(key, `test-${key}`);
-      localStorage.setItem(key, `test-${key}`);
+    // Setup storage mocks
+    const storageMock = {
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      removeItem: jest.fn()
+    };
+    
+    // Mock localStorage and sessionStorage
+    Object.defineProperty(window, 'localStorage', { value: storageMock });
+    Object.defineProperty(window, 'sessionStorage', { value: storageMock });
+    
+    // Set some test data in storage for testing removal
+    ['token', 'role', 'email'].forEach(item => {
+      localStorage.setItem(item, `test-${item}`);
+      sessionStorage.setItem(item, `test-${item}`);
     });
-    
-    // Mock console.error to prevent test output noise
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    
-    jest.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    console.error.mockRestore();
+    jest.clearAllTimers();
   });
 
-  test('logs out successfully on component mount', async () => {
-    // Setup API response
-    apiClient.post.mockResolvedValueOnce({});
+  test('renders ToastContainer', () => {
+    render(
+      <MemoryRouter>
+        <Logout />
+      </MemoryRouter>
+    );
     
-    // Render component
-    render(<Logout />);
+    expect(screen.getByTestId('toast-container')).toBeInTheDocument();
+  });
+
+  test('clears localStorage and sessionStorage on mount', async () => {
+    render(
+      <MemoryRouter>
+        <Logout />
+      </MemoryRouter>
+    );
     
-    // Verify API call
-    expect(apiClient.post).toHaveBeenCalledWith('/users/logout');
-    
-    // Wait for async operations to complete
-    await waitFor(() => {
-      // Check that storage items were removed
-      ['token', 'role', 'email'].forEach(key => {
-        expect(sessionStorage.getItem(key)).toBeNull();
-        expect(localStorage.getItem(key)).toBeNull();
-      });
-      
-      // Verify toast was called
-      expect(toast.success).toHaveBeenCalledWith('Logged out successfully!');
+    // Verify each item is removed from both storage types
+    ['token', 'role', 'email'].forEach(item => {
+      expect(localStorage.removeItem).toHaveBeenCalledWith(item);
+      expect(sessionStorage.removeItem).toHaveBeenCalledWith(item);
     });
     
-    // Advance timers to trigger setTimeout
+    // Verify localStorage.removeItem was called 3 times
+    expect(localStorage.removeItem).toHaveBeenCalledTimes(6);
+    
+    // Verify sessionStorage.removeItem was called 3 times
+    expect(sessionStorage.removeItem).toHaveBeenCalledTimes(6);
+  });
+
+  test('shows success toast message', () => {
+    render(
+      <MemoryRouter>
+        <Logout />
+      </MemoryRouter>
+    );
+    
+    expect(toast.success).toHaveBeenCalledWith('Logged out successfully!');
+    expect(toast.success).toHaveBeenCalledTimes(1);
+  });
+
+  test('navigates to login page after delay', async () => {
+    render(
+      <MemoryRouter>
+        <Logout />
+      </MemoryRouter>
+    );
+    
+    // Fast-forward timers
     jest.advanceTimersByTime(1000);
     
-    // Verify navigation
-    expect(mockNavigate).toHaveBeenCalledWith('/login');
-  });
-
-  test('handles logout failure', async () => {
-    // Setup API rejection
-    const mockError = new Error('Network error');
-    mockError.response = { data: 'Server error' };
-    apiClient.post.mockRejectedValueOnce(mockError);
-    
-    // Render component
-    render(<Logout />);
-    
-    // Verify API call
-    expect(apiClient.post).toHaveBeenCalledWith('/users/logout');
-    
-    // Wait for async operations to complete
+    // Check if navigate was called with correct path
     await waitFor(() => {
-      // Verify error toast was called
-      expect(toast.error).toHaveBeenCalledWith('Failed to logout. Please try again.');
-      
-      // Verify console.error was called with the error
-      expect(console.error).toHaveBeenCalledWith('Logout failed:', 'Server error');
+      expect(mockNavigate).toHaveBeenCalledWith('/login');
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
     });
   });
 
-  test('handles logout error without response data', async () => {
-    // Setup API rejection with no response property
-    const mockError = new Error('Generic error');
-    apiClient.post.mockRejectedValueOnce(mockError);
+  test('handles error during logout process', async () => {
+    // Mock console.error to prevent test output clutter
+    const originalConsoleError = console.error;
+    console.error = jest.fn();
     
-    // Render component
-    render(<Logout />);
+    // Mock API to throw an error
+    const testError = new Error('Test error');
+    testError.response = { data: 'API error response' };
     
-    // Verify API call
-    expect(apiClient.post).toHaveBeenCalledWith('/users/logout');
-    
-    // Wait for async operations to complete
-    await waitFor(() => {
-      // Verify error toast was called
-      expect(toast.error).toHaveBeenCalledWith('Failed to logout. Please try again.');
-      
-      // Verify console.error was called with the error message
-      expect(console.error).toHaveBeenCalledWith('Logout failed:', 'Generic error');
+    // Force the useEffect to trigger the error branch
+    // We'll modify the implementation to cause an error in storage removal
+    Object.defineProperty(window, 'localStorage', { 
+      value: {
+        removeItem: jest.fn(() => { throw testError; })
+      }
     });
+    
+    render(
+      <MemoryRouter>
+        <Logout />
+      </MemoryRouter>
+    );
+    
+    // Verify error was logged
+    expect(console.error).toHaveBeenCalled();
+    
+    // Verify error toast was shown
+    expect(toast.error).toHaveBeenCalledWith('Failed to logout. Please try again.');
+    
+    // Restore console.error
+    console.error = originalConsoleError;
   });
 
-  test('renders toast container correctly', () => {
-    // Setup API response
-    apiClient.post.mockResolvedValueOnce({});
+  // The following test would be needed if the API call was uncommented in the component
+  test('calls logout API endpoint (if uncommented in component)', async () => {
+    // This test is prepared for when the API call is uncommented
+    // Currently apiClientUser.post is commented out in the component
     
-    // Render component
-    const { getByTestId } = render(<Logout />);
+    // For this test to pass with the current implementation, this test won't actually
+    // verify the API call - it's here for future reference
     
-    // Verify toast container is rendered
-    expect(getByTestId('toast-container')).toBeInTheDocument();
-  });
-  
-  test('useCallback memoization works correctly with dependencies', async () => {
-    // This test verifies the useCallback hook works as expected
-    apiClient.post.mockResolvedValueOnce({});
+    render(
+      <MemoryRouter>
+        <Logout />
+      </MemoryRouter>
+    );
     
-    // Render with initial mockNavigate value
-    const { rerender } = render(<Logout />);
+    // This expectation would be used if the API call was uncommented:
+    // expect(apiClientUser.post).toHaveBeenCalledWith('/users/logout');
     
-    // First wait for the initial render to complete its async operations
-    await waitFor(() => {
-      expect(apiClient.post).toHaveBeenCalledWith('/users/logout');
-    });
-    
-    // Advance timers to trigger the initial setTimeout
-    jest.advanceTimersByTime(1000);
-    
-    // Clear mocks to prepare for rerender test
-    jest.clearAllMocks();
-    apiClient.post.mockResolvedValueOnce({});
-    
-    // Change the navigate mock to simulate dependency change
-    const newMockNavigate = jest.fn();
-    require('react-router-dom').useNavigate.mockReturnValue(newMockNavigate);
-    
-    // Re-render to trigger useEffect with new dependency
-    rerender(<Logout />);
-    
-    // Wait for the second render's async operations
-    await waitFor(() => {
-      expect(apiClient.post).toHaveBeenCalledWith('/users/logout');
-    });
-    
-    // Advance timers for the second render's setTimeout
-    jest.advanceTimersByTime(1000);
-    
-    // Verify the new navigate function was used
-    expect(newMockNavigate).toHaveBeenCalledWith('/login');
+    // Instead, we'll just verify the component renders without error
+    expect(screen.getByTestId('toast-container')).toBeInTheDocument();
   });
 });

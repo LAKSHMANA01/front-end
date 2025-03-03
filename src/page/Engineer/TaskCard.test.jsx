@@ -189,8 +189,8 @@ describe('TaskCard Component', () => {
   test('displays correct priority colors for different priorities', () => {
     const priorities = [
       { priority: 'high', expectedClass: 'bg-red-500' },
-      { priority: 'medium', expectedClass: 'bg-yellow-500' },
-      { priority: 'low', expectedClass: 'bg-green-500' },
+      { priority: 'medium', expectedClass: 'w-3 h-3 rounded-full bg-orange-500' },
+      { priority: 'low', expectedClass: 'w-3 h-3 rounded-full bg-yellow-500' },
       { priority: 'unknown', expectedClass: 'bg-gray-400' }
     ];
 

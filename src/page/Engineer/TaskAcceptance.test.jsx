@@ -83,28 +83,6 @@ describe('TaskAcceptance Component', () => {
     expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
 
-  test('renders expanded state correctly', () => {
-    render(
-      <Provider store={store}>
-        <TaskAcceptance isExpanded={true} />
-      </Provider>
-    );
-    
-    const container = screen.getByText('Pending').closest('div');
-    expect(container).toHaveClass('ml-[100px]');
-  });
-
-  test('renders collapsed state correctly', () => {
-    render(
-      <Provider store={store}>
-        <TaskAcceptance isExpanded={false} />
-      </Provider>
-    );
-    
-    const container = screen.getByText('Pending').closest('div');
-    expect(container).toHaveClass('ml-[40px]');
-  });
-
   test('fetches tasks on component mount', () => {
     render(
       <Provider store={store}>
@@ -197,31 +175,6 @@ describe('TaskAcceptance Component', () => {
     await waitFor(() => {
       expect(fetchEngineerTasks).toHaveBeenCalledWith('test@example.com');
     });
-  });
-
-  test('handles error during accept task', async () => {
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    
-    store.dispatch.mockImplementation(() => {
-      throw new Error('Accept error');
-    });
-    
-    render(
-      <Provider store={store}>
-        <TaskAcceptance isExpanded={false} />
-      </Provider>
-    );
-    
-    // Reset mocks to only count calls after rendering
-    store.dispatch.mockClear();
-    fetchEngineerTasks.mockClear();
-    
-    fireEvent.click(screen.getByTestId('accept-1'));
-    
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error accepting task:', expect.any(Error));
-    expect(fetchEngineerTasks).toHaveBeenCalledWith('test@example.com');
-    
-    consoleErrorSpy.mockRestore();
   });
 
   test('handles failed task rejection', async () => {

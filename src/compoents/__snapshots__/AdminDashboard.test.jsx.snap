@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AdminDashboard Component matches the snapshot 1`] = `
+<div>
+  <div
+    class="flex"
+  >
+    <div
+      class="grow ml-16 md:ml-64 h-full lg:h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white "
+    >
+      <div
+        data-testid="navbar"
+      >
+        Navbar
+      </div>
+      <div
+        data-testid="dashbord"
+      >
+        Dashbord
+      </div>
+    </div>
+  </div>
+</div>
+`;

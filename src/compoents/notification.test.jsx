@@ -1,103 +1,114 @@
-import React from "react";
-import { expect } from "chai";
-import { mount } from "enzyme";
-import sinon from "sinon";
-import * as reactRedux from "react-redux";
-import Notifications from "../components/notification"; // Adjust path if needed
-import { fetchNotifications, markAsRead } from "../redux/Slice/notificationSlice";
+// Notifications.test.jsx
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import Notifications from './notification';
 
-describe("Notifications Component", () => {
-  let useDispatchStub;
-  let useSelectorStub;
-  let dispatchSpy;
+// Mock react-redux hooks
+import { useDispatch, useSelector } from 'react-redux';
+jest.mock('react-redux', () => ({
+  useDispatch: jest.fn(),
+  useSelector: jest.fn(),
+}));
 
+// Mock the action creators
+import { fetchNotifications, markAsRead } from '../redux/Slice/notificationSlice';
+jest.mock('../redux/Slice/notificationSlice', () => ({
+  fetchNotifications: jest.fn((userId) => ({ type: 'FETCH_NOTIFICATIONS', payload: userId })),
+  markAsRead: jest.fn((notifId) => ({ type: 'MARK_AS_READ', payload: notifId })),
+}));
+
+describe('Notifications Component', () => {
+  let mockDispatch;
+  
   beforeEach(() => {
-    // Stub useDispatch and useSelector from react-redux
-    dispatchSpy = sinon.spy();
-    useDispatchStub = sinon.stub(reactRedux, "useDispatch").returns(dispatchSpy);
-    // Clear sessionStorage for each test
-    sessionStorage.clear();
+    jest.clearAllMocks();
+    mockDispatch = jest.fn();
+    useDispatch.mockReturnValue(mockDispatch);
   });
 
   afterEach(() => {
-    sinon.restore();
+    sessionStorage.clear();
   });
 
-  it("dispatches fetchNotifications on mount when email exists in sessionStorage", () => {
-    sessionStorage.setItem("email", "test@example.com");
-    useSelectorStub = sinon.stub(reactRedux, "useSelector").callsFake((selector) =>
-      selector({
-        notifications: [],
-        loading: false,
-      })
+  test('dispatches fetchNotifications in useEffect when userId exists', () => {
+    sessionStorage.setItem("email", "user@example.com");
+    // Provide default state with empty notifications and not loading
+    useSelector.mockImplementation(callback =>
+      callback({ notifications: { notifications: [], loading: false } })
     );
-
-    mount(<Notifications />);
-    // Expect fetchNotifications to be dispatched with the stored email.
-    expect(dispatchSpy.calledWith(fetchNotifications("test@example.com"))).to.be.true;
+    render(<Notifications />);
+    
+    // Verify that fetchNotifications is called with the userId
+    expect(fetchNotifications).toHaveBeenCalledWith("user@example.com");
+    expect(mockDispatch).toHaveBeenCalledWith(fetchNotifications("user@example.com"));
   });
 
-  it("does not dispatch fetchNotifications when email is not set", () => {
-    // No email is stored in sessionStorage.
-    useSelectorStub = sinon.stub(reactRedux, "useSelector").callsFake((selector) =>
-      selector({
-        notifications: [],
-        loading: false,
-      })
+  test('does not dispatch fetchNotifications if no userId', () => {
+    sessionStorage.removeItem("email");
+    useSelector.mockImplementation(callback =>
+      callback({ notifications: { notifications: [], loading: false } })
     );
-    mount(<Notifications />);
-    // Ensure that no action with type "notifications/fetchNotifications" is dispatched.
-    expect(
-      dispatchSpy.calledWith(sinon.match.has("type", "notifications/fetchNotifications"))
-    ).to.be.false;
+    render(<Notifications />);
+    
+    // fetchNotifications should not be called because no userId is present
+    expect(fetchNotifications).not.toHaveBeenCalled();
   });
 
-  it("renders loading state when loading is true", () => {
-    sessionStorage.setItem("email", "test@example.com");
-    useSelectorStub = sinon.stub(reactRedux, "useSelector").callsFake((selector) =>
-      selector({
-        notifications: [],
-        loading: true,
-      })
+  test('renders Loading... text when loading is true', () => {
+    sessionStorage.setItem("email", "user@example.com");
+    useSelector.mockImplementation(callback =>
+      callback({ notifications: { notifications: [], loading: true } })
     );
-    const wrapper = mount(<Notifications />);
-    expect(wrapper.text()).to.contain("Loading...");
+    render(<Notifications />);
+    
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
-  it('renders "No new notifications" when not loading and notifications array is empty', () => {
-    sessionStorage.setItem("email", "test@example.com");
-    useSelectorStub = sinon.stub(reactRedux, "useSelector").callsFake((selector) =>
-      selector({
-        notifications: [],
-        loading: false,
-      })
+  test('renders "No new notifications" when loading is false and notifications are empty', () => {
+    sessionStorage.setItem("email", "user@example.com");
+    useSelector.mockImplementation(callback =>
+      callback({ notifications: { notifications: [], loading: false } })
     );
-    const wrapper = mount(<Notifications />);
-    expect(wrapper.text()).to.contain("No new notifications");
+    render(<Notifications />);
+    
+    expect(screen.getByText("No new notifications")).toBeInTheDocument();
   });
 
-  it("renders notifications and dispatches markAsRead when the button is clicked", () => {
-    sessionStorage.setItem("email", "test@example.com");
-    const notificationsData = [
-      { _id: "1", message: "Notification 1" },
-      { _id: "2", message: "Notification 2" },
+  test('renders a list of notifications and dispatches markAsRead when a button is clicked', () => {
+    sessionStorage.setItem("email", "user@example.com");
+    const mockNotifications = [
+      { _id: '1', message: 'Notification 1' },
+      { _id: '2', message: 'Notification 2' },
     ];
-    useSelectorStub = sinon.stub(reactRedux, "useSelector").callsFake((selector) =>
-      selector({
-        notifications: notificationsData,
-        loading: false,
-      })
+    useSelector.mockImplementation(callback =>
+      callback({ notifications: { notifications: mockNotifications, loading: false } })
     );
-    const wrapper = mount(<Notifications />);
-    // Verify that the notification messages are rendered.
-    expect(wrapper.text()).to.contain("Notification 1");
-    expect(wrapper.text()).to.contain("Notification 2");
-    // Assume each notification renders a button with text "Mark as Read"
-    const buttons = wrapper.find("button").filterWhere((n) => n.text() === "Mark as Read");
-    expect(buttons).to.have.lengthOf(2);
-    // Simulate clicking the first button.
-    buttons.at(0).simulate("click");
-    // Verify that dispatch was called with markAsRead for the first notification.
-    expect(dispatchSpy.calledWith(markAsRead("1"))).to.be.true;
+    render(<Notifications />);
+    
+    // Verify that each notification message is rendered
+    expect(screen.getByText("Notification 1")).toBeInTheDocument();
+    expect(screen.getByText("Notification 2")).toBeInTheDocument();
+    
+    // There should be a "Mark as Read" button for each notification
+    const markButtons = screen.getAllByText("Mark as Read");
+    expect(markButtons.length).toBe(2);
+    
+    // Click the first button and verify dispatch of markAsRead with corresponding id
+    fireEvent.click(markButtons[0]);
+    expect(mockDispatch).toHaveBeenCalledWith(markAsRead('1'));
+    
+    // Click the second button and verify dispatch of markAsRead with corresponding id
+    fireEvent.click(markButtons[1]);
+    expect(mockDispatch).toHaveBeenCalledWith(markAsRead('2'));
+  });
+
+  test('matches snapshot', () => {
+    sessionStorage.setItem("email", "user@example.com");
+    useSelector.mockImplementation(callback =>
+      callback({ notifications: { notifications: [], loading: false } })
+    );
+    const { container } = render(<Notifications />);
+    expect(container).toMatchSnapshot();
   });
 });

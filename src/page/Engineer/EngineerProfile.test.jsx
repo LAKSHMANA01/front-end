@@ -1,282 +1,164 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import engineerReducer, {
-  fetchProfile,
-  fetchUpdateEngineerProfile,
-  fetchEngineerTasks,
-} from "../../redux/Slice/EngineerSlice";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act
+} from "@testing-library/react";
 import EngineerProfile from "./EngineerProfile";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-// Mock sessionStorage
-const mockSessionStorage = {
-  getItem: jest.fn((key) => {
-    if (key === "email") return "test@example.com";
-    if (key === "role") return "engineer";
-    return null;
-  }),
-};
+// Mock the Navbar (child component) so we don’t need to render its internals.
+jest.mock("./Navbar", () => () => <div data-testid="engineer-navbar" />);
 
-Object.defineProperty(window, "sessionStorage", {
-  value: mockSessionStorage,
-  writable: true,
-});
-
-// Mock Redux Actions
-jest.mock("../../redux/Slice/EngineerSlice", () => ({
-  ...jest.requireActual("../../redux/Slice/EngineerSlice"),
-  fetchProfile: jest.fn(),
-  fetchUpdateEngineerProfile: jest.fn(),
-  fetchEngineerTasks: jest.fn(),
-}));
-
-// Mock useDispatch hook
+// Setup mocks for react-redux hooks.
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
-  ...jest.requireActual("react-redux"),
+  useDispatch: jest.fn(),
   useSelector: jest.fn(),
-  useDispatch: () => mockDispatch,
 }));
 
-// Mock Navbar component
-jest.mock("./Navbar", () => () => <div data-testid="navbar-mock">Navbar</div>);
+// Sample profile to use in tests.
+const sampleProfile = {
+  name: "John Doe",
+  email: "john.doe@example.com",
+  phone: "1234567890",
+  address: "123 Main St",
+  availability: ["Monday", "Friday"],
+  specialization: "Fault",
+};
 
-describe("EngineerProfile Component", () => {
-  let mockState;
-
+describe("EngineerProfile", () => {
   beforeEach(() => {
-    // Reset mocks
+    // Set sessionStorage items used in the component.
+    sessionStorage.setItem("email", "john.doe@example.com");
+    sessionStorage.setItem("role", "engineer");
+
+    // Reset dispatch mock
+    mockDispatch.mockReset();
+    useDispatch.mockReturnValue(mockDispatch);
+    // By default, simulate that profile is not present (to trigger fetchProfile).
+    useSelector.mockImplementation((selectorFn) =>
+      selectorFn({ tickets: {} })
+    );
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
-    
-    // Initialize mock state
-    mockState = {
-      engineer: {
-        profile: {
-          name: "John Doe",
-          email: "john.doe@example.com",
-          phone: "1234567890",
-          address: "123 Main Street",
-          availability: {
-            Monday: true,
-            Tuesday: false,
-            Wednesday: true,
-            Thursday: false,
-            Friday: true,
-            Saturday: false,
-            Sunday: true,
-          },
-          specialization: "Installation",
-        },
-        updateSuccess: false,
-        loading: false,
-      },
-      notifications: {
-        notifications: [],
-      },
-    };
-
-    // Mock useSelector to return our mock state
-    useSelector.mockImplementation((selector) => {
-      if (selector === expect.any(Function)) {
-        return mockState.engineer;
-      }
-      return selector(mockState);
-    });
-
-    // Mock implementations for Redux actions
-    fetchProfile.mockReturnValue({ type: "engineer/fetchProfile" });
-    fetchUpdateEngineerProfile.mockReturnValue({ 
-      type: "engineer/fetchUpdateEngineerProfile"
-    });
-    fetchEngineerTasks.mockReturnValue({ type: "engineer/fetchEngineerTasks" });
+    jest.useRealTimers();
   });
 
-  test("renders EngineerProfile component correctly", () => {
-    render(
-      <Provider store={configureStore({
-        reducer: {
-          engineer: engineerReducer,
-          notifications: (state = { notifications: [] }) => state,
-        }
-      })}>
-        <EngineerProfile />
-      </Provider>
-    );
-
-    expect(screen.getByText("Engineer Profile")).toBeInTheDocument();
-    expect(screen.getByTestId("navbar-mock")).toBeInTheDocument();
+  test("dispatches fetchProfile if profile is not loaded", () => {
+    render(<EngineerProfile />);
+    // Since profile is not present in state, the useEffect should trigger dispatch(fetchProfile(...))
+    expect(mockDispatch).toHaveBeenCalled();
   });
 
-  test("dispatches fetchProfile and fetchEngineerTasks action on mount", async () => {
-    render(
-      <Provider store={configureStore({
-        reducer: {
-          engineer: engineerReducer,
-          notifications: (state = { notifications: [] }) => state,
-        }
-      })}>
-        <EngineerProfile />
-      </Provider>
+  test("renders Navbar and title, and displays personal tab fields when profile exists", async () => {
+    // Simulate that profile exists in redux state.
+    useSelector.mockImplementation((selectorFn) =>
+      selectorFn({ tickets: { profile: sampleProfile } })
     );
-  
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(fetchProfile({
-        userEmail: "test@example.com",
-        role: "engineer"
-      }));
+
+    render(<EngineerProfile />);
+    // Navbar should render.
+    expect(screen.getByTestId("engineer-navbar")).toBeInTheDocument();
+    // Title should be visible.
+    expect(
+      screen.getByRole("heading", { name: /Your Profile/i })
+    ).toBeInTheDocument();
+
+    // Personal tab is default. Check that fields are shown.
+    expect(screen.getByText("Full Name")).toBeInTheDocument();
+    expect(screen.getByText("Email")).toBeInTheDocument();
+    expect(screen.getByText("Phone")).toBeInTheDocument();
+    expect(screen.getByText("Address")).toBeInTheDocument();
+
+    // Check that availability checkboxes are rendered (disabled)
+    sampleProfile.availability.forEach((day) => {
+      // Since availability is computed from profile.availability array,
+      // the corresponding checkbox should be checked.
+      const checkbox = screen.getAllByRole("checkbox", { checked: true }).find((cb) =>
+        cb.nextSibling.textContent === day
+      );
+      expect(checkbox).toBeInTheDocument();
     });
-  
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(fetchEngineerTasks());
-    });
+
+    // Specialization: since sampleProfile.specialization is "Fault",
+    // the radio button for Fault should be checked and disabled.
+    const faultRadio = screen.getAllByRole("radio", { checked: true }).find((radio) =>
+      radio.value === "Fault"
+    );
+    expect(faultRadio).toBeInTheDocument();
   });
 
-  test("initializes engineer state with profile data", async () => {
-    useSelector.mockImplementationOnce(() => ({
-      profile: undefined
-    }));
-    
-    render(
-      <Provider store={configureStore({
-        reducer: {
-          engineer: engineerReducer,
-          notifications: (state = { notifications: [] }) => state,
-        }
-      })}>
-        <EngineerProfile />
-      </Provider>
-    );
 
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(fetchProfile({
-        userEmail: "test@example.com",
-        role: "engineer"
-      }));
-    });
-    
-    useSelector.mockImplementation(() => ({
-      profile: mockState.engineer.profile
-    }));
-    
-    render(
-      <Provider store={configureStore({
-        reducer: {
-          engineer: engineerReducer,
-          notifications: (state = { notifications: [] }) => state,
-        }
-      })}>
-        <EngineerProfile />
-      </Provider>
+  test("updates availability checkbox in update form", () => {
+    // Provide a profile with default availability.
+    useSelector.mockImplementation((selectorFn) =>
+      selectorFn({ tickets: { profile: sampleProfile } })
     );
-    
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    render(<EngineerProfile />);
+    // Switch to Update tab.
+    fireEvent.click(screen.getByRole("button", { name: /Update Profile/i }));
+
+    // Find a checkbox for a day that is initially unchecked.
+    // From sampleProfile, availability is ["Monday", "Friday"], so Tuesday should be false.
+    const tuesdayCheckbox = screen.getAllByRole("checkbox").find(
+      (cb) => cb.nextSibling.textContent === "Tuesday"
+    );
+    expect(tuesdayCheckbox.checked).toBe(false);
+    // Click to toggle Tuesday.
+    fireEvent.click(tuesdayCheckbox);
+    // Now it should be checked.
+    expect(tuesdayCheckbox.checked).toBe(true);
   });
 
-  test("allows profile update", async () => {
-    render(
-      <Provider store={configureStore({
-        reducer: {
-          engineer: engineerReducer,
-          notifications: (state = { notifications: [] }) => state,
-        }
-      })}>
-        <EngineerProfile />
-      </Provider>
+  test("updates specialization radio button in update form", () => {
+    useSelector.mockImplementation((selectorFn) =>
+      selectorFn({ tickets: { profile: sampleProfile } })
     );
+    render(<EngineerProfile />);
+    // Switch to Update tab.
+    fireEvent.click(screen.getByRole("button", { name: /Update Profile/i }));
 
-    fireEvent.click(screen.getByText("Update Profile"));
+    // Initially, sampleProfile.specialization is "Fault".
+    const installationRadio = screen.getByRole("radio", {
+      name: /Installation/i,
+    });
+    expect(installationRadio.checked).toBe(false);
+    // Click the Installation radio.
+    fireEvent.click(installationRadio);
+    expect(installationRadio.checked).toBe(true);
+  });
 
-    await waitFor(() => expect(screen.getByText("Full Name")).toBeInTheDocument());
+  test("handles update form submission error", async () => {
+    // Spy on console.error to catch the error log.
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    // Simulate profile present.
+    useSelector.mockImplementation((selectorFn) =>
+      selectorFn({ tickets: { profile: sampleProfile } })
+    );
+    // Simulate dispatch failure for update.
+    mockDispatch.mockRejectedValue(new Error("Update failed"));
 
-    const nameInput = screen.getByLabelText("Full Name");
+    render(<EngineerProfile />);
+    // Switch to Update tab.
+    fireEvent.click(screen.getByRole("button", { name: /Update Profile/i }));
 
-    fireEvent.change(nameInput, { target: { value: "Jane Doe" } });
-
-    fireEvent.click(screen.getByText("Save Changes"));
+    // Submit the form without any changes.
+    const submitButton = screen.getByRole("button", { name: /Save Changes/i });
+    fireEvent.submit(submitButton.closest("form"));
 
     await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        fetchUpdateEngineerProfile({
-          email: "test@example.com",
-          updatedData: expect.objectContaining({ name: "Jane Doe" }),
-        })
+      expect(mockDispatch).toHaveBeenCalled();
+      // Check that error was logged.
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Profile update failed:",
+        "Update failed"
       );
     });
-  });
-
-  test("toggles availability checkboxes", async () => {
-    render(
-      <Provider store={configureStore({
-        reducer: {
-          engineer: engineerReducer,
-          notifications: (state = { notifications: [] }) => state,
-        }
-      })}>
-        <EngineerProfile />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText("Update Profile"));
-
-    const checkboxes = screen.getAllByRole("checkbox");
-    const mondayCheckbox = checkboxes[0];
-
-    const initialCheckedState = mondayCheckbox.checked;
-
-    fireEvent.click(mondayCheckbox);
-
-    expect(mondayCheckbox.checked).not.toBe(initialCheckedState);
-  });
-
-  test("changes specialization when radio button is clicked", async () => {
-    render(
-      <Provider store={configureStore({
-        reducer: {
-          engineer: engineerReducer,
-          notifications: (state = { notifications: [] }) => state,
-        }
-      })}>
-        <EngineerProfile />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText("Update Profile"));
-
-    const radioButtons = screen.getAllByRole("radio");
-    const faultRadio = radioButtons.find(radio => radio.value === "Fault");
-
-    fireEvent.click(faultRadio);
-
-    expect(faultRadio.checked).toBe(true);
-  });
-
-  test("shows success message on profile update", async () => {
-    mockDispatch.mockImplementationOnce(action => {
-      if (action.type === "engineer/fetchUpdateEngineerProfile") {
-        return Promise.resolve();
-      }
-      return action;
-    });
-
-    render(
-      <Provider store={configureStore({
-        reducer: {
-          engineer: engineerReducer,
-          notifications: (state = { notifications: [] }) => state,
-        }
-      })}>
-        <EngineerProfile />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText("Update Profile"));
-
-    fireEvent.click(screen.getByText("Save Changes"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Profile Updated!")).toBeInTheDocument();
-    });
+    consoleSpy.mockRestore();
   });
 });

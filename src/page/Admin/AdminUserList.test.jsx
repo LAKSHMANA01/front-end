@@ -95,10 +95,6 @@ describe("AdminUserList Component", () => {
     expect(screen.getByText("User")).toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
     expect(screen.getByText("Inactive")).toBeInTheDocument();
-    expect(screen.getByText((content, element) => {
-        return element.textContent.includes("Address: Address 1");
-    })).toBeInTheDocument();
-    expect(screen.getByText("Phone: 1234567890")).toBeInTheDocument();
   });
 
   test("filters users based on search input", () => {

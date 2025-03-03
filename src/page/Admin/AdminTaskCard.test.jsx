@@ -1,254 +1,287 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import adminReducer from "../../redux/Slice/AdminSlice"; // Import the actual slice
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import AdminTaskCard from "./AdminTaskCard";
+import { ToastContainer, toast } from "react-toastify";
 import apiClient from "../../utils/apiClientAdmin";
-import { fetchAllTasks } from "../../redux/Slice/AdminSlice";
-import { ToastContainer } from "react-toastify";
-import "@testing-library/jest-dom";
+import { useLocation } from "react-router-dom";
 
-// --- Mock Redux useDispatch and useLocation ---
+// Mock react-redux to provide a custom dispatch
+const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
-  ...jest.requireActual("react-redux"),
-  useDispatch: jest.fn(),
+  useDispatch: () => mockDispatch,
 }));
 
+// Mock react-router-dom's useLocation
 jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
   useLocation: jest.fn(),
 }));
 
-// --- Mock API Calls ---
-jest.mock("../../utils/apiClientAdmin", () => ({
-  get: jest.fn(),
-  patch: jest.fn(),
-}));
+// Mock toast notifications
+jest.mock("react-toastify", () => {
+  const actual = jest.requireActual("react-toastify");
+  return {
+    ...actual,
+    toast: {
+      success: jest.fn(),
+      error: jest.fn(),
+      warning: jest.fn(),
+    },
+  };
+});
 
-jest.mock("../../redux/Slice/AdminSlice", () => ({
-  fetchAllTasks: jest.fn(),
-}));
+// Mock the apiClient
+jest.mock("../../utils/apiClientAdmin");
 
-describe("AdminTaskCard Component", () => {
-  let store;
-  let mockDispatch;
-  const { useDispatch } = require("react-redux");
-  const { useLocation } = require("react-router-dom");
-
-  // Mock Task Data
-  const task = {
-    _id: "1",
-    serviceType: "Cleaning",
-    status: "deferred",
-    priority: "low",
-    description: "Test cleaning task",
-    address: "123 Street, City",
+describe("AdminTaskCard", () => {
+  const sampleTask = {
+    _id: "task1",
+    serviceType: "Plumbing",
+    status: "pending",
+    priority: "high",
+    description: "Fix the sink",
+    address: "123 Main St",
     pincode: "123456",
-    engineerEmail: null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    engineerEmail: "engineer@example.com",
+    createdAt: new Date("2023-01-01").toISOString(),
+    updatedAt: new Date("2023-01-02").toISOString(),
   };
 
   beforeEach(() => {
-    // Setup Redux store using `configureStore` from Redux Toolkit
-    store = configureStore({
-      reducer: {
-        admin: adminReducer, // Using actual reducer
-      },
-      preloadedState: {
-        admin: {
-          tasks: [],
-          loading: false,
-          error: null,
-        },
-      },
-    });
-
-    mockDispatch = jest.fn();
-    useDispatch.mockReturnValue(mockDispatch);
-    useLocation.mockReturnValue({ pathname: "/somepath" }); // Default location
-
-    apiClient.get.mockClear();
-    apiClient.patch.mockClear();
-  });
-
-  // test("renders task details correctly", () => {
-  //   render(
-  //     <Provider store={store}>
-  //       <AdminTaskCard task={task} />
-  //     </Provider>
-  //   );
-
-  //   expect(screen.getByText(task.serviceType)).toBeInTheDocument();
-  //   expect(screen.getByText(task.description)).toBeInTheDocument();
-  //   expect(screen.getByText(task.address)).toBeInTheDocument();
-  //   expect(screen.getByText("Current Engineer: Unassigned")).toBeInTheDocument();
-  //   expect(screen.getByText(task.status)).toBeInTheDocument();
-  //   expect(screen.getByText(task.priority)).toBeInTheDocument();
-  // });
-
-  test("renders task details correctly", async () => {
-    render(
-      <Provider store={store}>
-        <AdminTaskCard task={task} />
-      </Provider>
-    );
-  
-    // Log the rendered output
-    screen.debug();
-  
-    expect(screen.getByText(task.serviceType)).toBeInTheDocument();
-  
-    // Debug why description is missing
-    console.log("Task description:", task.description);
-  
-    await waitFor(() => {
-      expect(screen.queryByText(task.description)).toBeInTheDocument();
-    });
-  
-    expect(screen.getByText(task.address)).toBeInTheDocument();
-  });
-  
-
-  
-  test("shows Reassign button when location is '/admin/deferred'", async () => {
     useLocation.mockReturnValue({ pathname: "/admin/deferred" });
+    mockDispatch.mockClear();
+    jest.clearAllMocks();
+  });
 
+  const renderComponent = (task = sampleTask) =>
     render(
-      <Provider store={store}>
+      <>
         <AdminTaskCard task={task} />
-      </Provider>
+        <ToastContainer />
+      </>
     );
 
+  test("renders task details correctly", () => {
+    renderComponent();
+
+    // Header details
+    expect(screen.getByText(sampleTask.serviceType)).toBeInTheDocument();
+    expect(screen.getByText(sampleTask.status)).toBeInTheDocument();
+    expect(screen.getByText(sampleTask.priority)).toBeInTheDocument();
+
+    // Card content details
+    expect(
+      screen.getByText(`Description : ${sampleTask.description}`)
+    ).toBeInTheDocument();
+    expect(screen.getByText(`Address : ${sampleTask.address}`)).toBeInTheDocument();
+    expect(screen.getByText(`Pincode : ${sampleTask.pincode}`)).toBeInTheDocument();
+
+    // Current Engineer and Dates
+    expect(
+      screen.getByText(`Current Engineer: ${sampleTask.engineerEmail}`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`Created At: ${new Date(sampleTask.createdAt).toLocaleDateString()}`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`Updated At: ${new Date(sampleTask.updatedAt).toLocaleDateString()}`)
+    ).toBeInTheDocument();
+
+    // Reassign button should be visible due to location "/admin/deferred"
+    expect(screen.getByRole("button", { name: /Reassign/i })).toBeInTheDocument();
+  });
+
+
+  test("fetches eligible engineers and displays dropdown", async () => {
+    const engineers = [
+      {
+        _id: "eng1",
+        name: "John Doe",
+        email: "john@example.com",
+        currentTasks: 2,
+        specialization: "Plumbing",
+        address: "456 Side St",
+        pincode: "654321",
+      },
+    ];
+
+    // Mock a successful API call for eligible engineers
+    apiClient.get.mockResolvedValue({
+      data: { success: true, engineers },
+    });
+
+    renderComponent();
+
+    // Click the Reassign button to open dropdown and trigger API call
+    const button = screen.getByRole("button", { name: /Reassign/i });
+    fireEvent.click(button);
+
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Reassign/i })).toBeInTheDocument();
+      expect(apiClient.get).toHaveBeenCalled();
+      // Engineer's name should appear in the dropdown
+      expect(screen.getByText(engineers[0].name)).toBeInTheDocument();
+      expect(screen.getByText("Available")).toBeInTheDocument();
     });
   });
 
-  test("fetches available engineers and renders dropdown on clicking Reassign", async () => {
-    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
-
-    apiClient.get.mockResolvedValueOnce({
-      data: { success: true, engineers: [{ name: "John Doe", email: "john@example.com" }] },
+  test("shows warning toast if no eligible engineers available", async () => {
+    // API returns an empty list of engineers
+    apiClient.get.mockResolvedValue({
+      data: { success: true, engineers: [] },
     });
 
-    render(
-      <Provider store={store}>
-        <AdminTaskCard task={task} />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText(/Reassign/i));
+    renderComponent();
+    const button = screen.getByRole("button", { name: /Reassign/i });
+    fireEvent.click(button);
 
     await waitFor(() => {
+      expect(apiClient.get).toHaveBeenCalled();
+      expect(
+        screen.getByText(
+          `No eligible engineers available with ${sampleTask.serviceType} specialization`
+        )
+      ).toBeInTheDocument();
+      expect(toast.warning).toHaveBeenCalled();
+    });
+  });
+
+  test("handles error during fetching eligible engineers", async () => {
+    // Simulate an API error
+    apiClient.get.mockRejectedValue(new Error("Fetch error"));
+
+    renderComponent();
+    const button = screen.getByRole("button", { name: /Reassign/i });
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(apiClient.get).toHaveBeenCalled();
+      // Error message should appear
+      expect(screen.getByText("Fetch error")).toBeInTheDocument();
+      expect(toast.error).toHaveBeenCalledWith("Failed to fetch eligible engineers");
+    });
+  });
+
+  test("reassigns engineer successfully", async () => {
+    const engineers = [
+      {
+        _id: "eng1",
+        name: "John Doe",
+        email: "john@example.com",
+        currentTasks: 2,
+        specialization: "Plumbing",
+        address: "456 Side St",
+        pincode: "654321",
+      },
+    ];
+
+    // Successful eligible engineers API call
+    apiClient.get.mockResolvedValue({
+      data: { success: true, engineers },
+    });
+
+    // Successful patch call for reassign
+    apiClient.patch.mockResolvedValue({
+      data: { success: true },
+    });
+
+    renderComponent();
+
+    // Open dropdown
+    const button = screen.getByRole("button", { name: /Reassign/i });
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(apiClient.get).toHaveBeenCalled();
+      expect(screen.getByText(engineers[0].name)).toBeInTheDocument();
+    });
+
+    // Click on the engineer to trigger reassignment
+    fireEvent.click(screen.getByText(engineers[0].name));
+
+    await waitFor(() => {
+      expect(apiClient.patch).toHaveBeenCalled();
+      expect(toast.success).toHaveBeenCalledWith(
+        `Task reassigned to ${engineers[0].name} successfully!`
+      );
+      // Ensure dropdown is closed
+      expect(screen.queryByText(engineers[0].name)).not.toBeInTheDocument();
+      // Verify that dispatch was called to update tasks
+      expect(mockDispatch).toHaveBeenCalled();
+    });
+  });
+
+  test("handles error during reassign engineer process", async () => {
+    const engineers = [
+      {
+        _id: "eng1",
+        name: "John Doe",
+        email: "john@example.com",
+        currentTasks: 2,
+        specialization: "Plumbing",
+        address: "456 Side St",
+        pincode: "654321",
+      },
+    ];
+
+    // Eligible engineers API call succeeds
+    apiClient.get.mockResolvedValue({
+      data: { success: true, engineers },
+    });
+
+    // Patch API call returns failure
+    apiClient.patch.mockResolvedValue({
+      data: { success: false, message: "Reassign failed" },
+    });
+
+    renderComponent();
+    const button = screen.getByRole("button", { name: /Reassign/i });
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(apiClient.get).toHaveBeenCalled();
+    });
+
+    // Click on the engineer item to trigger reassign attempt
+    fireEvent.click(screen.getByText(engineers[0].name));
+
+    await waitFor(() => {
+      expect(apiClient.patch).toHaveBeenCalled();
+      expect(screen.getByText("Reassign failed")).toBeInTheDocument();
+      expect(toast.error).toHaveBeenCalledWith("Reassign failed");
+    });
+  });
+
+  test("handles error when invalid engineer email is provided", async () => {
+    // Simulate an engineer with an invalid email
+    const engineers = [
+      {
+        _id: "eng1",
+        name: "John Doe",
+        email: "", // invalid email
+        currentTasks: 2,
+        specialization: "Plumbing",
+        address: "456 Side St",
+        pincode: "654321",
+      },
+    ];
+
+    apiClient.get.mockResolvedValue({
+      data: { success: true, engineers },
+    });
+
+    renderComponent();
+    const button = screen.getByRole("button", { name: /Reassign/i });
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(apiClient.get).toHaveBeenCalled();
       expect(screen.getByText("John Doe")).toBeInTheDocument();
     });
-  });
 
-  test("shows error message if fetching engineers fails", async () => {
-    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
-
-    apiClient.get.mockRejectedValueOnce(new Error("Failed to fetch engineers"));
-
-    render(
-      <Provider store={store}>
-        <AdminTaskCard task={task} />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText(/Reassign/i));
+    // Clicking the engineer with an empty email should trigger an error
+    fireEvent.click(screen.getByText("John Doe"));
 
     await waitFor(() => {
-      expect(screen.getByText("Failed to fetch eligible engineers")).toBeInTheDocument();
-    });
-  });
-
-  test("successfully reassigns engineer and updates task list", async () => {
-    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
-
-    apiClient.get.mockResolvedValueOnce({
-      data: { success: true, engineers: [{ name: "Alice Smith", email: "alice@example.com" }] },
-    });
-
-    apiClient.patch.mockResolvedValueOnce({ data: { success: true } });
-
-    render(
-      <Provider store={store}>
-        <AdminTaskCard task={task} />
-        <ToastContainer />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText(/Reassign/i));
-
-    await waitFor(() => {
-      expect(screen.getByText("Alice Smith")).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText("Alice Smith"));
-
-    await waitFor(() => {
-      expect(apiClient.patch).toHaveBeenCalledWith(`/admin/reassign/${task._id}/alice@example.com`);
-      expect(fetchAllTasks).toHaveBeenCalled();
-    });
-  });
-
-  test("shows error message if reassignment fails", async () => {
-    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
-
-    apiClient.get.mockResolvedValueOnce({
-      data: { success: true, engineers: [{ name: "Alice Smith", email: "alice@example.com" }] },
-    });
-
-    apiClient.patch.mockRejectedValueOnce(new Error("Failed to reassign engineer"));
-
-    render(
-      <Provider store={store}>
-        <AdminTaskCard task={task} />
-        <ToastContainer />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText(/Reassign/i));
-
-    await waitFor(() => {
-      expect(screen.getByText("Alice Smith")).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText("Alice Smith"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Failed to reassign engineer")).toBeInTheDocument();
-    });
-  });
-
-  test("displays loading spinner when fetching engineers", async () => {
-    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
-
-    let resolveGet;
-    const getPromise = new Promise((resolve) => {
-      resolveGet = resolve;
-    });
-
-    apiClient.get.mockReturnValue(getPromise);
-
-    render(
-      <Provider store={store}>
-        <AdminTaskCard task={task} />
-      </Provider>
-    );
-
-    fireEvent.click(screen.getByText(/Reassign/i));
-
-    expect(screen.getByText(/Processing\.\.\./i)).toBeInTheDocument();
-
-    act(() => {
-      resolveGet({ data: { engineers: [] } });
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText(/No engineers available/i)).toBeInTheDocument();
+      expect(toast.error).toHaveBeenCalledWith("Invalid engineer ID");
     });
   });
 });

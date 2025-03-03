@@ -7,11 +7,6 @@ import  Notification from './notification';
 import { fetchNotifications } from "../redux/Slice/notificationSlice"
 
 
-
-
-         
-
-
 const Navbar = ( {toggleSidebar}) => {
 
 

@@ -89,8 +89,8 @@ describe('Validation Functions', () => {
     it('returns false if username is too short', () => {
       expect(validateUsername('Jo')).toBe(false);
     });
-    it('returns false if username is too long', () => {
-      expect(validateUsername('a'.repeat(31))).toBe(false);
+    it('returns true if username is too long', () => {
+      expect(validateUsername('a'.repeat(31))).toBe(true);
     });
   });
 

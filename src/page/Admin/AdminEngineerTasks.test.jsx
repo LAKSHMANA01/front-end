@@ -1,97 +1,138 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import AdminEngineerTasks from './AdminEngineerTasks';
+// AdminEngineerTasks.test.js
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import AdminEngineerTasks from "./AdminEngineerTasks";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { fetchEngineerTasks } from "../../redux/Slice/AdminSlice";
 
-// Mock child components
-jest.mock('./NavBar', () => () => <div data-testid="admin-navbar">Mock NavBar</div>);
-
-jest.mock('./AdminTaskCard', () => ({ task }) => <div data-testid="admin-task-card">{task.title}</div>);
-
-// Mock Redux dispatch
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => jest.fn(),
+// Mock react-redux hooks
+jest.mock("react-redux", () => ({
+  useDispatch: jest.fn(),
+  useSelector: jest.fn(),
 }));
 
-describe('AdminEngineerTasks Component', () => {
-  const createMockStore = (initialState) => createStore(() => initialState);
+// Mock react-router-dom useParams hook
+jest.mock("react-router-dom", () => ({
+  useParams: jest.fn(),
+}));
 
-  const renderWithProviders = (component, store, route) => {
-    return render(
-      <MemoryRouter initialEntries={[route]}>
-        <Provider store={store}>
-          <Routes>
-            <Route path="/admin/engineer-tasks/:email" element={component} />
-          </Routes>
-        </Provider>
-      </MemoryRouter>
+// Mock the fetchEngineerTasks action creator
+jest.mock("../../redux/Slice/AdminSlice", () => ({
+  fetchEngineerTasks: jest.fn(() => ({ type: "FETCH_ENGINEER_TASKS" })),
+}));
+
+// Mock the AdminTaskCard component for testing purposes
+jest.mock("./AdminTaskCard", () => (props) => {
+  return <div data-testid="admin-task-card">Task ID: {props.task.id}</div>;
+});
+
+describe("AdminEngineerTasks", () => {
+  let mockDispatch;
+
+  beforeEach(() => {
+    mockDispatch = jest.fn();
+    useDispatch.mockReturnValue(mockDispatch);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("renders loading state", () => {
+    useParams.mockReturnValue({ email: "test@example.com" });
+    useSelector.mockImplementation((selector) =>
+      selector({
+        admin: { loading: true, tasks: [], error: null },
+      })
     );
-  };
-
-  test('renders loading state correctly', () => {
-    const store = createMockStore({
-      admin: { tasks: [], loading: true, error: null },
-    });
-
-    renderWithProviders(<AdminEngineerTasks />, store, '/admin/engineer-tasks/test@example.com');
-
-    expect(screen.getByText('Loading tasks...')).toBeInTheDocument();
+    render(<AdminEngineerTasks />);
+    expect(
+      screen.getByText(/Loading tasks.../i)
+    ).toBeInTheDocument();
   });
 
-  test('renders error state correctly', () => {
-    const store = createMockStore({
-      admin: { tasks: [], loading: false, error: 'Failed to fetch tasks' },
-    });
-
-    renderWithProviders(<AdminEngineerTasks />, store, '/admin/engineer-tasks/test@example.com');
-
-    expect(screen.getByText('Error: Failed to fetch tasks')).toBeInTheDocument();
+  test("renders error state", () => {
+    useParams.mockReturnValue({ email: "test@example.com" });
+    useSelector.mockImplementation((selector) =>
+      selector({
+        admin: { loading: false, tasks: [], error: "Error message" },
+      })
+    );
+    render(<AdminEngineerTasks />);
+    expect(
+      screen.getByText(/Error: Error message/i)
+    ).toBeInTheDocument();
   });
 
-  test('renders empty state when no tasks assigned', () => {
-    const store = createMockStore({
-      admin: { tasks: [], loading: false, error: null },
-    });
-
-    renderWithProviders(<AdminEngineerTasks />, store, '/admin/engineer-tasks/test@example.com');
-
-    expect(screen.getByText('No tasks assigned.')).toBeInTheDocument();
+  test("renders no tasks message when tasks is empty", () => {
+    useParams.mockReturnValue({ email: "test@example.com" });
+    useSelector.mockImplementation((selector) =>
+      selector({
+        admin: { loading: false, tasks: [], error: null },
+      })
+    );
+    render(<AdminEngineerTasks />);
+    expect(
+      screen.getByText(/No tasks assigned./i)
+    ).toBeInTheDocument();
   });
 
-  test('renders assigned tasks correctly', () => {
-    const store = createMockStore({
-      admin: {
-        tasks: [
-          { id: '1', title: 'Task 1' },
-          { id: '2', title: 'Task 2' },
-        ],
-        loading: false,
-        error: null,
-      },
-    });
-
-    renderWithProviders(<AdminEngineerTasks />, store, '/admin/engineer-tasks/test@example.com');
-
-    expect(screen.getByTestId('admin-navbar')).toBeInTheDocument();
-    const taskCards = screen.getAllByTestId('admin-task-card');
-    expect(taskCards).toHaveLength(2);
-    expect(screen.getByText('Task 1')).toBeInTheDocument();
-    expect(screen.getByText('Task 2')).toBeInTheDocument();
+  test("renders no tasks message when tasks is undefined", () => {
+    useParams.mockReturnValue({ email: "test@example.com" });
+    useSelector.mockImplementation((selector) =>
+      selector({
+        admin: { loading: false, tasks: undefined, error: null },
+      })
+    );
+    render(<AdminEngineerTasks />);
+    expect(
+      screen.getByText(/No tasks assigned./i)
+    ).toBeInTheDocument();
   });
 
-  test('dispatches fetchEngineerTasks on mount', () => {
-    const mockDispatch = jest.fn();
-    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(mockDispatch);
+  test("renders tasks list when tasks exist", () => {
+    useParams.mockReturnValue({ email: "test@example.com" });
+    const tasks = [{ id: 1 }, { id: 2 }];
+    useSelector.mockImplementation((selector) =>
+      selector({
+        admin: { loading: false, tasks, error: null },
+      })
+    );
+    render(<AdminEngineerTasks />);
+    expect(
+      screen.getByText(/Tasks Assigned to Engineer/i)
+    ).toBeInTheDocument();
 
-    const store = createMockStore({
-      admin: { tasks: [], loading: false, error: null },
-    });
+    // Verify that the correct number of AdminTaskCard components are rendered
+    const taskCards = screen.getAllByTestId("admin-task-card");
+    expect(taskCards).toHaveLength(tasks.length);
+    expect(taskCards[0]).toHaveTextContent("Task ID: 1");
+    expect(taskCards[1]).toHaveTextContent("Task ID: 2");
+  });
 
-    renderWithProviders(<AdminEngineerTasks />, store, '/admin/engineer-tasks/test@example.com');
+  test("dispatches fetchEngineerTasks when email exists", () => {
+    useParams.mockReturnValue({ email: "test@example.com" });
+    useSelector.mockImplementation((selector) =>
+      selector({
+        admin: { loading: false, tasks: [], error: null },
+      })
+    );
+    render(<AdminEngineerTasks />);
+    // useEffect should trigger a dispatch
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    expect(fetchEngineerTasks).toHaveBeenCalledWith("test@example.com");
+  });
 
-    expect(mockDispatch).toHaveBeenCalled();
+  test("does not dispatch fetchEngineerTasks when email is not provided", () => {
+    useParams.mockReturnValue({ email: undefined });
+    useSelector.mockImplementation((selector) =>
+      selector({
+        admin: { loading: false, tasks: [], error: null },
+      })
+    );
+    render(<AdminEngineerTasks />);
+    // Since email is falsy, dispatch should not be called
+    expect(mockDispatch).not.toHaveBeenCalled();
   });
 });

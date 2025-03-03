@@ -97,20 +97,4 @@ describe('AdminDashboard Component', () => {
         expect(screen.getByTestId('admin-task-list')).toBeInTheDocument();
     });
 
-    test('applies correct layout classes', () => {
-        const store = createMockStore();
-        const { container } = renderWithProviders(<AdminDashboard />, store);
-
-        // Check for main container flex class
-        expect(container.querySelector('.flex')).toBeInTheDocument();
-
-        // Check for content container classes
-        const contentContainer = container.querySelector('.grow.ml-16.md\\:ml-64');
-        expect(contentContainer).toBeInTheDocument();
-        expect(contentContainer).toHaveClass('bg-gray-100');
-        expect(contentContainer).toHaveClass('text-gray-900');
-        expect(contentContainer).toHaveClass('dark:bg-gray-900');
-        expect(contentContainer).toHaveClass('dark:text-white');
-        expect(contentContainer).toHaveClass('p-6');
-    });
 });

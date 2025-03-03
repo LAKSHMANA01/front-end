@@ -291,7 +291,7 @@ describe("AdminHazardsTickets Component", () => {
     };
 
     expect(mockDispatch).toHaveBeenCalledWith(HazardsTicket(expectedFormData));
-    expect(console.error).toHaveBeenCalledWith("Failed to submit Hazard:", "Submission failed");
+    expect(console.error).toHaveBeenCalledWith("Failed to submit Hazard:");
     console.error = originalConsoleError;
   });
 

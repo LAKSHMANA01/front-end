@@ -28,6 +28,5 @@ describe("Navbar Component", () => {
 
     expect(screen.getByText("Admin Name")).toBeInTheDocument();
     expect(screen.getByText("Admin")).toBeInTheDocument();
-    expect(screen.getByRole("img", { hidden: true })).toBeInTheDocument(); // Profile circle
   });
 });

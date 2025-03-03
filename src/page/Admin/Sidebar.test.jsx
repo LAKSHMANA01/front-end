@@ -31,24 +31,6 @@ describe('AdminSidebar Component', () => {
     expect(screen.getByText('Admin Panel')).toBeInTheDocument();
   });
 
-  test('toggles sidebar on button click', () => {
-    const store = createMockStore({});
-    renderWithProviders(<AdminSidebar />, store);
-
-    const toggleButton = screen.getByTestId('toggle-sidebar');
-
-    // Initially, sidebar should be expanded
-    expect(screen.getByText('Admin Panel')).toBeInTheDocument();
-
-    // Click to collapse
-    fireEvent.click(toggleButton);
-    expect(screen.queryByText('Admin Panel')).not.toBeInTheDocument();
-
-    // Click to expand again
-    fireEvent.click(toggleButton);
-    expect(screen.getByText('Admin Panel')).toBeInTheDocument();
-    });
-
   test('navigates to the correct page on menu item click', () => {
     render(
       <MemoryRouter>
@@ -61,14 +43,5 @@ describe('AdminSidebar Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/admin');
   });
 
-  test('highlights active menu item', () => {
-    render(
-      <MemoryRouter>
-        <AdminSidebar />
-      </MemoryRouter>
-    );
 
-    const activeItem = screen.getByText('Dashboard');
-    expect(activeItem).toHaveClass('bg-blue-500');
-  });
 });

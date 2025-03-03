@@ -1,238 +1,156 @@
-import reducer, {
-  submitTicket,
-  HazardsTicket
-} from './raiseticke';
+import reducer, { submitTicket, HazardsTicket } from "./raiseticke";
+import apiClientUser from "../../utils/apiClientUser";
+import apiClientNH from "../../utils/apiClientNH";
 
-import { configureStore } from '@reduxjs/toolkit';
-import axios from 'axios';
-import apiClientUser from '../../utils/apiClientUser';
-import { combineReducers } from 'redux';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 1) MOCK EXTERNAL MODULES (axios, apiClientUser)
-// ─────────────────────────────────────────────────────────────────────────────
-jest.mock('axios');
-jest.mock('../../utils/apiClientUser', () => ({
-  post: jest.fn()
+jest.mock("../../utils/apiClientUser", () => ({
+  post: jest.fn(),
 }));
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Combine your slice reducer into a test store so we can dispatch the thunks
-// ─────────────────────────────────────────────────────────────────────────────
-const rootReducer = combineReducers({
-  tickets: reducer
-});
+jest.mock("../../utils/apiClientNH", () => ({
+  post: jest.fn(),
+}));
 
-// Updated store setup: middleware is provided as a callback returning the default middleware.
-function setupStore(preloadedState) {
-  return configureStore({
-    reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware(), // thunk is included by default
-    preloadedState
-  });
-}
+// ---------------------------------------------------------------------
+// Reducer tests
+// ---------------------------------------------------------------------
+describe("ticketSlice reducer", () => {
+  const initialState = {
+    isLoading: false,
+    data: [],
+    HazardsRisetickes: [],
+    isError: false,
+    errorMessage: "",
+  };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// INITIAL STATE
-// ─────────────────────────────────────────────────────────────────────────────
-const initialState = {
-  isLoading: false,
-  data: [],
-  HazardsRisetickes: [],
-  isError: false,
-  errorMessage: ""
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// REDUCER TESTS
-// ─────────────────────────────────────────────────────────────────────────────
-describe('ticketSlice reducer', () => {
-  it('should return the initial state', () => {
-    expect(reducer(undefined, {})).toEqual(initialState);
-  });
-
-  describe('submitTicket action (reducer)', () => {
-    it('should set isLoading true when pending', () => {
+  // --- submitTicket reducer tests ---
+  describe("submitTicket reducer cases", () => {
+    it("should set isLoading true on submitTicket.pending", () => {
       const action = { type: submitTicket.pending.type };
       const state = reducer(initialState, action);
       expect(state.isLoading).toBe(true);
     });
 
-    it('should add the submitted ticket to data and set isLoading to false when fulfilled', () => {
-      const ticket = { id: 1, description: 'Test Ticket' };
-      const action = { type: submitTicket.fulfilled.type, payload: ticket };
-      const state = reducer({ ...initialState, isLoading: true }, action);
+    it("should push payload into data on submitTicket.fulfilled", () => {
+      const payload = { id: 1, subject: "Ticket Data" };
+      const action = { type: submitTicket.fulfilled.type, payload };
+      const state = reducer(initialState, action);
       expect(state.isLoading).toBe(false);
-      expect(state.data).toEqual([ticket]);
+      expect(state.data).toContainEqual(payload);
     });
 
-    it('should handle rejected action when error has a response', () => {
-      const errorMsg = "Failed to submit ticket";
-      const action = { type: submitTicket.rejected.type, payload: errorMsg };
-      const state = reducer({ ...initialState, isLoading: true }, action);
+    it("should set isError true and errorMessage on submitTicket.rejected", () => {
+      const errorMessage = "Submission failed";
+      const action = { type: submitTicket.rejected.type, payload: errorMessage };
+      const state = reducer(initialState, action);
       expect(state.isLoading).toBe(false);
       expect(state.isError).toBe(true);
-      expect(state.errorMessage).toBe(errorMsg);
-    });
-
-    it('should handle rejected action when error has no response', () => {
-      const action = { type: submitTicket.rejected.type, payload: undefined };
-      const state = reducer({ ...initialState, isLoading: true }, action);
-      expect(state.isLoading).toBe(false);
-      expect(state.isError).toBe(true);
-      expect(state.errorMessage).toBeUndefined();
+      expect(state.errorMessage).toEqual(errorMessage);
     });
   });
 
-  describe('HazardsTicket action (reducer)', () => {
-    it('should set isLoading true when pending', () => {
+  // --- HazardsTicket reducer tests ---
+  describe("HazardsTicket reducer cases", () => {
+    it("should set isLoading true on HazardsTicket.pending", () => {
       const action = { type: HazardsTicket.pending.type };
       const state = reducer(initialState, action);
       expect(state.isLoading).toBe(true);
     });
 
-    it('should add the hazard ticket to HazardsRisetickes and set isLoading to false when fulfilled', () => {
-      const hazardTicket = { id: 2, hazard: 'Test Hazard' };
-      const action = { type: HazardsTicket.fulfilled.type, payload: hazardTicket };
-      const state = reducer({ ...initialState, isLoading: true }, action);
+    it("should push payload into HazardsRisetickes on HazardsTicket.fulfilled", () => {
+      const payload = { id: 2, hazard: "Hazard Data" };
+      const action = { type: HazardsTicket.fulfilled.type, payload };
+      const state = reducer(initialState, action);
       expect(state.isLoading).toBe(false);
-      expect(state.HazardsRisetickes).toEqual([hazardTicket]);
+      expect(state.HazardsRisetickes).toContainEqual(payload);
     });
 
-    it('should handle rejected action when error has a response', () => {
-      const errorMsg = "Failed to submit hazard ticket";
-      const action = { type: HazardsTicket.rejected.type, payload: errorMsg };
-      const state = reducer({ ...initialState, isLoading: true }, action);
+    it("should set isError true and errorMessage on HazardsTicket.rejected", () => {
+      const errorMessage = "Hazard submission failed";
+      const action = { type: HazardsTicket.rejected.type, payload: errorMessage };
+      const state = reducer(initialState, action);
       expect(state.isLoading).toBe(false);
       expect(state.isError).toBe(true);
-      expect(state.errorMessage).toBe(errorMsg);
-    });
-
-    it('should handle rejected action when error has no response', () => {
-      const action = { type: HazardsTicket.rejected.type, payload: undefined };
-      const state = reducer({ ...initialState, isLoading: true }, action);
-      expect(state.isLoading).toBe(false);
-      expect(state.isError).toBe(true);
-      expect(state.errorMessage).toBeUndefined();
+      expect(state.errorMessage).toEqual(errorMessage);
     });
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// THUNK TESTS
-// ─────────────────────────────────────────────────────────────────────────────
-describe('ticketSlice Thunk logic', () => {
-  let store;
+// ---------------------------------------------------------------------
+// Async thunk tests
+// ---------------------------------------------------------------------
+describe("ticketSlice async thunks", () => {
+  const dummyDispatch = jest.fn();
+  const dummyGetState = jest.fn();
+  const dummyExtra = undefined;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    store = setupStore({ tickets: initialState });
   });
 
-  describe('submitTicket thunk', () => {
-    it('dispatches fulfilled when apiClientUser.post succeeds', async () => {
-      const mockResponse = { id: 123, description: 'Mocked ticket' };
-      apiClientUser.post.mockResolvedValueOnce({ data: mockResponse });
-
-      const ticketData = {
-        email: 'test@example.com',
-        description: 'Testing ticket'
-      };
-
-      const result = await store.dispatch(submitTicket(ticketData));
-      expect(result.type).toBe('tickets/submitTicket/fulfilled');
-      expect(result.payload).toEqual(mockResponse);
-
+  // --- submitTicket async thunk tests ---
+  describe("submitTicket thunk", () => {
+    it("should submit ticket successfully", async () => {
+      const ticketData = { email: "test@example.com", subject: "Test Ticket" };
+      const responseData = { id: 1, subject: "Test Ticket" };
+      // Mock apiClientUser.post to resolve with response.data
+      apiClientUser.post.mockResolvedValue({ data: responseData });
+      
+      const action = submitTicket(ticketData);
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(responseData);
       expect(apiClientUser.post).toHaveBeenCalledWith(
-        '/users/raiseTicket/test@example.com',
-        { description: 'Testing ticket' }
+        `/users/raiseTicket/${ticketData.email}`,
+        { subject: "Test Ticket" }
       );
-
-      const finalState = store.getState().tickets;
-      expect(finalState.isLoading).toBe(false);
-      expect(finalState.data).toEqual([mockResponse]);
     });
 
-    it('dispatches rejected when apiClientUser.post throws error', async () => {
-      const mockError = new Error('Network Error');
-      apiClientUser.post.mockRejectedValueOnce(mockError);
-
-      const ticketData = {
-        email: 'fail@example.com',
-        description: 'This will fail'
-      };
-
-      const result = await store.dispatch(submitTicket(ticketData));
-      expect(result.type).toBe('tickets/submitTicket/rejected');
-      expect(result.payload).toEqual(mockError);
-
-      const finalState = store.getState().tickets;
-      expect(finalState.isLoading).toBe(false);
-      expect(finalState.isError).toBe(true);
-      expect(finalState.errorMessage).toEqual(mockError);
+    it("should handle error in submitTicket", async () => {
+      const ticketData = { email: "error@example.com", subject: "Error Ticket" };
+      const errorObj = new Error("Network error");
+      // Simulate error thrown from apiClientUser.post
+      apiClientUser.post.mockRejectedValue(errorObj);
+      
+      const action = submitTicket(ticketData);
+      // Note: since the thunk catches the error and returns it, unwrap() resolves with the error.
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(errorObj);
+      expect(apiClientUser.post).toHaveBeenCalledWith(
+        `/users/raiseTicket/${ticketData.email}`,
+        { subject: "Error Ticket" }
+      );
     });
   });
 
-  describe('HazardsTicket thunk', () => {
-    it('dispatches fulfilled when axios.post succeeds', async () => {
-      const mockHazardResponse = { id: 999, hazard: 'Mock Hazard' };
-      axios.post.mockResolvedValueOnce({ data: mockHazardResponse });
+  // --- HazardsTicket async thunk tests ---
+  describe("HazardsTicket thunk", () => {
+    it("should submit hazard ticket successfully", async () => {
+      const ticketData = { hazard: "New Hazard", details: "Details" };
+      const responseData = { id: 2, hazard: "New Hazard" };
+      apiClientNH.post.mockResolvedValue({ data: responseData });
 
-      const hazardData = { hazard: 'Some hazard data' };
-
-      const result = await store.dispatch(HazardsTicket(hazardData));
-      expect(result.type).toBe('tickets/HazardsTicket/fulfilled');
-      expect(result.payload).toEqual(mockHazardResponse);
-
-      expect(axios.post).toHaveBeenCalledWith(
-        'https://localhost:8000/api/hazards/addNewHazard',
-        hazardData,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
+      const action = HazardsTicket(ticketData);
+      const result = await action(dummyDispatch, dummyGetState, dummyExtra).unwrap();
+      expect(result).toEqual(responseData);
+      expect(apiClientNH.post).toHaveBeenCalledWith(
+        "/hazards/addNewHazard",
+        ticketData,
+        { headers: { "Content-Type": "application/json" } }
       );
-
-      const finalState = store.getState().tickets;
-      expect(finalState.isLoading).toBe(false);
-      expect(finalState.HazardsRisetickes).toEqual([mockHazardResponse]);
     });
 
-    it('dispatches rejected when axios.post fails with response', async () => {
-      const mockAxiosError = {
-        response: {
-          data: 'Something went wrong on hazards creation'
-        }
-      };
-      axios.post.mockRejectedValueOnce(mockAxiosError);
+    it("should handle error in HazardsTicket", async () => {
+      const ticketData = { hazard: "Error Hazard", details: "Error Details" };
+      const errorResponse = { response: { data: "Failed to add hazard" } };
+      apiClientNH.post.mockRejectedValue(errorResponse);
 
-      const hazardData = { hazard: 'Will fail' };
-
-      const result = await store.dispatch(HazardsTicket(hazardData));
-      expect(result.type).toBe('tickets/HazardsTicket/rejected');
-      expect(result.payload).toBe('Something went wrong on hazards creation');
-
-      const finalState = store.getState().tickets;
-      expect(finalState.isLoading).toBe(false);
-      expect(finalState.isError).toBe(true);
-      expect(finalState.errorMessage).toBe('Something went wrong on hazards creation');
-    });
-
-    it('dispatches rejected with default error if no response', async () => {
-      const mockAxiosError = new Error('No server response');
-      axios.post.mockRejectedValueOnce(mockAxiosError);
-
-      const hazardData = { hazard: 'No server response case' };
-
-      const result = await store.dispatch(HazardsTicket(hazardData));
-      expect(result.type).toBe('tickets/HazardsTicket/rejected');
-      expect(result.payload).toBe('Failed to submit ticket');
-
-      const finalState = store.getState().tickets;
-      expect(finalState.isLoading).toBe(false);
-      expect(finalState.isError).toBe(true);
-      expect(finalState.errorMessage).toBe('Failed to submit ticket');
+      const action = HazardsTicket(ticketData);
+      await expect(action(dummyDispatch, dummyGetState, dummyExtra).unwrap())
+        .rejects.toEqual("Failed to add hazard");
+      expect(apiClientNH.post).toHaveBeenCalledWith(
+        "/hazards/addNewHazard",
+        ticketData,
+        { headers: { "Content-Type": "application/json" } }
+      );
     });
   });
 });
