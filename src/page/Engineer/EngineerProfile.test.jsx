@@ -120,16 +120,16 @@ describe("EngineerProfile Component", () => {
         <EngineerProfile />
       </Provider>
     );
-  
+
     await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(fetchProfile({
+      expect(mockDispatch).toHaveBeenNthCalledWith(1, fetchProfile({
         userEmail: "test@example.com",
         role: "engineer"
       }));
     });
-  
+
     await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(fetchEngineerTasks());
+      expect(mockDispatch).toHaveBeenNthCalledWith(2, fetchEngineerTasks());
     });
   });
 
@@ -190,7 +190,7 @@ describe("EngineerProfile Component", () => {
 
     await waitFor(() => expect(screen.getByText("Full Name")).toBeInTheDocument());
 
-    const nameInput = screen.getByLabelText("Full Name");
+    const nameInput = screen.getByRole("textbox", { name: /Full Name/i });
 
     fireEvent.change(nameInput, { target: { value: "Jane Doe" } });
 

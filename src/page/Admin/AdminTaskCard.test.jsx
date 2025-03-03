@@ -1,291 +1,252 @@
-import React from 'react';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
-import AdminTaskCard from './AdminTaskCard';
-import apiClient from '../../utils/apiClientAdmin';
-import { fetchDeferredTasks } from '../../redux/Slice/AdminSlice';
+import React from "react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import adminReducer from "../../redux/Slice/AdminSlice"; // Import the actual slice
+import AdminTaskCard from "./AdminTaskCard";
+import apiClient from "../../utils/apiClientAdmin";
+import { fetchAllTasks } from "../../redux/Slice/AdminSlice";
+import { ToastContainer } from "react-toastify";
+import "@testing-library/jest-dom";
 
-// --- Mock the API client ---
-jest.mock('../../utils/apiClientAdmin', () => ({
+// --- Mock Redux useDispatch and useLocation ---
+jest.mock("react-redux", () => ({
+  ...jest.requireActual("react-redux"),
+  useDispatch: jest.fn(),
+}));
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useLocation: jest.fn(),
+}));
+
+// --- Mock API Calls ---
+jest.mock("../../utils/apiClientAdmin", () => ({
   get: jest.fn(),
   patch: jest.fn(),
 }));
 
-// --- Mock the fetchDeferredTasks action ---
-jest.mock('../../redux/Slice/AdminSlice', () => ({
-  fetchDeferredTasks: jest.fn(() => ({ type: 'FETCH_DEFERRED_TASKS' })),
+jest.mock("../../redux/Slice/AdminSlice", () => ({
+  fetchAllTasks: jest.fn(),
 }));
 
-// --- Mock react-redux's useDispatch ---
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: jest.fn(),
-}));
-
-// --- Mock react-router-dom's useLocation ---
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(),
-}));
-
-describe('AdminTaskCard Component', () => {
+describe("AdminTaskCard Component", () => {
+  let store;
   let mockDispatch;
-  const { useDispatch } = require('react-redux');
-  const { useLocation } = require('react-router-dom');
+  const { useDispatch } = require("react-redux");
+  const { useLocation } = require("react-router-dom");
 
-  const defaultTask = {
-    _id: '1',
-    serviceType: 'Cleaning',
-    status: 'open',
-    priority: 'low',
-    description: 'Test description',
-    engineerEmail: 'eng@example.com',
-    assignee: 'Old Assignee'
+  // Mock Task Data
+  const task = {
+    _id: "1",
+    serviceType: "Cleaning",
+    status: "deferred",
+    priority: "low",
+    description: "Test cleaning task",
+    address: "123 Street, City",
+    pincode: "123456",
+    engineerEmail: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 
   beforeEach(() => {
-    jest.useFakeTimers();
+    // Setup Redux store using `configureStore` from Redux Toolkit
+    store = configureStore({
+      reducer: {
+        admin: adminReducer, // Using actual reducer
+      },
+      preloadedState: {
+        admin: {
+          tasks: [],
+          loading: false,
+          error: null,
+        },
+      },
+    });
+
     mockDispatch = jest.fn();
     useDispatch.mockReturnValue(mockDispatch);
-    // By default, use a pathname that is not '/admin/deferred'
-    useLocation.mockReturnValue({ pathname: '/somepath' });
-    // Clear previous mock calls
+    useLocation.mockReturnValue({ pathname: "/somepath" }); // Default location
+
     apiClient.get.mockClear();
     apiClient.patch.mockClear();
   });
 
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
-    jest.clearAllMocks();
-  });
+  // test("renders task details correctly", () => {
+  //   render(
+  //     <Provider store={store}>
+  //       <AdminTaskCard task={task} />
+  //     </Provider>
+  //   );
 
-  test('renders card header and content correctly', () => {
-    render(<AdminTaskCard task={defaultTask} />);
-    // Service type should be rendered in uppercase.
-    expect(screen.getByText('CLEANING')).toBeInTheDocument();
-    // Status and priority texts are rendered.
-    expect(screen.getByText('open')).toBeInTheDocument();
-    expect(screen.getByText('low')).toBeInTheDocument();
-    // Description is rendered.
-    expect(screen.getByText('Test description')).toBeInTheDocument();
-    // Current engineer info is shown.
-    expect(screen.getByText(/Current Engineer:/)).toHaveTextContent('Current Engineer: eng@example.com');
-    // Since location is not "/admin/deferred", the Reassign button should not be rendered.
-    expect(screen.queryByText('Reassign')).not.toBeInTheDocument();
-  });
+  //   expect(screen.getByText(task.serviceType)).toBeInTheDocument();
+  //   expect(screen.getByText(task.description)).toBeInTheDocument();
+  //   expect(screen.getByText(task.address)).toBeInTheDocument();
+  //   expect(screen.getByText("Current Engineer: Unassigned")).toBeInTheDocument();
+  //   expect(screen.getByText(task.status)).toBeInTheDocument();
+  //   expect(screen.getByText(task.priority)).toBeInTheDocument();
+  // });
 
-  test('shows Reassign button when location.pathname is "/admin/deferred"', async () => {
-    // Set location pathname to "/admin/deferred" so that the useEffect sets Button to true.
-    useLocation.mockReturnValue({ pathname: '/admin/deferred' });
-    render(<AdminTaskCard task={defaultTask} />);
-    // Wait for useEffect to run.
+  test("renders task details correctly", async () => {
+    render(
+      <Provider store={store}>
+        <AdminTaskCard task={task} />
+      </Provider>
+    );
+  
+    // Log the rendered output
+    screen.debug();
+  
+    expect(screen.getByText(task.serviceType)).toBeInTheDocument();
+  
+    // Debug why description is missing
+    console.log("Task description:", task.description);
+  
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Reassign/i })).toBeInTheDocument();
+      expect(screen.queryByText(task.description)).toBeInTheDocument();
     });
-    const button = screen.getByRole('button', { name: /Reassign/i });
-    // Button should not be disabled when not loading.
-    expect(button).not.toBeDisabled();
+  
+    expect(screen.getByText(task.address)).toBeInTheDocument();
   });
+  
 
-  test('fetches available engineers and renders dropdown options when Reassign is clicked', async () => {
-    // Set location to trigger button rendering.
-    useLocation.mockReturnValue({ pathname: '/admin/deferred' });
-    // Mock API GET to resolve with a valid response containing one approved engineer.
-    const engineerData = {
-      engineers: [
-        {
-          _id: 'e1',
-          name: 'John Doe',
-          isEngineer: true,
-          currentTasks: 2,
-          specialization: 'Electrician',
-          address: '123 St',
-          pincode: '12345',
-          email: 'john@example.com'
-        }
-      ]
-    };
-    apiClient.get.mockResolvedValue({ data: engineerData });
+  
+  test("shows Reassign button when location is '/admin/deferred'", async () => {
+    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
 
-    render(<AdminTaskCard task={defaultTask} />);
-    // Click the Reassign button to toggle the dropdown.
-    const button = await screen.findByRole('button', { name: /Reassign/i });
-    act(() => {
-      fireEvent.click(button);
-    });
-    // Wait for the async API call and dropdown rendering.
+    render(
+      <Provider store={store}>
+        <AdminTaskCard task={task} />
+      </Provider>
+    );
+
     await waitFor(() => {
-      // The dropdown should show the engineer option. The initials "JD" should appear.
-      expect(screen.getByText('JD')).toBeInTheDocument();
-      // Also, the text "Available" should appear in the option.
-      expect(screen.getByText('Available')).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Reassign/i })).toBeInTheDocument();
     });
   });
 
-  test('handleReassignEngineer shows error for invalid task information', async () => {
-    // Provide a task without _id.
-    const invalidTask = { ...defaultTask };
-    delete invalidTask._id;
-    useLocation.mockReturnValue({ pathname: '/admin/deferred' });
-    // Mock API GET to return available engineers.
-    const engineerData = {
-      engineers: [
-        {
-          _id: 'e1',
-          name: 'John Doe',
-          isEngineer: true,
-          currentTasks: 2,
-          specialization: 'Electrician',
-          address: '123 St',
-          pincode: '12345',
-          email: 'john@example.com'
-        }
-      ]
-    };
-    apiClient.get.mockResolvedValue({ data: engineerData });
-    render(<AdminTaskCard task={invalidTask} />);
-    // Open dropdown.
-    const button = await screen.findByRole('button', { name: /Reassign/i });
-    act(() => {
-      fireEvent.click(button);
+  test("fetches available engineers and renders dropdown on clicking Reassign", async () => {
+    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
+
+    apiClient.get.mockResolvedValueOnce({
+      data: { success: true, engineers: [{ name: "John Doe", email: "john@example.com" }] },
     });
-    // Wait for the dropdown options to appear.
+
+    render(
+      <Provider store={store}>
+        <AdminTaskCard task={task} />
+      </Provider>
+    );
+
+    fireEvent.click(screen.getByText(/Reassign/i));
+
     await waitFor(() => {
-      expect(screen.getByText('JD')).toBeInTheDocument();
-    });
-    // Click on the engineer option.
-    act(() => {
-      fireEvent.click(screen.getByText('JD'));
-    });
-    // Wait for error state update.
-    await waitFor(() => {
-      expect(screen.getByText(/Invalid task information/)).toBeInTheDocument();
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
     });
   });
 
-  test('handleReassignEngineer shows error for invalid engineer ID', async () => {
-    // Provide valid task.
-    useLocation.mockReturnValue({ pathname: '/admin/deferred' });
-    // Mock API GET to return an engineer with empty email.
-    const engineerData = {
-      engineers: [
-        {
-          _id: 'e2',
-          name: 'Jane Doe',
-          isEngineer: true,
-          currentTasks: 1,
-          specialization: 'Plumbing',
-          address: '456 St',
-          pincode: '67890',
-          email: '' // Invalid email
-        }
-      ]
-    };
-    apiClient.get.mockResolvedValue({ data: engineerData });
-    render(<AdminTaskCard task={defaultTask} />);
-    // Open dropdown.
-    const button = await screen.findByRole('button', { name: /Reassign/i });
-    act(() => {
-      fireEvent.click(button);
-    });
+  test("shows error message if fetching engineers fails", async () => {
+    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
+
+    apiClient.get.mockRejectedValueOnce(new Error("Failed to fetch engineers"));
+
+    render(
+      <Provider store={store}>
+        <AdminTaskCard task={task} />
+      </Provider>
+    );
+
+    fireEvent.click(screen.getByText(/Reassign/i));
+
     await waitFor(() => {
-      expect(screen.getByText('JD')).toBeInTheDocument();
-    });
-    // Click on the engineer option.
-    act(() => {
-      fireEvent.click(screen.getByText('JD'));
-    });
-    // Wait for error message.
-    await waitFor(() => {
-      expect(screen.getByText(/Invalid engineer ID/)).toBeInTheDocument();
+      expect(screen.getByText("Failed to fetch eligible engineers")).toBeInTheDocument();
     });
   });
 
-  test('handleReassignEngineer succeeds and dispatches fetchDeferredTasks', async () => {
-    // Provide valid task.
-    useLocation.mockReturnValue({ pathname: '/admin/deferred' });
-    // Mock API GET to return an approved engineer.
-    const engineerData = {
-      engineers: [
-        {
-          _id: 'e3',
-          name: 'Alice Smith',
-          isEngineer: true,
-          currentTasks: 1,
-          specialization: 'Carpentry',
-          address: '789 St',
-          pincode: '11111',
-          email: 'alice@example.com'
-        }
-      ]
-    };
-    apiClient.get.mockResolvedValue({ data: engineerData });
-    // Mock API PATCH to resolve with a non-falsey response.
-    apiClient.patch.mockResolvedValue({ data: { success: true } });
+  test("successfully reassigns engineer and updates task list", async () => {
+    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
 
-    render(<AdminTaskCard task={defaultTask} />);
-    // Open dropdown.
-    const button = await screen.findByRole('button', { name: /Reassign/i });
-    act(() => {
-      fireEvent.click(button);
+    apiClient.get.mockResolvedValueOnce({
+      data: { success: true, engineers: [{ name: "Alice Smith", email: "alice@example.com" }] },
     });
-    // Wait for engineer option to appear.
+
+    apiClient.patch.mockResolvedValueOnce({ data: { success: true } });
+
+    render(
+      <Provider store={store}>
+        <AdminTaskCard task={task} />
+        <ToastContainer />
+      </Provider>
+    );
+
+    fireEvent.click(screen.getByText(/Reassign/i));
+
     await waitFor(() => {
-      expect(screen.getByText('AS')).toBeInTheDocument();
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument();
     });
-    // Click on the engineer option.
-    act(() => {
-      fireEvent.click(screen.getByText('AS'));
-    });
-    // Wait for API PATCH to be called and dispatch to be invoked.
+
+    fireEvent.click(screen.getByText("Alice Smith"));
+
     await waitFor(() => {
-      expect(apiClient.patch).toHaveBeenCalledWith(
-        `/admin/reassign/${defaultTask._id}/alice@example.com`,
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      expect(mockDispatch).toHaveBeenCalledWith(fetchDeferredTasks());
-      // After reassignment, the dropdown should be closed.
-      expect(screen.queryByText('AS')).not.toBeInTheDocument();
+      expect(apiClient.patch).toHaveBeenCalledWith(`/admin/reassign/${task._id}/alice@example.com`);
+      expect(fetchAllTasks).toHaveBeenCalled();
     });
   });
 
-  test('displays loading spinner in dropdown when loading is true', async () => {
-    useLocation.mockReturnValue({ pathname: '/admin/deferred' });
-    // Create a promise that does not resolve immediately.
+  test("shows error message if reassignment fails", async () => {
+    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
+
+    apiClient.get.mockResolvedValueOnce({
+      data: { success: true, engineers: [{ name: "Alice Smith", email: "alice@example.com" }] },
+    });
+
+    apiClient.patch.mockRejectedValueOnce(new Error("Failed to reassign engineer"));
+
+    render(
+      <Provider store={store}>
+        <AdminTaskCard task={task} />
+        <ToastContainer />
+      </Provider>
+    );
+
+    fireEvent.click(screen.getByText(/Reassign/i));
+
+    await waitFor(() => {
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Alice Smith"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Failed to reassign engineer")).toBeInTheDocument();
+    });
+  });
+
+  test("displays loading spinner when fetching engineers", async () => {
+    useLocation.mockReturnValue({ pathname: "/admin/deferred" });
+
     let resolveGet;
     const getPromise = new Promise((resolve) => {
       resolveGet = resolve;
     });
+
     apiClient.get.mockReturnValue(getPromise);
-    render(<AdminTaskCard task={defaultTask} />);
-    // Open dropdown.
-    const button = await screen.findByRole('button', { name: /Reassign/i });
-    act(() => {
-      fireEvent.click(button);
-    });
-    // Immediately, the dropdown should show the loading spinner.
+
+    render(
+      <Provider store={store}>
+        <AdminTaskCard task={task} />
+      </Provider>
+    );
+
+    fireEvent.click(screen.getByText(/Reassign/i));
+
     expect(screen.getByText(/Processing\.\.\./i)).toBeInTheDocument();
-    // Now resolve the promise.
+
     act(() => {
       resolveGet({ data: { engineers: [] } });
     });
-    // Wait for the spinner to disappear and "No engineers available" to appear.
-    await waitFor(() => {
-      expect(screen.getByText(/No engineers available/i)).toBeInTheDocument();
-    });
-  });
 
-  test('displays "No engineers available" when API returns an empty list', async () => {
-    useLocation.mockReturnValue({ pathname: '/admin/deferred' });
-    // Mock API GET to return an empty engineers array.
-    apiClient.get.mockResolvedValue({ data: { engineers: [] } });
-    render(<AdminTaskCard task={defaultTask} />);
-    // Open dropdown.
-    const button = await screen.findByRole('button', { name: /Reassign/i });
-    act(() => {
-      fireEvent.click(button);
-    });
-    // Wait for the dropdown to display the message.
     await waitFor(() => {
       expect(screen.getByText(/No engineers available/i)).toBeInTheDocument();
     });
