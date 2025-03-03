@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { User, Mail, Phone, MapPin, Camera, CheckCircle } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchEngineerTasks,
   fetchUpdateEngineerProfile,
-  fetchProfile,
 } from "../../redux/Slice/EngineerSlice";
+import { fetchProfile } from "../../redux/Slice/UserSlice";
 import EngineerNavbar from "./Navbar";
 
 const userEmail = sessionStorage.getItem("email");
@@ -15,7 +14,8 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 const EngineerProfile = () => {
   const dispatch = useDispatch();
-  const { profile } = useSelector((state) => state.engineer?.profile) || {};
+  const { profile } = useSelector((state) => state.tickets) || {};
+  console.log("engineer profile: ", profile)
 
   // Initialize engineer state
   const [engineer, setEngineer] = useState({

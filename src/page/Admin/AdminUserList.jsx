@@ -67,8 +67,8 @@ const AdminUserList = () => {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
+          {filteredUsers?.length > 0 ? (
+            filteredUsers?.map((user) => (
               <div key={user.email} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                 <div className="p-4">
                   <div className="flex items-center space-x-3">

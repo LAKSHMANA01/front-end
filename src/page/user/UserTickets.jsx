@@ -6,7 +6,6 @@ import { fetchTickets } from '../../redux/Slice/UserSlice';
 
 import TaskCard from './Taskcard';
 import Loading from "../../compoents/Loadingpage"
-import Footer from '../../compoents/footers';
 // import Notasksimage from '../../assets/NoTasks.png';
 
 
@@ -18,9 +17,10 @@ const UserTicketList = () => {
   const { tasks, loading, error } = useSelector((state) => state.tickets);
   
   useEffect(() => {
-    
-    if (user?.email && user?.role && !isDataLoaded)  {
-      dispatch(fetchTickets({userEmail: user?.email, role: user?.role}));
+    const email = sessionStorage.getItem('email');
+    const role = sessionStorage.getItem('role');
+    if (email && !isDataLoaded)  {
+      dispatch(fetchTickets({userEmail: email, role: role}));
       setIsDataLoaded(true)
     }
   }, [user, dispatch,isDataLoaded]);
@@ -52,9 +52,6 @@ const UserTicketList = () => {
           <TaskCard key={task._id} task={task} showPriority={false} assignEngineer={true}/>
         
         ))}
-      </div>
-      <div className="mt-40">
-      <Footer />
       </div>
       
     </div>

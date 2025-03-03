@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { User, Mail, Phone, MapPin, Camera, CheckCircle } from "lucide-react";
+import { User, Mail, Phone, MapPin, CheckCircle } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUpdateProfile, fetchProfile } from "../../redux/Slice/UserSlice";
-import Footer from "./../../compoents/footers";
 import { validateEmail,validatePhoneNumber } from "../../utils/validation";
 
 const UserProfile = () => {
@@ -10,6 +9,7 @@ const UserProfile = () => {
   const role = sessionStorage.getItem("role"); // Replace with the actual user role/ID if needed
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.tickets);
+  console.log("user profile: ", profile)
 
   // Fetch the profile if not already loaded
   useEffect(() => {
@@ -171,9 +171,6 @@ const UserProfile = () => {
         </div>
       </div>
     </div>
-    <div className="mt-6">
-      <Footer />
-      </div>
     </div>
   );
 };

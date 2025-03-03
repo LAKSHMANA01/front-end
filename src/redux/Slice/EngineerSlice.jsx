@@ -78,7 +78,7 @@ export const fetchUpdateEngineerProfile = createAsyncThunk(
         }
       );
       console.log(`response.data inside fetchUpdateEngineerProfile: ${response.data}`);
-      return response.data;
+      return response.data.profile.user;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to update engineer profile');
     }

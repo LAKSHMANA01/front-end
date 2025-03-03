@@ -91,8 +91,8 @@ const AdminDashboard = ({ debouncedSearchTerm = "", statusFilter = "", priorityF
     ],
   };
   const adminData = {
-    openTickets: tasks.filter(task => task.status === "open"),
-    resolvedTickets: tasks.filter(task => task.status === "completed"),
+    openTickets: tasks?.filter(task => task.status === "open"),
+    resolvedTickets: tasks?.filter(task => task.status === "completed"),
     approvedEngineers:approvedEngineers,
     allEngineers:engineers,
   };
