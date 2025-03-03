@@ -22,6 +22,7 @@ const EngineerNavbar = ({toggleSidebar}) => {
   useEffect(() => {
     console.log(" isProfileOpen")
     dispatch(fetchNotifications());
+    
       const interval = setInterval(() => {
         dispatch(fetchNotifications(UserName))
       }, 5000);

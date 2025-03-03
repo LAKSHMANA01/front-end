@@ -61,8 +61,8 @@ const AssignedTasks = ({ isExpanded }) => { // Accepts isExpanded from Sidebar
             if (newStatus === "deferred" || newStatus === "failed") {
                 const notificationPayload = {
                     // Ensure this exists
-                    email: "vikas07@gmail.com",
-                    message: `Task "${selectedTask._id}" has been deferred by ${user.email}`,
+                    email: "admin@gmail.com",
+                    message: `Task with ID "${selectedTask._id}" has been "${newStatus}" by "${user.email}"`,
                     isRead: false,
                 };
                 dispatch(sendNotification(notificationPayload))
