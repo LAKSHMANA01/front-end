@@ -130,7 +130,7 @@ const EngineerDashboard = ({ debouncedSearchTerm="", statusFilter="", priorityFi
       {
         label: "Ticket Status",
         data: Object.values(ticketStatusCounts),
-        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50", "#9966FF"],
+        backgroundColor: ["#FFCE56", "#36A2EB", "#4CAF50", "#FF0000", "#808080"],
         borderWidth: 2,
       },
     ],
@@ -142,7 +142,7 @@ const EngineerDashboard = ({ debouncedSearchTerm="", statusFilter="", priorityFi
       {
         label: "Task Priority",
         data: Object.values(taskPriorityCounts),
-        backgroundColor: ["#4CAF50", "#FFCE56", "#FF6384"],
+        backgroundColor: ["#FFCE56", "#FFA500", "#FF0000"],
         borderWidth: 2,
       },
     ],

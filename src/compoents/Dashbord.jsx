@@ -340,7 +340,7 @@ const Dashboard = ({ ticketStatusData, taskPriorityData,data }) => {
           )}
         </div>
 
-        <div className=" p-4 rounded-lg shadow-md dark:bg-gray-800">
+        <div className="bg-white p-4 rounded-lg shadow-md dark:bg-gray-800">
           <h3 className="text-lg font-semibold mb-4">Task Priority Overview</h3>
           {taskPriorityData?.labels ? (
             <Bar data={taskPriorityData} />
