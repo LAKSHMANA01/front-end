@@ -7,7 +7,7 @@ import AdminHazardsTickets from "./AdminHazardsTickets";
 import { HazardsTicket } from "../../redux/Slice/raiseticke";
 import { toast } from "react-toastify";
 
-// Define a dummy value for any global inputStyles if needed
+// Define a dummy global value for inputStyles if needed
 global.inputStyles = "dummy-input-styles";
 
 // --- Mock CustomCard so that it simply renders its title and children ---
@@ -51,10 +51,8 @@ jest.mock("react-redux", () => ({
   useDispatch: jest.fn(),
 }));
 
-// --- Helper function to create a dummy Redux store ---
-const createMockStore = (initialState) => {
-  return createStore(() => initialState);
-};
+// --- Helper to create a dummy Redux store (without middleware) ---
+const createMockStore = (initialState) => createStore(() => initialState);
 
 // --- Helper function to render with Redux Provider and MemoryRouter ---
 const renderWithProviders = (component, store) => {
@@ -103,8 +101,8 @@ describe("AdminHazardsTickets Component", () => {
     expect(riskLevelSelect).toBeInTheDocument();
     expect(riskLevelSelect.value).toBe("medium");
 
-    // Check for pincode input via its label
-    const pinLabel = screen.getByText("Enter Pin Code");
+    // Check for pincode input via its label (matches exactly "Enter Pincode")
+    const pinLabel = screen.getByText("Enter Pincode");
     expect(pinLabel).toBeInTheDocument();
     expect(pinLabel.nextElementSibling).toBeInTheDocument();
 
@@ -124,35 +122,29 @@ describe("AdminHazardsTickets Component", () => {
     const addressInput = screen.getByPlaceholderText("Address");
     const descriptionInput = screen.getByPlaceholderText("Describe hazard in detail");
     const riskLevelSelect = screen.getByRole("combobox");
-    const pinLabel = screen.getByText("Enter Pin Code");
+    const pinLabel = screen.getByText("Enter Pincode");
     const pinCodeInput = pinLabel.nextElementSibling;
 
-    // Update the hazard title input
+    // Update each field and check its value.
     fireEvent.change(hazardTitleInput, { target: { value: "Fire" } });
     expect(hazardTitleInput.value).toBe("Fire");
 
-    // Update the address input
     fireEvent.change(addressInput, { target: { value: "123 Main St" } });
     expect(addressInput.value).toBe("123 Main St");
 
-    // Update the description textarea
-    fireEvent.change(descriptionInput, {
-      target: { value: "Test hazard description" },
-    });
+    fireEvent.change(descriptionInput, { target: { value: "Test hazard description" } });
     expect(descriptionInput.value).toBe("Test hazard description");
 
-    // Update the risk level select
     fireEvent.change(riskLevelSelect, { target: { value: "high" } });
     expect(riskLevelSelect.value).toBe("high");
 
-    // Update the pincode input
     fireEvent.change(pinCodeInput, { target: { value: "12345" } });
     expect(pinCodeInput.value).toBe("12345");
   });
 
   test("submits form successfully with truthy response", async () => {
     const store = createMockStore({});
-    // Simulate dispatch returning a resolved promise with payload.success true
+    // Simulate dispatch resolving with payload.success true.
     mockDispatch.mockResolvedValue({ payload: { success: true } });
     HazardsTicket.mockImplementation((data) => ({
       type: "HAZARD_TICKET",
@@ -165,19 +157,17 @@ describe("AdminHazardsTickets Component", () => {
     const addressInput = screen.getByPlaceholderText("Address");
     const descriptionInput = screen.getByPlaceholderText("Describe hazard in detail");
     const riskLevelSelect = screen.getByRole("combobox");
-    const pinLabel = screen.getByText("Enter Pin Code");
+    const pinLabel = screen.getByText("Enter Pincode");
     const pinCodeInput = pinLabel.nextElementSibling;
 
-    // Fill in the form inputs
+    // Fill in the form.
     fireEvent.change(hazardTitleInput, { target: { value: "Initial Title" } });
     fireEvent.change(addressInput, { target: { value: "123 Main St" } });
-    fireEvent.change(descriptionInput, {
-      target: { value: "Test hazard description" },
-    });
+    fireEvent.change(descriptionInput, { target: { value: "Test hazard description" } });
     fireEvent.change(riskLevelSelect, { target: { value: "high" } });
     fireEvent.change(pinCodeInput, { target: { value: "12345" } });
 
-    // Submit the form by clicking the "Submit" button
+    // Submit the form.
     const submitButton = screen.getByText(/submit/i);
     await act(async () => {
       fireEvent.click(submitButton);
@@ -191,20 +181,16 @@ describe("AdminHazardsTickets Component", () => {
       pincode: "12345",
     };
 
-    expect(mockDispatch).toHaveBeenCalledWith(
-      HazardsTicket(expectedFormData)
-    );
-    expect(toast.success).toHaveBeenCalledWith(
-      "Hazard submitted successfully!"
-    );
+    expect(mockDispatch).toHaveBeenCalledWith(HazardsTicket(expectedFormData));
+    expect(toast.success).toHaveBeenCalledWith("Hazard submitted successfully!");
 
-    // Advance timers by 1000ms to trigger delayed navigation
+    // Advance timers to simulate delayed navigation.
     act(() => {
       jest.advanceTimersByTime(1000);
     });
     expect(mockNavigate).toHaveBeenCalledWith("/admin/hazards");
 
-    // Verify that the form resets to initial values
+    // Verify that the form resets.
     expect(hazardTitleInput.value).toBe("");
     expect(addressInput.value).toBe("");
     expect(descriptionInput.value).toBe("");
@@ -214,7 +200,7 @@ describe("AdminHazardsTickets Component", () => {
 
   test("submits form with falsey response (no toast or navigation)", async () => {
     const store = createMockStore({});
-    // Simulate dispatch returning a resolved promise with payload.success false
+    // Simulate dispatch resolving with payload.success false.
     mockDispatch.mockResolvedValue({ payload: { success: false } });
     HazardsTicket.mockImplementation((data) => ({
       type: "HAZARD_TICKET",
@@ -227,19 +213,15 @@ describe("AdminHazardsTickets Component", () => {
     const addressInput = screen.getByPlaceholderText("Address");
     const descriptionInput = screen.getByPlaceholderText("Describe hazard in detail");
     const riskLevelSelect = screen.getByRole("combobox");
-    const pinLabel = screen.getByText("Enter Pin Code");
+    const pinLabel = screen.getByText("Enter Pincode");
     const pinCodeInput = pinLabel.nextElementSibling;
 
-    // Fill in the form inputs
     fireEvent.change(hazardTitleInput, { target: { value: "Test Title" } });
     fireEvent.change(addressInput, { target: { value: "456 Another St" } });
-    fireEvent.change(descriptionInput, {
-      target: { value: "Another description" },
-    });
+    fireEvent.change(descriptionInput, { target: { value: "Another description" } });
     fireEvent.change(riskLevelSelect, { target: { value: "low" } });
     fireEvent.change(pinCodeInput, { target: { value: "67890" } });
 
-    // Submit the form
     const submitButton = screen.getByText(/submit/i);
     await act(async () => {
       fireEvent.click(submitButton);
@@ -253,22 +235,17 @@ describe("AdminHazardsTickets Component", () => {
       pincode: "67890",
     };
 
-    expect(mockDispatch).toHaveBeenCalledWith(
-      HazardsTicket(expectedFormData)
-    );
-    // Because the response is falsey, the success toast should not be triggered
-    expect(toast.success).not.toHaveBeenCalledWith(
-      "Hazard submitted successfully!"
-    );
+    expect(mockDispatch).toHaveBeenCalledWith(HazardsTicket(expectedFormData));
+    // Since response is falsey, success toast should not trigger.
+    expect(toast.success).not.toHaveBeenCalledWith("Hazard submitted successfully!");
 
-    // The form resets regardless of the response
+    // The form resets regardless.
     expect(hazardTitleInput.value).toBe("");
     expect(addressInput.value).toBe("");
     expect(descriptionInput.value).toBe("");
     expect(riskLevelSelect.value).toBe("medium");
     expect(pinCodeInput.value).toBe("");
 
-    // Advance timers by 1000ms; navigation should not occur
     act(() => {
       jest.advanceTimersByTime(1000);
     });
@@ -291,7 +268,7 @@ describe("AdminHazardsTickets Component", () => {
     const addressInput = screen.getByPlaceholderText("Address");
     const descriptionInput = screen.getByPlaceholderText("Describe hazard in detail");
     const riskLevelSelect = screen.getByRole("combobox");
-    const pinLabel = screen.getByText("Enter Pin Code");
+    const pinLabel = screen.getByText("Enter Pincode");
     const pinCodeInput = pinLabel.nextElementSibling;
 
     fireEvent.change(hazardTitleInput, { target: { value: "Error Title" } });
@@ -313,11 +290,8 @@ describe("AdminHazardsTickets Component", () => {
       pincode: "00000",
     };
 
-    expect(mockDispatch).toHaveBeenCalledWith(
-      HazardsTicket(expectedFormData)
-    );
-    // Verify that console.error was called with the error message
-    expect(console.error).toHaveBeenCalledWith("Failed to submit Hazard:");
+    expect(mockDispatch).toHaveBeenCalledWith(HazardsTicket(expectedFormData));
+    expect(console.error).toHaveBeenCalledWith("Failed to submit Hazard:", "Submission failed");
     console.error = originalConsoleError;
   });
 
@@ -328,10 +302,7 @@ describe("AdminHazardsTickets Component", () => {
     const cancelButton = screen.getByText(/cancel/i);
     fireEvent.click(cancelButton);
 
-    // Check that toast.success is called with "Cancelled!"
     expect(toast.success).toHaveBeenCalledWith("Cancelled!");
-
-    // Advance timers by 1000ms to trigger delayed navigation
     act(() => {
       jest.advanceTimersByTime(1000);
     });
