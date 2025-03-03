@@ -52,7 +52,7 @@ const AdminTaskList = () => {
 
   return (
     <div className="space-y-6 p-4 mt-25 ml-6 pl-3 mt-12">
-      <h1 className="font-bold bg-white rounded-md text-2xl w-full p-3 mb-6">Approved Engineers</h1>
+      <h1 className="font-bold bg-white rounded-md text-2xl w-full p-3 mb-6">All Tickets</h1>
       {/* Search Bar */}
       <div className="relative mb-6">
         <input

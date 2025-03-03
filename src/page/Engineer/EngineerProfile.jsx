@@ -114,7 +114,7 @@ const EngineerProfile = () => {
       <EngineerNavbar />
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-blue-900 mb-6">Engineer Profile</h1>
+          <h1 className="text-4xl font-bold text-blue-900 mb-6">Your Profile</h1>
           <div className="relative inline-block group">
             {/* 
             <img

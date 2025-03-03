@@ -48,7 +48,7 @@ const AdminDeferredTasks = () => {
     // </div>
     <div>
       <h1 className='font-bold bg-white rounded-md justify-start text-2xl w-full ml-6 p-3 mb-6 shadow-sm'>
-        <span className="text-black-600">Pending Tasks</span>
+        <span className="text-black-600">Failed / Deferred Tickets</span>
       </h1>
       <div className="space-y-6 p-4">
         {filteredTasks?.length > 0 ? (

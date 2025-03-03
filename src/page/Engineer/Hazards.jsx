@@ -154,7 +154,7 @@ const EngineerHazards = () => {
               </div>
             ))
           ) : (
-            <p> Hazards not founds </p>
+            <p> Hazards not found </p>
           )}
         </div>
       </div>
