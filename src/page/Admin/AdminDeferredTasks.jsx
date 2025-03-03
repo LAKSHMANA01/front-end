@@ -15,7 +15,7 @@ const AdminDeferredTasks = () => {
   // }, [dispatch]);
 
     useEffect(() => {
-    dispatch(fetchAllTasks()); // Fetch all tasks on mount
+      dispatch(fetchAllTasks()); // Fetch all tasks on mount
   }, [dispatch]);
 
   if (loading) {
@@ -34,7 +34,7 @@ const AdminDeferredTasks = () => {
     //console.log("task priority:",task.priority)
 
     const matchesStatusFilter =  task.status.toLowerCase() ===  'deferred' || task.
-engineerEmail === null || task.status.toLowerCase() === "failed"
+    engineerEmail.toLowerCase() === 'Not assigned' || task.status.toLowerCase() === "failed"
     //console.log("before priority:",task.priority)
 
     return matchesStatusFilter;

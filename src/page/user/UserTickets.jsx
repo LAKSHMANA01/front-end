@@ -47,7 +47,7 @@ const UserTicketList = () => {
     <div className=''> 
      
       <div style={taskListStyles}>
-      <h1 className=' font-bold bg-gray-100 rounded-md  justify-start text-2xl  w-full h-50  p-3 mb-6'> My Tickets  </h1>
+      <h1 className=' font-bold bg-white rounded-md  justify-start text-2xl  w-full h-50  p-3 mb-6'> My Tickets  </h1>
         {tasks.map((task) => (
           <TaskCard key={task._id} task={task} showPriority={false} assignEngineer={true}/>
         
