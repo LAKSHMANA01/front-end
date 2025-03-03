@@ -31,10 +31,10 @@ const Navbar = ( {toggleSidebar}) => {
   
    useEffect(() => {
     console.log("notification")
-     dispatch(fetchNotifications("vikas07@gmail.com"));
+     dispatch(fetchNotifications("admin@gmail.com"));
 
      const interval = setInterval(() => {
-        dispatch(fetchNotifications("vikas07@gmail.com"))
+        dispatch(fetchNotifications("admin@gmail.com"))
       }, 5000);
       return () => clearInterval(interval);
   }, [dispatch]);

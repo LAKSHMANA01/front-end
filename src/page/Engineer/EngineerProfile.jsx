@@ -15,7 +15,8 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 const EngineerProfile = () => {
   const dispatch = useDispatch();
-  const { profile } = useSelector((state) => state.engineer?.profile) || {};
+  const {  profiledata } = useSelector((state) => state.engineer) || {};
+  console.log("profile engineer profile: ", profile)
 
   // Initialize engineer state
   const [engineer, setEngineer] = useState({
@@ -40,7 +41,7 @@ const EngineerProfile = () => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (!profile?.email) {
+    if (!profile?.user?.email) {
       dispatch(fetchProfile({ userEmail, role }));
     }
   }, [dispatch]);
@@ -48,20 +49,20 @@ const EngineerProfile = () => {
   // Convert DB array of days -> object of booleans
   // e.g. ["Monday", "Friday"] => { Monday: true, Tuesday: false, ... Friday: true, ... }
   useEffect(() => {
-    if (profile?.email) {
+    if (profiledata?.user?.email) {
       setEngineer((prev) => ({
         ...prev,
-        name: profile.name || "",
-        email: profile.email || "",
-        phone: profile.phone || "",
-        address: profile.address || "",
-        availability: Array.isArray(profile.availability)
+        name: profile?.user?.name || "",
+        email: profile?.user?.email || "",
+        phone: profile?.user?.phone || "",
+        address: profile?.user?.address || "",
+        availability: Array.isArray(profile?.user?.availability)
           ? DAYS.reduce((acc, day) => {
-              acc[day] = profile.availability.includes(day);
+              acc[day] = profile?.user?.availability.includes(day);
               return acc;
             }, {})
           : prev.availability,
-        specialization: profile.specialization || "Installation",
+        specialization: profile?.user?.specialization || "Installation",
       }));
     }
   }, [profile]);
