@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 const AdminHazards = () => {
   const { Hazards, loading, error } = useSelector((state) => state.engineer);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);

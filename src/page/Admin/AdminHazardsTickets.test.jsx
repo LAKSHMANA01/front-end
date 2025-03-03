@@ -7,7 +7,7 @@ import AdminHazardsTickets from "./AdminHazardsTickets";
 import { HazardsTicket } from "../../redux/Slice/raiseticke";
 import { toast } from "react-toastify";
 
-// Define a dummy value for the missing inputStyles variable
+// Define a dummy value for any global inputStyles if needed
 global.inputStyles = "dummy-input-styles";
 
 // --- Mock CustomCard so that it simply renders its title and children ---
@@ -34,12 +34,15 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-// --- Mock react-toastify's ToastContainer and toast.success ---
+// --- Mock react-toastify's ToastContainer and toast methods ---
 jest.mock("react-toastify", () => ({
   ToastContainer: ({ children }) => (
     <div data-testid="toast-container">{children}</div>
   ),
-  toast: { success: jest.fn() },
+  toast: { 
+    success: jest.fn(),
+    error: jest.fn()
+  },
 }));
 
 // --- Mock react-redux's useDispatch ---
@@ -68,10 +71,11 @@ describe("AdminHazardsTickets Component", () => {
   beforeEach(() => {
     jest.useFakeTimers();
     mockDispatch = jest.fn();
-    // Instead of using spyOn, we directly set the return value on the mocked useDispatch.
+    // Set the return value on the mocked useDispatch.
     useDispatch.mockReturnValue(mockDispatch);
     mockNavigate.mockReset();
     toast.success.mockClear();
+    toast.error.mockClear();
     HazardsTicket.mockClear();
   });
 
@@ -89,13 +93,26 @@ describe("AdminHazardsTickets Component", () => {
 
     // Check for presence of form inputs and buttons
     expect(screen.getByPlaceholderText("Hazard Title")).toBeInTheDocument();
-    // There are two inputs with placeholder "Address"
-    expect(screen.getAllByPlaceholderText("Address")).toHaveLength(2);
+    expect(screen.getByPlaceholderText("Address")).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText("Describe hazard in detail")
     ).toBeInTheDocument();
+
+    // Check for the select element (using its role "combobox")
+    const riskLevelSelect = screen.getByRole("combobox");
+    expect(riskLevelSelect).toBeInTheDocument();
+    expect(riskLevelSelect.value).toBe("medium");
+
+    // Check for pincode input via its label
+    const pinLabel = screen.getByText("Enter Pin Code");
+    expect(pinLabel).toBeInTheDocument();
+    expect(pinLabel.nextElementSibling).toBeInTheDocument();
+
+    // Check that Cancel and Submit buttons are present
     expect(screen.getByText(/cancel/i)).toBeInTheDocument();
-    expect(screen.getByText(/Submit Hazard/i)).toBeInTheDocument();
+    expect(screen.getByText(/submit/i)).toBeInTheDocument();
+
+    // Check toast container presence
     expect(screen.getByTestId("toast-container")).toBeInTheDocument();
   });
 
@@ -104,85 +121,70 @@ describe("AdminHazardsTickets Component", () => {
     renderWithProviders(<AdminHazardsTickets />, store);
 
     const hazardTitleInput = screen.getByPlaceholderText("Hazard Title");
-    const addressInputs = screen.getAllByPlaceholderText("Address");
-    const descriptionInput = screen.getByPlaceholderText(
-      "Describe hazard in detail"
-    );
-    const riskLevelSelect = screen.getByDisplayValue("Medium - Needs Attention");
-    // "Enter Pin Code" label is rendered; get its adjacent input
+    const addressInput = screen.getByPlaceholderText("Address");
+    const descriptionInput = screen.getByPlaceholderText("Describe hazard in detail");
+    const riskLevelSelect = screen.getByRole("combobox");
     const pinLabel = screen.getByText("Enter Pin Code");
     const pinCodeInput = pinLabel.nextElementSibling;
 
-    // Change the hazard title input
+    // Update the hazard title input
     fireEvent.change(hazardTitleInput, { target: { value: "Fire" } });
     expect(hazardTitleInput.value).toBe("Fire");
 
-    // Change the first Address input – note this one erroneously updates hazardType
-    fireEvent.change(addressInputs[0], { target: { value: "Explosion" } });
-    // Because the hazard title input's value is bound to ticketForm.hazardType,
-    // its value becomes "Explosion"
-    expect(hazardTitleInput.value).toBe("Explosion");
+    // Update the address input
+    fireEvent.change(addressInput, { target: { value: "123 Main St" } });
+    expect(addressInput.value).toBe("123 Main St");
 
-    // Change the second Address input which correctly sets the address field
-    fireEvent.change(addressInputs[1], { target: { value: "123 Main St" } });
-    expect(addressInputs[1].value).toBe("123 Main St");
-
-    // Change the description textarea
+    // Update the description textarea
     fireEvent.change(descriptionInput, {
       target: { value: "Test hazard description" },
     });
     expect(descriptionInput.value).toBe("Test hazard description");
 
-    // Change the risk level select
+    // Update the risk level select
     fireEvent.change(riskLevelSelect, { target: { value: "high" } });
     expect(riskLevelSelect.value).toBe("high");
 
-    // Change the pincode input
+    // Update the pincode input
     fireEvent.change(pinCodeInput, { target: { value: "12345" } });
     expect(pinCodeInput.value).toBe("12345");
   });
 
   test("submits form successfully with truthy response", async () => {
     const store = createMockStore({});
-    // Simulate dispatch returning a resolved promise with a truthy value
-    mockDispatch.mockResolvedValue(true);
+    // Simulate dispatch returning a resolved promise with payload.success true
+    mockDispatch.mockResolvedValue({ payload: { success: true } });
     HazardsTicket.mockImplementation((data) => ({
       type: "HAZARD_TICKET",
-      payload: data,
+      payload: { ...data, success: true },
     }));
 
     renderWithProviders(<AdminHazardsTickets />, store);
 
     const hazardTitleInput = screen.getByPlaceholderText("Hazard Title");
-    const addressInputs = screen.getAllByPlaceholderText("Address");
-    const descriptionInput = screen.getByPlaceholderText(
-      "Describe hazard in detail"
-    );
-    const riskLevelSelect = screen.getByDisplayValue("Medium - Needs Attention");
+    const addressInput = screen.getByPlaceholderText("Address");
+    const descriptionInput = screen.getByPlaceholderText("Describe hazard in detail");
+    const riskLevelSelect = screen.getByRole("combobox");
     const pinLabel = screen.getByText("Enter Pin Code");
     const pinCodeInput = pinLabel.nextElementSibling;
 
     // Fill in the form inputs
     fireEvent.change(hazardTitleInput, { target: { value: "Initial Title" } });
-    // Change the first Address input (overwrites hazardType)
-    fireEvent.change(addressInputs[0], { target: { value: "Overridden Title" } });
-    // Change the second Address input to set the actual address field
-    fireEvent.change(addressInputs[1], { target: { value: "123 Main St" } });
+    fireEvent.change(addressInput, { target: { value: "123 Main St" } });
     fireEvent.change(descriptionInput, {
       target: { value: "Test hazard description" },
     });
     fireEvent.change(riskLevelSelect, { target: { value: "high" } });
     fireEvent.change(pinCodeInput, { target: { value: "12345" } });
 
-    // Submit the form by clicking the "Submit Hazard" button
-    const submitButton = screen.getByText(/Submit Hazard/i);
+    // Submit the form by clicking the "Submit" button
+    const submitButton = screen.getByText(/submit/i);
     await act(async () => {
       fireEvent.click(submitButton);
     });
 
-    // Expected formData reflects the fact that the second input overwrote hazardType:
     const expectedFormData = {
-      hazardType: "Overridden Title",
+      hazardType: "Initial Title",
       description: "Test hazard description",
       riskLevel: "high",
       address: "123 Main St",
@@ -202,9 +204,9 @@ describe("AdminHazardsTickets Component", () => {
     });
     expect(mockNavigate).toHaveBeenCalledWith("/admin/hazards");
 
-    // Check that the form resets to initial values
+    // Verify that the form resets to initial values
     expect(hazardTitleInput.value).toBe("");
-    expect(addressInputs[1].value).toBe("");
+    expect(addressInput.value).toBe("");
     expect(descriptionInput.value).toBe("");
     expect(riskLevelSelect.value).toBe("medium");
     expect(pinCodeInput.value).toBe("");
@@ -212,27 +214,25 @@ describe("AdminHazardsTickets Component", () => {
 
   test("submits form with falsey response (no toast or navigation)", async () => {
     const store = createMockStore({});
-    mockDispatch.mockResolvedValue(false);
+    // Simulate dispatch returning a resolved promise with payload.success false
+    mockDispatch.mockResolvedValue({ payload: { success: false } });
     HazardsTicket.mockImplementation((data) => ({
       type: "HAZARD_TICKET",
-      payload: data,
+      payload: { ...data, success: false },
     }));
 
     renderWithProviders(<AdminHazardsTickets />, store);
 
     const hazardTitleInput = screen.getByPlaceholderText("Hazard Title");
-    const addressInputs = screen.getAllByPlaceholderText("Address");
-    const descriptionInput = screen.getByPlaceholderText(
-      "Describe hazard in detail"
-    );
-    const riskLevelSelect = screen.getByDisplayValue("Medium - Needs Attention");
+    const addressInput = screen.getByPlaceholderText("Address");
+    const descriptionInput = screen.getByPlaceholderText("Describe hazard in detail");
+    const riskLevelSelect = screen.getByRole("combobox");
     const pinLabel = screen.getByText("Enter Pin Code");
     const pinCodeInput = pinLabel.nextElementSibling;
 
     // Fill in the form inputs
     fireEvent.change(hazardTitleInput, { target: { value: "Test Title" } });
-    fireEvent.change(addressInputs[0], { target: { value: "Overridden Title" } });
-    fireEvent.change(addressInputs[1], { target: { value: "456 Another St" } });
+    fireEvent.change(addressInput, { target: { value: "456 Another St" } });
     fireEvent.change(descriptionInput, {
       target: { value: "Another description" },
     });
@@ -240,13 +240,13 @@ describe("AdminHazardsTickets Component", () => {
     fireEvent.change(pinCodeInput, { target: { value: "67890" } });
 
     // Submit the form
-    const submitButton = screen.getByText(/Submit Hazard/i);
+    const submitButton = screen.getByText(/submit/i);
     await act(async () => {
       fireEvent.click(submitButton);
     });
 
     const expectedFormData = {
-      hazardType: "Overridden Title",
+      hazardType: "Test Title",
       description: "Another description",
       riskLevel: "low",
       address: "456 Another St",
@@ -261,9 +261,9 @@ describe("AdminHazardsTickets Component", () => {
       "Hazard submitted successfully!"
     );
 
-    // Form resets regardless of response
+    // The form resets regardless of the response
     expect(hazardTitleInput.value).toBe("");
-    expect(addressInputs[1].value).toBe("");
+    expect(addressInput.value).toBe("");
     expect(descriptionInput.value).toBe("");
     expect(riskLevelSelect.value).toBe("medium");
     expect(pinCodeInput.value).toBe("");
@@ -288,30 +288,25 @@ describe("AdminHazardsTickets Component", () => {
     renderWithProviders(<AdminHazardsTickets />, store);
 
     const hazardTitleInput = screen.getByPlaceholderText("Hazard Title");
-    const addressInputs = screen.getAllByPlaceholderText("Address");
-    const descriptionInput = screen.getByPlaceholderText(
-      "Describe hazard in detail"
-    );
-    const riskLevelSelect = screen.getByDisplayValue("Medium - Needs Attention");
+    const addressInput = screen.getByPlaceholderText("Address");
+    const descriptionInput = screen.getByPlaceholderText("Describe hazard in detail");
+    const riskLevelSelect = screen.getByRole("combobox");
     const pinLabel = screen.getByText("Enter Pin Code");
     const pinCodeInput = pinLabel.nextElementSibling;
 
     fireEvent.change(hazardTitleInput, { target: { value: "Error Title" } });
-    fireEvent.change(addressInputs[0], { target: { value: "Error Overridden" } });
-    fireEvent.change(addressInputs[1], { target: { value: "Error Address" } });
-    fireEvent.change(descriptionInput, {
-      target: { value: "Error description" },
-    });
+    fireEvent.change(addressInput, { target: { value: "Error Address" } });
+    fireEvent.change(descriptionInput, { target: { value: "Error description" } });
     fireEvent.change(riskLevelSelect, { target: { value: "high" } });
     fireEvent.change(pinCodeInput, { target: { value: "00000" } });
 
-    const submitButton = screen.getByText(/Submit Hazard/i);
+    const submitButton = screen.getByText(/submit/i);
     await act(async () => {
       fireEvent.click(submitButton);
     });
 
     const expectedFormData = {
-      hazardType: "Error Overridden",
+      hazardType: "Error Title",
       description: "Error description",
       riskLevel: "high",
       address: "Error Address",
@@ -323,7 +318,6 @@ describe("AdminHazardsTickets Component", () => {
     );
     // Verify that console.error was called with the error message
     expect(console.error).toHaveBeenCalledWith("Failed to submit Hazard:");
-    // Restore original console.error
     console.error = originalConsoleError;
   });
 
@@ -343,6 +337,4 @@ describe("AdminHazardsTickets Component", () => {
     });
     expect(mockNavigate).toHaveBeenCalledWith("/admin/hazards");
   });
-
-  
 });

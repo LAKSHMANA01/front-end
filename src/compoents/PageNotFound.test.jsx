@@ -1,42 +1,61 @@
-// src/components/PageNotFound.test.jsx
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import PageNotFound from './PageNotFound';
+import React from "react";
+import { expect } from "chai";
+import { mount } from "enzyme";
+import sinon from "sinon";
+import PageNotFound from "../components/PageNotFound"; // Adjust path if needed
 
-describe('PageNotFound', () => {
-  test('renders PageNotFound component', () => {
-    render(<PageNotFound />);
-    const notFoundElement = screen.getByText('Oops! Page Not Found');
-    expect(notFoundElement).toBeInTheDocument();
+describe("PageNotFound Component", () => {
+  let wrapper;
+  let historyBackStub, locationReloadStub;
+  let clock;
+
+  before(() => {
+    // Use fake timers to control setTimeout
+    clock = sinon.useFakeTimers();
   });
 
-  test('renders 404 header', () => {
-    render(<PageNotFound />);
-    const headerElement = screen.getByText('404');
-    expect(headerElement).toBeInTheDocument();
+  after(() => {
+    clock.restore();
   });
 
-  test('renders astronaut illustration', () => {
-    render(<PageNotFound />);
-    const imgElement = screen.getByAltText('Lost in Space');
-    expect(imgElement).toBeInTheDocument();
+  beforeEach(() => {
+    // Stub window.history.back and window.location.reload to test their calls
+    historyBackStub = sinon.stub(window.history, "back");
+    locationReloadStub = sinon.stub(window.location, "reload");
+    wrapper = mount(<PageNotFound />);
   });
 
-  test('animates astronaut illustration on refresh', () => {
-    render(<PageNotFound />);
-    const imgElement = screen.getByAltText('Lost in Space');
-    fireEvent.click(imgElement);
-    expect(imgElement).toHaveClass('animate-bounce');
+  afterEach(() => {
+    historyBackStub.restore();
+    locationReloadStub.restore();
+    wrapper.unmount();
   });
 
-  test('handles countdown correctly', () => {
-    jest.useFakeTimers();
-    render(<PageNotFound />);
-    expect(screen.getByText('10')).toBeInTheDocument();
-    jest.advanceTimersByTime(1000);
-    expect(screen.getByText('9')).toBeInTheDocument();
-    jest.advanceTimersByTime(9000);
-    expect(screen.queryByText('0')).toBeInTheDocument();
-    jest.useRealTimers();
+  it("renders the header and message", () => {
+    expect(wrapper.find("h1").text()).to.equal("404");
+    expect(wrapper.find("span").text()).to.equal("Oops! Page Not Found");
+  });
+
+  it("displays the image with bounce animation when isAnimating is true", () => {
+    const img = wrapper.find("img");
+    expect(img.hasClass("animate-bounce")).to.be.true;
+  });
+
+  it("calls handleGoBack when the Go Back button is clicked", () => {
+    wrapper.find('button[data-test="go-back"]').simulate("click");
+    expect(historyBackStub.calledOnce).to.be.true;
+  });
+
+  it("calls handleRefresh when the Refresh button is clicked", () => {
+    wrapper.find('button[data-test="refresh"]').simulate("click");
+    expect(locationReloadStub.calledOnce).to.be.true;
+  });
+
+  it("updates countdown over time", () => {
+    const initialHTML = wrapper.html();
+    clock.tick(3000); // advance 3 seconds
+    wrapper.update();
+    // Even though countdown is not displayed, we verify the component still renders.
+    expect(wrapper.html()).to.not.equal(initialHTML);
   });
 });

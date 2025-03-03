@@ -8,8 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { useLocation } from "react-router-dom";
 
 const AdminTaskCard = ({ task = {} }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentAssignee, setCurrentAssignee] = useState(task.assignee);
+ 
+
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
   const [availableEngineers, setAvailableEngineers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,17 +49,7 @@ const AdminTaskCard = ({ task = {} }) => {
 
       const data = response.data;
       console.log("data", data);
-      // if (data && Array.isArray(data.engineers)) {
-      //   const formattedEngineers = data.engineers.map(engineer => ({
-      //     id: engineer._id,
-      //     name: engineer.name,
-      //     email: engineer.email,t
-
-      //     currentTasks: engineer.currentTasks,
-      //     availability: engineer.availability,
-      //     specialization: engineer.specialization,
-      //     location: engineer.location
-      //   }));
+   
 
       const approvedEngineers = response.data?.engineers.filter(
         (engineer) => engineer.isEngineer
@@ -67,9 +57,6 @@ const AdminTaskCard = ({ task = {} }) => {
       setAvailableEngineers(approvedEngineers);
       setError(null);
 
-      // else {
-      //   throw new Error('Invalid data format received from server');
-      // }
     } catch (err) {
       // setError(err.message || 'Failed to fetch available engineers');
       console.error("Error fetching engineers:", err);
@@ -126,12 +113,7 @@ const AdminTaskCard = ({ task = {} }) => {
       // });
 
       // Add reassignment comment
-      const comment = {
-        id: Date.now(),
-        text: `Ticket reassigned to ${selectedEngineer.name}`,
-        timestamp: new Date().toISOString(),
-        author: "Admin",
-      };
+  
       // setComments(prevComments => [...prevComments, comment]);
 
       // Close the dropdown
@@ -178,7 +160,7 @@ const AdminTaskCard = ({ task = {} }) => {
               </span>
             </p>
             <br />
-            <div className="flex items-center space-x-20">
+            <div className="flex lg:items-center lg:space-x-20 space-y-1 lg:space-y-0">
               <p className="text-gray-600">
                 Created At: {new Date(task.createdAt).toLocaleDateString()}
               </p>
@@ -188,13 +170,15 @@ const AdminTaskCard = ({ task = {} }) => {
             </div>
           </div>
           {Button && (
+            <div  className="lg:ml-auto lg:mt-0 mt-">
+
             <button
               onClick={() => setShowAssigneeDropdown(!showAssigneeDropdown)}
-              className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-1 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 mt-4 lg:mt-0"
               disabled={loading}
             >
               {loading ? "Processing..." : "Reassign"}
-            </button>
+            </button></div>
           )}
         </div>
 
@@ -265,23 +249,7 @@ const AdminTaskCard = ({ task = {} }) => {
           </div>
         )}
 
-        {/* Comments Section */}
-        {/* <div className="mt-4">
-          <h4 className="font-medium mb-2">Comments</h4>
-          <div className="space-y-2">
-            {comments.map((comment) => (
-              <div key={comment.id} className="bg-gray-50 p-2 rounded">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">{comment.author}</span>
-                  <span className="text-gray-500">
-                    {new Date(comment.timestamp).toLocaleString()}
-                  </span>
-                </div>
-                <p className="mt-1">{comment.text}</p>
-              </div>
-            ))}
-          </div>
-        </div> */}
+   
       </div>
     </div>
   );

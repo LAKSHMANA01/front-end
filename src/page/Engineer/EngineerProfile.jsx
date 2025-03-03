@@ -45,8 +45,7 @@ const EngineerProfile = () => {
     }
   }, [dispatch]);
 
-  // Convert DB array of days -> object of booleans
-  // e.g. ["Monday", "Friday"] => { Monday: true, Tuesday: false, ... Friday: true, ... }
+
   useEffect(() => {
     if (profiledata?.user?.email) {
       setEngineer((prev) => ({
