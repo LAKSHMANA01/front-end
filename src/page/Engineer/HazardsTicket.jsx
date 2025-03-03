@@ -347,6 +347,11 @@ const TicketForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!ticketForm.hazardType || !ticketForm.address || !ticketForm.description) {
+      toast.error("Please fill all required fields");
+      return;
+    }
     console.log("Ticket submitted:", ticketForm);
 
     const formData = {
@@ -422,10 +427,11 @@ const TicketForm = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="priority-level" className="block text-sm font-medium text-gray-700 mb-1">
             Priority Level
           </label>
           <select
+            id="priority-level"
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={ticketForm.riskLevel}
             onChange={(e) =>
@@ -453,7 +459,7 @@ const TicketForm = () => {
 
         <div className="flex justify-between  ">
           <button
-          type="submit"
+          type="button"
           className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-colors"
           onClick={() =>  navigate("/engineer/Hazards")}
         >
@@ -471,15 +477,6 @@ const TicketForm = () => {
           </span>
         </button>
         
-
-          <button
-            type="button"
-            onClick={() => navigate("/engineer/Hazards")}
-            className="w-40 flex items-center justify-center gap-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-colors"
-          >
-            <Send size={16} />
-            Cancel
-          </button>
         </div>
       </form>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
