@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import TaskCard from "./TaskCard";
+import TaskCard from './Taskcard';
 
 describe("TaskCard Component", () => {
   const mockTask = {

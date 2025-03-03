@@ -271,7 +271,7 @@ const getPriorityStyle = (priority) => {
   const styles = {
     high: "bg-red-100 text-red-800", // High priority - Red
     medium: "bg-orange-100 text-orange-800", // Medium priority - Orange
-    low: "bg-green-100 text-green-800", // Low priority - Green
+    low: "bg-yellow-100 text-yellow-800", // Low priority - Yellow
   };
 
   return `px-3 py-1 rounded-full text-sm ${

@@ -79,7 +79,6 @@ describe("EngineerProfile Component", () => {
 
     // Mock useSelector to return our mock state
     useSelector.mockImplementation((selector) => {
-      // Handle the specific case for profile data
       if (selector === expect.any(Function)) {
         return mockState.engineer;
       }
@@ -121,22 +120,22 @@ describe("EngineerProfile Component", () => {
         <EngineerProfile />
       </Provider>
     );
-
+  
     await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(fetchProfile({ 
-        userEmail: "test@example.com", 
+      expect(mockDispatch).toHaveBeenCalledWith(fetchProfile({
+        userEmail: "test@example.com",
         role: "engineer"
       }));
     });
-    
-    // Verify fetchEngineerTasks was also called
-    expect(mockDispatch).toHaveBeenCalledWith(fetchEngineerTasks());
+  
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith(fetchEngineerTasks());
+    });
   });
 
   test("initializes engineer state with profile data", async () => {
-    // Set up the initial profile data as undefined to trigger the useEffect
     useSelector.mockImplementationOnce(() => ({
-      profile: undefined // Initially no profile
+      profile: undefined
     }));
     
     render(
@@ -150,7 +149,6 @@ describe("EngineerProfile Component", () => {
       </Provider>
     );
 
-    // Verify fetchProfile was called
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalledWith(fetchProfile({
         userEmail: "test@example.com",
@@ -158,12 +156,10 @@ describe("EngineerProfile Component", () => {
       }));
     });
     
-    // Now change the mock to simulate profile data being loaded
     useSelector.mockImplementation(() => ({
       profile: mockState.engineer.profile
     }));
     
-    // Re-render to trigger the second useEffect
     render(
       <Provider store={configureStore({
         reducer: {
@@ -175,7 +171,6 @@ describe("EngineerProfile Component", () => {
       </Provider>
     );
     
-    // Since the component has loaded with profile data, we should see the name
     expect(screen.getByText("John Doe")).toBeInTheDocument();
   });
 
@@ -191,24 +186,21 @@ describe("EngineerProfile Component", () => {
       </Provider>
     );
 
-    // Click on the Update Profile tab
     fireEvent.click(screen.getByText("Update Profile"));
-    
-    // Find input field by its value (more reliable than by label)
-    const inputs = screen.getAllByRole("textbox");
-    const nameInput = inputs.find(input => input.value === "John Doe");
-    
-    // Change the input value
+
+    await waitFor(() => expect(screen.getByText("Full Name")).toBeInTheDocument());
+
+    const nameInput = screen.getByLabelText("Full Name");
+
     fireEvent.change(nameInput, { target: { value: "Jane Doe" } });
-    
-    // Find and click the Save Changes button
+
     fireEvent.click(screen.getByText("Save Changes"));
-    
-    // Check that the correct action was dispatched
+
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: "engineer/fetchUpdateEngineerProfile"
+        fetchUpdateEngineerProfile({
+          email: "test@example.com",
+          updatedData: expect.objectContaining({ name: "Jane Doe" }),
         })
       );
     });
@@ -226,20 +218,15 @@ describe("EngineerProfile Component", () => {
       </Provider>
     );
 
-    // Click on the Update Profile tab
     fireEvent.click(screen.getByText("Update Profile"));
-    
-    // Find all checkboxes
+
     const checkboxes = screen.getAllByRole("checkbox");
-    const mondayCheckbox = checkboxes[0]; // First day is Monday
-    
-    // Get initial state
+    const mondayCheckbox = checkboxes[0];
+
     const initialCheckedState = mondayCheckbox.checked;
-    
-    // Toggle the checkbox
+
     fireEvent.click(mondayCheckbox);
-    
-    // Verify the checkbox state changed
+
     expect(mondayCheckbox.checked).not.toBe(initialCheckedState);
   });
 
@@ -255,31 +242,25 @@ describe("EngineerProfile Component", () => {
       </Provider>
     );
 
-    // Click on the Update Profile tab
     fireEvent.click(screen.getByText("Update Profile"));
-    
-    // Find the radio buttons
+
     const radioButtons = screen.getAllByRole("radio");
     const faultRadio = radioButtons.find(radio => radio.value === "Fault");
-    
-    // Click the Fault radio button
+
     fireEvent.click(faultRadio);
-    
-    // Verify it's checked
+
     expect(faultRadio.checked).toBe(true);
   });
 
   test("shows success message on profile update", async () => {
-    // Setup the success state change after dispatching
     mockDispatch.mockImplementationOnce(action => {
       if (action.type === "engineer/fetchUpdateEngineerProfile") {
-        // Simulate the promise resolving
         return Promise.resolve();
       }
       return action;
     });
 
-    const { rerender } = render(
+    render(
       <Provider store={configureStore({
         reducer: {
           engineer: engineerReducer,
@@ -290,13 +271,10 @@ describe("EngineerProfile Component", () => {
       </Provider>
     );
 
-    // Click on the Update Profile tab
     fireEvent.click(screen.getByText("Update Profile"));
-    
-    // Find and click the Save Changes button
+
     fireEvent.click(screen.getByText("Save Changes"));
-    
-    // Wait for the success message to appear
+
     await waitFor(() => {
       expect(screen.getByText("Profile Updated!")).toBeInTheDocument();
     });

@@ -17,10 +17,10 @@ const ResetPassword = () => {
     const sendResetRequest = async (data, onSuccess, errorMessage) => {
         try {
             const response = await apiClientUser.post('/users/reset', data);
-            if (response.data.success) {
+            if (response.data.user.success) {
                 onSuccess(response.data);
             } else {
-                toast.error(response.data.message);
+                toast.error(response.data.user.message);
             }
         } catch (error) {
             toast.error(error.response?.data?.message || errorMessage);
@@ -33,7 +33,7 @@ const ResetPassword = () => {
         sendResetRequest(
             { email },
             (data) => {
-                setSecurityQuestion(data.securityQuestion);
+                setSecurityQuestion(data.user.securityQuestion);
                 setStep(2);
             },
             "Error verifying email"
@@ -94,7 +94,8 @@ const ResetPassword = () => {
                 {/* Step 2: Verify Security Answer */}
                 {step === 2 && (
                     <form onSubmit={handleSecurityAnswerSubmit}>
-                        <p className="mb-2">{securityQuestion}</p>
+                        <label htmlFor="securityAnswer" className="block mb-2">Security Question</label>
+                        <p className="mb-2 text-gray-700 font-semibold">{securityQuestion}</p>
                         <label htmlFor="securityAnswer" className="block mb-2">Security Answer</label>
                         <input
                             id='securityAnswer' 
