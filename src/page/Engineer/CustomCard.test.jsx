@@ -32,6 +32,8 @@ describe("CustomCard Component", () => {
     render(<CustomCard title="Profile" icon={FaUser}>User Content</CustomCard>);
 
     expect(screen.getByText("Profile")).toBeInTheDocument();
+    
+    // Ensure the icon is rendered correctly
     expect(screen.getByTestId("custom-icon")).toBeInTheDocument();
   });
 

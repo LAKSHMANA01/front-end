@@ -1,7 +1,5 @@
 import React from "react";
-import {
-  FaTasks,
-  FaMapPin,
+import { 
   FaRegClock,
   FaUserCog,
   FaUsers,

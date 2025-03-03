@@ -10,6 +10,7 @@
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
     "cra-template": "1.2.0",
+    "express": "^4.21.2",
     "https-browserify": "^1.0.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.474.0",
@@ -28,7 +29,8 @@
     "test": "jest --config jest.config.js",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "start": "react-scripts start"
+    "start": "react-scripts start",
+    "build": "react-scripts build"
   },
   "browserslist": {
     "production": [
