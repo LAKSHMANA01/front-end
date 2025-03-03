@@ -66,7 +66,7 @@ const TaskAcceptance = ({ isExpanded }) => {
     return (
         <div className={`transition-all duration-300 ease-in-out p-4 ${isExpanded ? 'ml-[100px]' : 'ml-[40px]'}`}>
             <h1 className='font-bold bg-white rounded-md justify-start text-2xl w-full p-3 mb-6 shadow-sm'>
-                <span className="text-black-600">Pending Tasks</span>
+                <span className="text-black-600">Upcoming Tasks</span>
             </h1>
           
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -51,7 +51,8 @@ const AdminTaskList = () => {
   });
 
   return (
-    <div className="space-y-6 p-4 mt-25 ml-6 pl-3 mt-16">
+    <div className="space-y-6 p-4 mt-25 ml-6 pl-3 mt-12">
+      <h1 className="font-bold bg-white rounded-md text-2xl w-full p-3 mb-6">Approved Engineers</h1>
       {/* Search Bar */}
       <div className="relative mb-6">
         <input
@@ -106,7 +107,7 @@ const AdminTaskList = () => {
 
 
       {/* Task Cards */}
-      <div className="flex flex-wrap gap-6  ml-10">
+      <div className="flex flex-wrap gap-16  ml-10">
         {filteredTasks.map((task) => (
           <AdminTaskCard key={task._id || task.id} task={task} />
         ))}

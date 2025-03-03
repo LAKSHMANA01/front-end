@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUpdateEngineerProfile,
 } from "../../redux/Slice/EngineerSlice";
+
 import { fetchProfile } from "../../redux/Slice/UserSlice";
 import EngineerNavbar from "./Navbar";
 
@@ -15,7 +16,6 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 const EngineerProfile = () => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.tickets) || {};
-  console.log("engineer profile: ", profile)
 
   // Initialize engineer state
   const [engineer, setEngineer] = useState({
@@ -40,27 +40,28 @@ const EngineerProfile = () => {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (!profile?.user?.email) {
+    if (!profile?.email) {
       dispatch(fetchProfile({ userEmail, role }));
     }
   }, [dispatch]);
 
-
+  // Convert DB array of days -> object of booleans
+  // e.g. ["Monday", "Friday"] => { Monday: true, Tuesday: false, ... Friday: true, ... }
   useEffect(() => {
-    if (profiledata?.user?.email) {
+    if (profile?.email) {
       setEngineer((prev) => ({
         ...prev,
-        name: profile?.user?.name || "",
-        email: profile?.user?.email || "",
-        phone: profile?.user?.phone || "",
-        address: profile?.user?.address || "",
-        availability: Array.isArray(profile?.user?.availability)
+        name: profile.name || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        address: profile.address || "",
+        availability: Array.isArray(profile.availability)
           ? DAYS.reduce((acc, day) => {
-              acc[day] = profile?.user?.availability.includes(day);
+              acc[day] = profile.availability.includes(day);
               return acc;
             }, {})
           : prev.availability,
-        specialization: profile?.user?.specialization || "Installation",
+        specialization: profile.specialization || "Installation",
       }));
     }
   }, [profile]);
@@ -215,7 +216,6 @@ const EngineerProfile = () => {
               <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
                 <div >
                   <InputField
-                    id="name"
                     label="Full Name"
                     value={engineer.name}
                     onChange={(e) =>

@@ -27,9 +27,9 @@ const AdminEngineerApproval = () => {
   if (!Array.isArray(engineers) || engineers.length === 0) return <p className="text-center text-gray-500">No engineers available.</p>;
 
   return (
-    
-    <div className="p-4 mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      
+    <div className="ml-12">
+    <h1 className="font-bold bg-white rounded-md text-2xl w-full p-3 mb-6">New Engineers</h1>
+    <div className="p-4 mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
       {/* <AdminNavbar /> */}
 
       {engineers.map((engineer) => (
@@ -37,11 +37,12 @@ const AdminEngineerApproval = () => {
           key={engineer._id}
           className="bg-white p-6 shadow-md rounded-lg border border-gray-300 hover:shadow-lg transition-all duration-300"
         >
-          <h2 className="text-xl font-semibold">{engineer?.name}</h2>
+          <h2 className="text-xl font-semibold">{engineer?.name}</h2><hr /><br />
           <p className="text-gray-600">Email: {engineer.email}</p>
           <p className="text-gray-600">Phone: {engineer.phone}</p>
           <p className="text-gray-600">Specialization: {engineer.specialization}</p>
-          <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-4">
+          <p className="text-gray-500">Address: {engineer.address}</p>
+          <div className="flex flex-wrap justify-center sm:justify-start gap-20 mt-4">
             <button
               onClick={() => handleApproval(engineer.email, true)}
               disabled={engineer.isEngineer}
@@ -67,6 +68,7 @@ const AdminEngineerApproval = () => {
           </div>
         </div>
       ))}
+    </div>
     </div>
   );
 };

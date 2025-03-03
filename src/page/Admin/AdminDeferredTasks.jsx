@@ -47,7 +47,7 @@ const AdminDeferredTasks = () => {
     //   </div>
     // </div>
     <div>
-      <h1 className='font-bold bg-white rounded-md justify-start text-2xl w-full p-3 mb-6 shadow-sm'>
+      <h1 className='font-bold bg-white rounded-md justify-start text-2xl w-full ml-6 p-3 mb-6 shadow-sm'>
         <span className="text-black-600">Pending Tasks</span>
       </h1>
       <div className="space-y-6 p-4">
