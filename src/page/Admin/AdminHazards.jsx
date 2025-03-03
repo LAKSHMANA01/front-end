@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 const AdminHazards = () => {
   const { Hazards, loading, error } = useSelector((state) => state.engineer);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -142,9 +142,7 @@ const AdminHazards = () => {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h4 className="font-medium">Risk Level</h4>
                 <span className={`px-3 py-1 rounded-full text-sm ${getHazardStyles(selectedTask.riskLevel)
-                  // selectedTask.riskLevel === 'High' ? 'bg-red-100 text-red-800' :
-                  // selectedTask.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                  // 'bg-green-100 text-green-800'
+            
                 }`}>
                   {selectedTask.riskLevel}
                 </span>

@@ -10,6 +10,7 @@ const UserProfile = () => {
   const role = sessionStorage.getItem("role"); // Replace with the actual user role/ID if needed
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.tickets);
+  console.log("profileasddsjdhf", profile);
 
   // Fetch the profile if not already loaded
   useEffect(() => {

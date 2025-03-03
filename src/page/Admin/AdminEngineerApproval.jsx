@@ -7,12 +7,7 @@ const AdminEngineerApproval = () => {
   const dispatch = useDispatch();
   const { engineers = [], loading, error } = useSelector((state) => state.admin);
 
-  // Redirect if not an admin
-  // useEffect(() => {
-  //   if (role !== "admin") {
-  //     navigate("/"); // Redirect unauthorized users
-  //   }
-  // }, [role, navigate]);
+ 
 
   useEffect(() => {
     dispatch(fetchAllEngineers()); // Fetch engineers who need approval
@@ -41,7 +36,7 @@ const AdminEngineerApproval = () => {
           key={engineer._id}
           className="bg-white p-6 shadow-md rounded-lg border border-gray-300 hover:shadow-lg transition-all duration-300"
         >
-          <h2 className="text-xl font-semibold">{engineer.name}</h2>
+          <h2 className="text-xl font-semibold">{engineer?.name}</h2>
           <p className="text-gray-600">Email: {engineer.email}</p>
           <p className="text-gray-600">Phone: {engineer.phone}</p>
           <p className="text-gray-600">Specialization: {engineer.specialization}</p>

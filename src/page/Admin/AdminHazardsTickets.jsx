@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AdminHazardsTickets = () => {
-  const userId = 2;
+
   const [ticketForm, setTicketForm] = useState({
    hazardType: "",
    description: "",

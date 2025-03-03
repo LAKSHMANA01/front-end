@@ -1,4 +1,3 @@
-// NotificationSlice.full.test.jsx
 import { configureStore } from "@reduxjs/toolkit";
 import notificationReducer, {
   fetchNotifications,
@@ -6,10 +5,16 @@ import notificationReducer, {
   sendNotification,
 } from "./notificationSlice";
 import axios from "axios";
+import apiClientNH from "../../utils/apiClientNH";
 
+// Mock both axios and apiClientNH
 jest.mock("axios");
+jest.mock("../../utils/apiClientNH", () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+}));
 
-// Helper: Create a test store using a middleware callback
+// Helper: Create a test store with preloaded state
 function setupStore(preloadedState) {
   return configureStore({
     reducer: { notifications: notificationReducer },
@@ -81,16 +86,15 @@ describe("Notification Slice", () => {
   describe("Async Thunks", () => {
     describe("fetchNotifications", () => {
       it("dispatches fulfilled and updates state with unread notifications", async () => {
-        // Prepare axios response with a mix of read/unread notifications.
+        // Prepare API response with a mix of read/unread notifications.
         const allNotifications = [
           { _id: "1", isRead: false },
           { _id: "2", isRead: true },
           { _id: "3", isRead: false },
         ];
-        axios.get.mockResolvedValueOnce({ data: { notifications: allNotifications } });
+        apiClientNH.get.mockResolvedValueOnce({ data: { notifications: allNotifications } });
         const email = "user@example.com";
-        // Call thunk with two parameters (userId and email)
-        const result = await store.dispatch(fetchNotifications("dummyUserId", email));
+        const result = await store.dispatch(fetchNotifications(email));
         expect(result.type).toBe("notifications/fetchNotifications/fulfilled");
         expect(result.payload).toEqual([
           { _id: "1", isRead: false },
@@ -104,10 +108,10 @@ describe("Notification Slice", () => {
         expect(state.loading).toBe(false);
       });
 
-      it("dispatches rejected when axios.get fails", async () => {
-        axios.get.mockRejectedValueOnce({ response: { data: "Fetch error" } });
+      it("dispatches rejected when apiClientNH.get fails", async () => {
+        apiClientNH.get.mockRejectedValueOnce({ response: { data: "Fetch error" } });
         const email = "user@example.com";
-        const result = await store.dispatch(fetchNotifications("dummyUserId", email));
+        const result = await store.dispatch(fetchNotifications(email));
         expect(result.type).toBe("notifications/fetchNotifications/rejected");
         const state = store.getState().notifications;
         expect(state.error).toEqual("Fetch error");
@@ -137,25 +141,27 @@ describe("Notification Slice", () => {
         axios.patch.mockRejectedValueOnce({ response: { data: "Patch error" } });
         const result = await store.dispatch(markAsRead("1"));
         expect(result.type).toBe("notifications/markAsRead/rejected");
-        // Note: since the slice doesn't handle markAsRead.rejected, state.error remains unchanged.
+        // Since markAsRead.rejected doesn't update state.error in extraReducers, error remains unchanged.
         const state = store.getState().notifications;
         expect(state.error).toBeNull();
       });
     });
 
     describe("sendNotification", () => {
-      it("dispatches fulfilled when axios.post succeeds (no state change)", async () => {
-        axios.post.mockResolvedValueOnce({ data: {} });
-        const result = await store.dispatch(sendNotification({ messageToSend: "Hello", isRead: false }));
+      it("dispatches fulfilled when apiClientNH.post succeeds (no state change)", async () => {
+        apiClientNH.post.mockResolvedValueOnce({ data: {} });
+        const payload = { messageToSend: "Hello", isRead: false };
+        const result = await store.dispatch(sendNotification(payload));
         expect(result.type).toBe("notifications/sendNotification/fulfilled");
         // Fulfilled case does not update state so notifications remain unchanged.
         const state = store.getState().notifications;
         expect(state.notifications).toEqual([]);
         expect(state.loading).toBe(false);
       });
-      it("dispatches rejected when axios.post fails", async () => {
-        axios.post.mockRejectedValueOnce({ response: { data: "Post error" } });
-        const result = await store.dispatch(sendNotification({ messageToSend: "Hello", isRead: false }));
+      it("dispatches rejected when apiClientNH.post fails", async () => {
+        apiClientNH.post.mockRejectedValueOnce({ response: { data: "Post error" } });
+        const payload = { messageToSend: "Hello", isRead: false };
+        const result = await store.dispatch(sendNotification(payload));
         expect(result.type).toBe("notifications/sendNotification/rejected");
         const state = store.getState().notifications;
         expect(state.error).toEqual("Post error");

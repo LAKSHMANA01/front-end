@@ -16,6 +16,7 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 const EngineerProfile = () => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.engineer?.profile) || {};
+  console.log("profileasdasd", profile);
 
   // Initialize engineer state
   const [engineer, setEngineer] = useState({
@@ -45,8 +46,7 @@ const EngineerProfile = () => {
     }
   }, [dispatch]);
 
-  // Convert DB array of days -> object of booleans
-  // e.g. ["Monday", "Friday"] => { Monday: true, Tuesday: false, ... Friday: true, ... }
+
   useEffect(() => {
     if (profile?.email) {
       setEngineer((prev) => ({
