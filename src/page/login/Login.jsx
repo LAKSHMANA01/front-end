@@ -43,9 +43,26 @@ function Login() {
       return;
     }
     // Validate Email
+    setEmailError(
+      !email
+        ? "Email is required!"
+        : !validateEmail(email)
+        ? "Invalid email format!"
+        : ""
+    );
+
+    // Validate Password
+    setPasswordError(
+      !password
+        ? "Password is required!"
+        : !validatePassword(password)
+        ? "Password must be at least 6 characters long!"
+        : ""
+    );
+
     // Show Toast Errors
-    // if (!email || !validateEmail(email)) toast.error(emailError);
-    // if (!password || !validatePassword(password)) toast.error(passwordError);
+    if (!email || !validateEmail(email)) toast.error(emailError);
+    if (!password || !validatePassword(password)) toast.error(passwordError);
 
     try {
       const response = await apiClientUser.post(`/users/checkUser`, {

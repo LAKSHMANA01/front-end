@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.14% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/14</span>
+                <span class='fraction'>12/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/12</span>
+                <span class='fraction'>10/12</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.14% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>8/14</span>
+                <span class='fraction'>12/14</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -167,7 +167,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -237,24 +237,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -338,16 +338,16 @@ const TaskCard = ({ task, showPriority, assignEngineer }) =&gt; {
 // Helper functions for styling
 const getStatusStyle = (status) =&gt; {
   switch (status.toLowerCase()) {
-<span class="branch-0 cbranch-no" title="branch not covered" >    case "completed":</span>
-<span class="cstat-no" title="statement not covered" >      return "text-green-600 bg-green-100 px-2 py-1 rounded-full";</span>
+    case "completed":
+      return "text-green-600 bg-green-100 px-2 py-1 rounded-full";
     case "in-progress":
       return "text-blue-600 bg-blue-100 px-2 py-1 rounded-full";
-<span class="branch-2 cbranch-no" title="branch not covered" >    case "open":</span>
-<span class="cstat-no" title="statement not covered" >      return "text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full";</span>
-<span class="branch-3 cbranch-no" title="branch not covered" >      case "failed":</span>
-<span class="cstat-no" title="statement not covered" >      return "text-red-600 bg-red-100 px-2 py-1 rounded-full";</span>
-<span class="branch-4 cbranch-no" title="branch not covered" >    default:</span>
-<span class="cstat-no" title="statement not covered" >      return "text-gray-600 bg-gray-100 px-2 py-1 rounded-full";</span>
+    case "open":
+      return "text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full";
+      case "failed":
+      return "text-red-600 bg-red-100 px-2 py-1 rounded-full";
+    default:
+      return "text-gray-600 bg-gray-100 px-2 py-1 rounded-full";
   }
 };
 &nbsp;
@@ -370,7 +370,7 @@ export default TaskCard;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-03T13:09:36.642Z
+                at 2025-03-03T16:39:30.469Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

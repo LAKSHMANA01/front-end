@@ -138,10 +138,7 @@
 <a name='L73'></a><a href='#L73'>73</a>
 <a name='L74'></a><a href='#L74'>74</a>
 <a name='L75'></a><a href='#L75'>75</a>
-<a name='L76'></a><a href='#L76'>76</a>
-<a name='L77'></a><a href='#L77'>77</a>
-<a name='L78'></a><a href='#L78'>78</a>
-<a name='L79'></a><a href='#L79'>79</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L76'></a><a href='#L76'>76</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -149,11 +146,6 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -191,18 +183,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -228,12 +222,7 @@ const AdminEngineerApproval = () =&gt; {
   const dispatch = useDispatch();
   const { engineers = <span class="branch-0 cbranch-no" title="branch not covered" >[],</span> loading, error } = useSelector((state) =&gt; state.admin);
 &nbsp;
-  // Redirect if not an admin
-  // useEffect(() =&gt; {
-  //   if (role !== "admin") {
-  //     navigate("/"); // Redirect unauthorized users
-  //   }
-  // }, [role, navigate]);
+ 
 &nbsp;
   useEffect(() =&gt; {
     dispatch(fetchAllEngineers()); // Fetch engineers who need approval
@@ -253,9 +242,9 @@ const AdminEngineerApproval = () =&gt; {
   if (!Array.isArray(engineers) || engineers.length === 0) return &lt;p className="text-center text-gray-500"&gt;No engineers available.&lt;/p&gt;;
 &nbsp;
   return (
-    
-    &lt;div className="p-4 mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"&gt;
-      
+    &lt;div className="ml-12"&gt;
+    &lt;h1 className="font-bold bg-white rounded-md text-2xl w-full p-3 mb-6"&gt;New Engineers&lt;/h1&gt;
+    &lt;div className="p-4 mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6"&gt;
       {/* &lt;AdminNavbar /&gt; */}
 &nbsp;
       {engineers.map((engineer) =&gt; (
@@ -263,11 +252,12 @@ const AdminEngineerApproval = () =&gt; {
           key={engineer._id}
           className="bg-white p-6 shadow-md rounded-lg border border-gray-300 hover:shadow-lg transition-all duration-300"
         &gt;
-          &lt;h2 className="text-xl font-semibold"&gt;{engineer.name}&lt;/h2&gt;
+          &lt;h2 className="text-xl font-semibold"&gt;{engineer?.name}&lt;/h2&gt;&lt;hr /&gt;&lt;br /&gt;
           &lt;p className="text-gray-600"&gt;Email: {engineer.email}&lt;/p&gt;
           &lt;p className="text-gray-600"&gt;Phone: {engineer.phone}&lt;/p&gt;
           &lt;p className="text-gray-600"&gt;Specialization: {engineer.specialization}&lt;/p&gt;
-          &lt;div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-4"&gt;
+          &lt;p className="text-gray-500"&gt;Address: {engineer.address}&lt;/p&gt;
+          &lt;div className="flex flex-wrap justify-center sm:justify-start gap-20 mt-4"&gt;
             &lt;button
               onClick={() =&gt; handleApproval(engineer.email, true)}
               disabled={engineer.isEngineer}
@@ -294,6 +284,7 @@ const AdminEngineerApproval = () =&gt; {
         &lt;/div&gt;
       ))}
     &lt;/div&gt;
+    &lt;/div&gt;
   );
 };
 &nbsp;
@@ -304,7 +295,7 @@ export default AdminEngineerApproval;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-03T13:09:36.642Z
+                at 2025-03-03T16:39:30.469Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

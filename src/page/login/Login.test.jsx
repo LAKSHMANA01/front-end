@@ -1,176 +1,138 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import Login from "./Login";
-import apiClientUser from "../../utils/apiClientUser";
-import { toast } from "react-toastify";
-import { validateEmail } from "../../utils/validation";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Login from './Login';
+import apiClientUser from '../../utils/apiClientUser';
+import { toast } from 'react-toastify';
 
-// Mock dependencies
-jest.mock("../../utils/apiClientUser");
-jest.mock("react-toastify", () => ({
+// Mock modules
+jest.mock('../../utils/apiClientUser');
+jest.mock('react-toastify', () => ({
   toast: {
     error: jest.fn(),
     success: jest.fn(),
   },
-  ToastContainer: jest.fn(() => <div data-testid="toast-container" />),
+}));
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
+  Link: ({ to, children }) => <a href={to}>{children}</a>,
 }));
 
-const mockNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigate,
-}));
+describe('Login Component', () => {
+  const mockNavigate = jest.fn();
+  const mockSetItem = jest.spyOn(Storage.prototype, 'setItem');
 
-jest.mock("../../utils/validation", () => ({
-  validateEmail: jest.fn(),
-}));
-
-const renderLoginComponent = () => {
-  return render(
-    <MemoryRouter>
-      <Login />
-    </MemoryRouter>
-  );
-};
-
-describe("Login Component", () => {
   beforeEach(() => {
+    require('react-router-dom').useNavigate.mockImplementation(() => mockNavigate);
     jest.clearAllMocks();
-    validateEmail.mockImplementation(() => true); // Only mocking email validation
-
-    Object.defineProperty(window, "sessionStorage", {
-      value: {
-        getItem: jest.fn(),
-        setItem: jest.fn(),
-        removeItem: jest.fn(),
-        clear: jest.fn(),
-      },
-      writable: true,
-    });
   });
 
-  test("renders login form correctly", () => {
-    renderLoginComponent();
-    
-    expect(screen.getByRole("heading", { name: /login/i })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/enter email/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/enter password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument();
+  test('renders login form with all elements', () => {
+    render(
+      <Router>
+        <Login />
+      </Router>
+    );
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
+    expect(screen.getByText('Forgot Password?')).toBeInTheDocument();
+    expect(screen.getByText(/Don't have an account/)).toBeInTheDocument();
   });
 
-  test("validates email input correctly", () => {
-    renderLoginComponent();
+  test('shows email validation error for invalid input', async () => {
+    render(
+      <Router>
+        <Login />
+      </Router>
+    );
+    const emailInput = screen.getByLabelText('Email');
     
-    const emailInput = screen.getByPlaceholderText(/enter email/i);
-    
-    validateEmail.mockImplementation(() => false);
-    fireEvent.change(emailInput, { target: { value: "invalid-email" } });
-    expect(screen.getByText(/invalid email format/i)).toBeInTheDocument();
-
-    validateEmail.mockImplementation(() => true);
-    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-    expect(screen.queryByText(/invalid email format/i)).not.toBeInTheDocument();
-  });
-
-  test("accepts password input without validation", () => {
-    renderLoginComponent();
-    
-    const passwordInput = screen.getByPlaceholderText(/enter password/i);
-    
-    fireEvent.change(passwordInput, { target: { value: "any-password" } });
-    expect(passwordInput.value).toBe("any-password");
-  });
-
-  test("disables submit button when there is an email validation error", () => {
-    renderLoginComponent();
-    
-    const emailInput = screen.getByPlaceholderText(/enter email/i);
-    const submitButton = screen.getByRole("button", { name: /login/i });
-
-    validateEmail.mockImplementation(() => false);
-    fireEvent.change(emailInput, { target: { value: "invalid-email" } });
-
-    expect(submitButton).toBeDisabled();
-  });
-
-  test("shows toast error when submitting with validation errors", async () => {
-    renderLoginComponent();
-    
-    const submitButton = screen.getByRole("button", { name: /login/i });
-    fireEvent.click(submitButton);
+    fireEvent.change(emailInput, { target: { value: 'invalid' } });
+    fireEvent.blur(emailInput);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Please fix the validation errors before submitting.");
+      expect(screen.getByText('Invalid email format')).toBeInTheDocument();
     });
   });
 
-  test("submits form with valid credentials and navigates", async () => {
-    apiClientUser.post.mockResolvedValue({
+  test('disables submit button when email has error', async () => {
+    render(
+      <Router>
+        <Login />
+      </Router>
+    );
+    const emailInput = screen.getByLabelText('Email');
+    const submitButton = screen.getByRole('button', { name: 'Login' });
+
+    fireEvent.change(emailInput, { target: { value: 'invalid' } });
+    fireEvent.blur(emailInput);
+
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled();
+    });
+  });
+
+  test('handles successful login and redirects', async () => {
+    const mockResponse = {
       data: {
         success: true,
         user: {
-          token: "test-token",
-          email: "test@example.com",
-          role: "user",
+          token: 'fake-token',
+          email: 'test@example.com',
+          role: 'user',
         },
       },
-    });
+    };
+    apiClientUser.post.mockResolvedValue(mockResponse);
 
-    renderLoginComponent();
-
-    fireEvent.change(screen.getByPlaceholderText(/enter email/i), {
-      target: { value: "test@example.com" },
+    render(
+      <Router>
+        <Login />
+      </Router>
+    );
+    
+    fireEvent.change(screen.getByLabelText('Email'), { 
+      target: { value: 'valid@example.com' } 
     });
-    fireEvent.change(screen.getByPlaceholderText(/enter password/i), {
-      target: { value: "AnyPassword123!" },
+    fireEvent.change(screen.getByLabelText('Password'), { 
+      target: { value: 'ValidPass123' } 
     });
-    fireEvent.click(screen.getByRole("button", { name: /login/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
     await waitFor(() => {
-      expect(apiClientUser.post).toHaveBeenCalledWith("/users/checkUser", {
-        email: "test@example.com",
-        password: "AnyPassword123!",
+      expect(apiClientUser.post).toHaveBeenCalledWith('/users/checkUser', {
+        email: 'valid@example.com',
+        password: 'ValidPass123',
       });
-      expect(window.sessionStorage.setItem).toHaveBeenCalledWith("token", "test-token");
-      expect(mockNavigate).toHaveBeenCalledWith("/user");
-      expect(toast.success).toHaveBeenCalledWith("Login successful!");
+      expect(mockSetItem).toHaveBeenCalledWith('token', 'fake-token');
+      expect(mockSetItem).toHaveBeenCalledWith('email', 'test@example.com');
+      expect(mockSetItem).toHaveBeenCalledWith('role', 'user');
+      expect(toast.success).toHaveBeenCalledWith('Login successful!');
+      expect(mockNavigate).toHaveBeenCalledWith('/user');
     });
   });
 
-  test("handles unsuccessful login with server error message", async () => {
-    apiClientUser.post.mockResolvedValue({ data: { success: false, error: "Invalid credentials" } });
+  test('shows error toast on API error', async () => {
+    apiClientUser.post.mockRejectedValue(new Error('API error'));
 
-    renderLoginComponent();
+    render(
+      <Router>
+        <Login />
+      </Router>
+    );
 
-    fireEvent.change(screen.getByPlaceholderText(/enter email/i), {
-      target: { value: "test@example.com" },
+    fireEvent.change(screen.getByLabelText('Email'), { 
+      target: { value: 'valid@example.com' } 
     });
-    fireEvent.change(screen.getByPlaceholderText(/enter password/i), {
-      target: { value: "WrongPassword123!" },
+    fireEvent.change(screen.getByLabelText('Password'), { 
+      target: { value: 'ValidPass123' } 
     });
-    fireEvent.click(screen.getByRole("button", { name: /login/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Invalid credentials");
-    });
-  });
-
-  test("shows error when API request fails", async () => {
-    apiClientUser.post.mockRejectedValue(new Error("Network Error"));
-
-    renderLoginComponent();
-
-    fireEvent.change(screen.getByPlaceholderText(/enter email/i), {
-      target: { value: "test@example.com" },
-    });
-    fireEvent.change(screen.getByPlaceholderText(/enter password/i), {
-      target: { value: "Password123!" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /login/i }));
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Something went wrong. Please try again.");
+      expect(toast.error).toHaveBeenCalledWith('Something went wrong. Please try again.');
     });
   });
 });

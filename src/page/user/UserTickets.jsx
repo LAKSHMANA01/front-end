@@ -28,8 +28,9 @@ const UserTicketList = () => {
  
 
   if (loading) {
-    return <div><Loading/></div>;
+    return <div role="status"><Loading />Loading...</div>;
   }
+  
 
   if (error) {
     return <div>Error: {error}</div>;

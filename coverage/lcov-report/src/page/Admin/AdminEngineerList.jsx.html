@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.33% </span>
+                <span class="strong">96.55% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>28/30</span>
+                <span class='fraction'>28/29</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.81% </span>
+                <span class="strong">90% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>9/11</span>
+                <span class='fraction'>9/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92% </span>
+                <span class="strong">95.83% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/25</span>
+                <span class='fraction'>23/24</span>
             </div>
         
             
@@ -154,7 +154,10 @@
 <a name='L89'></a><a href='#L89'>89</a>
 <a name='L90'></a><a href='#L90'>90</a>
 <a name='L91'></a><a href='#L91'>91</a>
-<a name='L92'></a><a href='#L92'>92</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -232,7 +235,10 @@
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -264,10 +270,10 @@ const AdminEngineerList = () =&gt; {
 &nbsp;
   useEffect(() =&gt; {
     dispatch(fetchAllApprovedEngineers());
-    //dispatch(fetchEngineerTasks()); // Fetch tasks for each engineer on mount
+   
   }, [dispatch]);
 &nbsp;
-  // Debounce search input to prevent unnecessary API calls
+ 
   useEffect(() =&gt; {
     const handle = setTimeout(() =&gt; {
       setDebouncedSearchTerm(searchTerm);
@@ -287,7 +293,7 @@ const AdminEngineerList = () =&gt; {
   });
 &nbsp;
   return (
-    &lt;div className="p-4 mt-20 bg-gray 100"&gt;
+    &lt;div className="p-4 mt-8 bg-gray 100"&gt;
       
       &lt;h1 className="font-bold bg-white rounded-md text-2xl w-full p-3 mb-6"&gt;Approved Engineers&lt;/h1&gt;
 &nbsp;
@@ -298,11 +304,11 @@ const AdminEngineerList = () =&gt; {
           placeholder="Search engineers by name..."
           value={searchTerm}
           onChange={(e) =&gt; setSearchTerm(e.target.value)} // Updates instantly, but filtering is debounced
-          className="w-full px-5 py-2 pl-12 pr-4 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-5 ml-4 py-2 pl-12 pr-4 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         /&gt;
         &lt;Search
           size={24}
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+          className="absolute ml-4 left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
         /&gt;
       &lt;/div&gt;
 &nbsp;
@@ -310,7 +316,7 @@ const AdminEngineerList = () =&gt; {
         &lt;select
           value={SpecialistFilter}
           onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >SetSpecialistFilter(e.target.value)}</span>
-          className="w-40 px-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-40 px-4 py-2 ml-4 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         &gt;
           &lt;option value=""&gt;Specialization&lt;/option&gt;
           &lt;option value="fault"&gt;Faults&lt;/option&gt;
@@ -318,17 +324,20 @@ const AdminEngineerList = () =&gt; {
         &lt;/select&gt;
       &lt;/div&gt;
 &nbsp;
-      &lt;div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"&gt;
+      &lt;div className="p-4 mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6"&gt;
         {filteredEngineer.map((engineer) =&gt; (
           &lt;div
             key={engineer._id}
             className="bg-white p-4 shadow-md rounded-lg cursor-pointer hover:shadow-lg"
-            onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >navigate(`/admin/engineer/${engineer.email}`)} </span>
+            // onClick={() =&gt; navigate(`/admin/engineer/${engineer.email}`)} 
           &gt;
-            &lt;h2 className="text-lg font-semibold"&gt;{engineer.name}&lt;/h2&gt;
+            &lt;h2 className="text-lg font-semibold"&gt;{engineer.name}&lt;/h2&gt;&lt;hr /&gt;&lt;br /&gt;
             &lt;p className="text-gray-500"&gt;Email: {engineer.email}&lt;/p&gt;
             &lt;p className="text-gray-500"&gt;Phone: {engineer.phone}&lt;/p&gt;
             &lt;p className="text-gray-500"&gt;Specialization: {engineer.specialization}&lt;/p&gt;
+            &lt;p className="text-gray-500"&gt;Current Tasks: {engineer.currentTasks}&lt;/p&gt;
+            &lt;p className="text-gray-500"&gt;Address: {engineer.address}&lt;/p&gt;
+            &lt;p className="text-gray-500"&gt;Pincode: {engineer.pincode}&lt;/p&gt;
           &lt;/div&gt;
         ))}
       &lt;/div&gt;
@@ -343,7 +352,7 @@ export default AdminEngineerList;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-03T13:09:36.642Z
+                at 2025-03-03T16:39:30.469Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
