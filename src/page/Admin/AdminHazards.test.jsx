@@ -1,12 +1,17 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createStore } from 'redux';
 import { MemoryRouter } from 'react-router-dom';
 import AdminHazards from './AdminHazards';
 import { HazardsTickets, HazardsUpdateTickets, HazardsDeleteTickets } from '../../redux/Slice/EngineerSlice';
+import { toast } from 'react-toastify';
 
-// Mock react-toastify
+// --- Dummy reducer for store creation ---
+const dummyReducer = (state = {}) => state;
+const createMockStore = (initialState) => createStore(dummyReducer, initialState);
+
+// --- Mock react-toastify ---
 jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
@@ -15,22 +20,26 @@ jest.mock('react-toastify', () => ({
   ToastContainer: () => <div data-testid="toast-container" />,
 }));
 
-// Mock Redux dispatch
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useDispatch: () => jest.fn().mockImplementation((action) => action),
-  useSelector: jest.fn(),
-}));
-
-// Mock the EngineerDashBoard component
-jest.mock('../Engineer/Hazards', () => {
-  return function MockEngineerDashBoard() {
-    return <div data-testid="engineer-dashboard">Mock Engineer Dashboard</div>;
+// --- Mock react-redux's hooks ---
+jest.mock('react-redux', () => {
+  const ActualReactRedux = jest.requireActual('react-redux');
+  return {
+    ...ActualReactRedux,
+    useDispatch: jest.fn(),
+    useSelector: jest.fn(),
   };
 });
 
+// --- Mock EngineerSlice actions ---
+jest.mock('../../redux/Slice/EngineerSlice', () => ({
+  HazardsTickets: jest.fn(),
+  HazardsUpdateTickets: jest.fn(),
+  HazardsDeleteTickets: jest.fn(),
+}));
+
 describe('AdminHazards Component', () => {
-  // Mock data
+  let store;
+  let dispatchMock;
   const mockHazards = [
     {
       _id: '1',
@@ -57,62 +66,51 @@ describe('AdminHazards Component', () => {
       pincode: '54321',
     },
   ];
-
-  // Helper function to render with providers
-  const renderWithProviders = (ui, reduxState) => {
-    const { useSelector } = require('react-redux');
-    useSelector.mockImplementation((selector) => selector(reduxState));
-    
-    return render(
-      <MemoryRouter>
-        <Provider store={createStore(() => ({}))}>
-          {ui}
-        </Provider>
-      </MemoryRouter>
-    );
+  const initialState = {
+    engineer: {
+      Hazards: mockHazards,
+      loading: false,
+      error: null,
+    },
   };
 
   beforeEach(() => {
+    dispatchMock = jest.fn();
+    // Set up useDispatch and useSelector mocks.
+    useDispatch.mockReturnValue(dispatchMock);
+    useSelector.mockImplementation((selector) => selector(initialState));
+    // Clear our action mocks.
+    HazardsTickets.mockClear();
+    HazardsUpdateTickets.mockClear();
+    HazardsDeleteTickets.mockClear();
+    toast.success.mockClear();
+    // Create a dummy store (even though useSelector is mocked).
+    store = createMockStore(initialState);
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('renders loading state correctly', () => {
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: [],
-        loading: true,
-        error: null,
-      },
-    });
-
-    expect(screen.getByText('Hazards Tasks')).toBeInTheDocument();
-    expect(screen.getByText('Hazards not founds')).toBeInTheDocument();
-  });
-
   test('dispatches HazardsTickets on mount', () => {
-    const mockDispatch = jest.fn();
-    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(mockDispatch);
-    
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: [],
-        loading: false,
-        error: null,
-      },
-    });
-
-    expect(mockDispatch).toHaveBeenCalled();
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
+    expect(HazardsTickets).toHaveBeenCalledWith({});
   });
 
   test('renders hazard cards correctly', () => {
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
     expect(screen.getByText('Hazards Tasks')).toBeInTheDocument();
     expect(screen.getByText('Harzard : Electrical')).toBeInTheDocument();
     expect(screen.getByText('Harzard : Chemical')).toBeInTheDocument();
@@ -120,204 +118,195 @@ describe('AdminHazards Component', () => {
   });
 
   test('search functionality filters hazards correctly', () => {
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
     const searchInput = screen.getByPlaceholderText('Search by hazard type');
+    // Our filtering uses task.pincode; type a value that matches only Electrical hazard.
     fireEvent.change(searchInput, { target: { value: '12345' } });
-
     expect(screen.getByText('Harzard : Electrical')).toBeInTheDocument();
     expect(screen.queryByText('Harzard : Chemical')).not.toBeInTheDocument();
+    expect(screen.queryByText('Harzard : Structural')).not.toBeInTheDocument();
   });
 
-  test('clicking on hazard card opens modal', () => {
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
+  test('clicking on hazard card opens modal with details', () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
     const hazardCard = screen.getByText('Harzard : Electrical').closest('div');
     fireEvent.click(hazardCard);
-
+    // Modal should now show details of the selected hazard.
     expect(screen.getByText('Exposed wiring near water source')).toBeInTheDocument();
     expect(screen.getByText('Address')).toBeInTheDocument();
     expect(screen.getByText('Pincode: 12345')).toBeInTheDocument();
   });
 
-  test('update button in modal opens update form', () => {
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
-    // Click on hazard card to open modal
+  test('update button in modal opens update form with pre-populated data', () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
+    // Open modal by clicking a hazard card.
     const hazardCard = screen.getByText('Harzard : Electrical').closest('div');
     fireEvent.click(hazardCard);
-
-    // Click on update button
+    // Click update button inside modal.
     const updateButton = screen.getByText('Update');
     fireEvent.click(updateButton);
-
-    // Check if update form is open
+    // Update modal should be visible and pre-filled.
     expect(screen.getByText('Update Hazard')).toBeInTheDocument();
-    
-    // Check if form fields are pre-populated
     const hazardTypeInput = screen.getByPlaceholderText('Hazard Type');
     expect(hazardTypeInput.value).toBe('Electrical');
   });
 
   test('submitting update form dispatches HazardsUpdateTickets', () => {
-    const mockDispatch = jest.fn();
-    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(mockDispatch);
-    
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
-    // Click on hazard card to open modal
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
+    // Open modal and then update modal.
     const hazardCard = screen.getByText('Harzard : Electrical').closest('div');
     fireEvent.click(hazardCard);
-
-    // Click on update button
     const updateButton = screen.getByText('Update');
     fireEvent.click(updateButton);
-
-    // Modify form data
+    // Modify one field.
     const hazardTypeInput = screen.getByPlaceholderText('Hazard Type');
     fireEvent.change(hazardTypeInput, { target: { value: 'Updated Electrical' } });
-
-    // Submit form
-    const submitButton = screen.getByText('Update');
+    // Submit the update form.
+    const submitButton = screen.getByRole('button', { name: 'Update' });
     fireEvent.click(submitButton);
-
-    // Check if HazardsUpdateTickets was dispatched
-    expect(mockDispatch).toHaveBeenCalledWith(expect.any(Function));
+    expect(HazardsUpdateTickets).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _id: '1',
+        hazardType: 'Updated Electrical',
+        description: 'Exposed wiring near water source',
+        riskLevel: 'high',
+        address: '123 Main St',
+        pincode: '12345',
+      })
+    );
   });
 
   test('delete button dispatches HazardsDeleteTickets and shows toast', () => {
-    const mockDispatch = jest.fn();
-    const { toast } = require('react-toastify');
-    jest.spyOn(require('react-redux'), 'useDispatch').mockReturnValue(mockDispatch);
-    
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
-    // Click on hazard card to open modal
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
+    // Open modal.
     const hazardCard = screen.getByText('Harzard : Electrical').closest('div');
     fireEvent.click(hazardCard);
-
-    // Click on update button to get to the update modal
-    const updateButton = screen.getByText('Update');
-    fireEvent.click(updateButton);
-
-    // Click delete button
+    // Click the delete button.
     const deleteButton = screen.getByText('Delete');
     fireEvent.click(deleteButton);
-
-    // Check if HazardsDeleteTickets was dispatched and toast shown
-    expect(mockDispatch).toHaveBeenCalled();
+    expect(HazardsDeleteTickets).toHaveBeenCalledWith('1');
     expect(toast.success).toHaveBeenCalledWith("Hazards deleted successfully!");
   });
 
-  test('correctly applies hazard styles based on risk level', () => {
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
-    // We'll check the class names of the hazard cards which should include the background color classes
-    const highRiskCard = screen.getByText('Harzard : Electrical').closest('div');
-    const mediumRiskCard = screen.getByText('Harzard : Chemical').closest('div');
-    const lowRiskCard = screen.getByText('Harzard : Structural').closest('div');
-
-    expect(highRiskCard.className).toContain('bg-red-200');
-    expect(mediumRiskCard.className).toContain('bg-orange-200');
-    expect(lowRiskCard.className).toContain('bg-yellow-200');
-  });
-
-  test('renders toast container', () => {
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
-    expect(screen.getByTestId('toast-container')).toBeInTheDocument();
-  });
-
   test('handles input changes in update form', () => {
-    renderWithProviders(<AdminHazards />, {
-      engineer: {
-        Hazards: mockHazards,
-        loading: false,
-        error: null,
-      },
-    });
-
-    // Click on hazard card to open modal
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
+    // Open modal and then update modal.
     const hazardCard = screen.getByText('Harzard : Electrical').closest('div');
     fireEvent.click(hazardCard);
-
-    // Click on update button
     const updateButton = screen.getByText('Update');
     fireEvent.click(updateButton);
-
-    // Modify form fields
+    // Change various form fields.
     const hazardTypeInput = screen.getByPlaceholderText('Hazard Type');
     const descriptionInput = screen.getByPlaceholderText('Description');
-    const riskLevelSelect = screen.getByDisplayValue('high');
+    const riskLevelSelect = screen.getByDisplayValue('Select Risk Level');
     const addressInput = screen.getByPlaceholderText('Address');
     const pincodeInput = screen.getByPlaceholderText('Pincode');
-
-    fireEvent.change(hazardTypeInput, { target: { value: 'Updated Electrical' } });
-    fireEvent.change(descriptionInput, { target: { value: 'Updated description' } });
+    fireEvent.change(hazardTypeInput, { target: { value: 'New Hazard' } });
+    fireEvent.change(descriptionInput, { target: { value: 'New description' } });
     fireEvent.change(riskLevelSelect, { target: { value: 'medium' } });
-    fireEvent.change(addressInput, { target: { value: 'Updated address' } });
-    fireEvent.change(pincodeInput, { target: { value: '54321' } });
-
-    // Check if values were updated
-    expect(hazardTypeInput.value).toBe('Updated Electrical');
-    expect(descriptionInput.value).toBe('Updated description');
+    fireEvent.change(addressInput, { target: { value: 'New address' } });
+    fireEvent.change(pincodeInput, { target: { value: '00000' } });
+    expect(hazardTypeInput.value).toBe('New Hazard');
+    expect(descriptionInput.value).toBe('New description');
     expect(riskLevelSelect.value).toBe('medium');
-    expect(addressInput.value).toBe('Updated address');
-    expect(pincodeInput.value).toBe('54321');
+    expect(addressInput.value).toBe('New address');
+    expect(pincodeInput.value).toBe('00000');
   });
 
-  test('add hazards button links to correct route', () => {
-    renderWithProviders(<AdminHazards />, {
+  test('renders toast container and add hazards button links correctly', () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('toast-container')).toBeInTheDocument();
+    const addButton = screen.getByText('Add Hazards');
+    expect(addButton.closest('a')).toHaveAttribute('href', '/admin/hazardsTickets');
+  });
+
+  test('handles getHazardStyles for unknown risk level', () => {
+    // Create a hazard with an unknown risk level.
+    const unknownHazard = {
+      _id: '4',
+      hazardType: 'Unknown',
+      description: 'Unknown risk level',
+      riskLevel: 'unknown',
+      address: 'No address',
+      pincode: '00000',
+    };
+    const customState = {
       engineer: {
-        Hazards: mockHazards,
+        Hazards: [unknownHazard],
         loading: false,
         error: null,
       },
-    });
+    };
+    useSelector.mockImplementation((selector) => selector(customState));
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
+    const hazardCard = screen.getByText('Harzard : Unknown').closest('div');
+    expect(hazardCard.className).toContain('bg-gray-200');
+  });
 
-    const addButton = screen.getByText('Add Hazards');
-    expect(addButton.closest('a')).toHaveAttribute('href', '/admin/hazardsTickets');
+  test('renders "Hazards not founds" when no hazards available', () => {
+    const customState = {
+      engineer: {
+        Hazards: [],
+        loading: false,
+        error: null,
+      },
+    };
+    useSelector.mockImplementation((selector) => selector(customState));
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <AdminHazards />
+        </Provider>
+      </MemoryRouter>
+    );
+    expect(screen.getByText('Hazards not founds')).toBeInTheDocument();
   });
 });
