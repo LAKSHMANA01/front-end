@@ -1,8 +1,8 @@
-import express from 'express'
+const express = require('express');
  
 const app = express()
  
-import path from 'path'
+const path = require('path')
 const staticPath = path.join(process.cwd(),'build')
 app.use(express.static(staticPath))
 app.get('*', (req, res) => {
