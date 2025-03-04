@@ -1,4 +1,4 @@
-import { ChevronRight, CheckCircle, MapPin, Shield, Server, Wifi, Users, Clipboard, AlertTriangle, Mail, Smartphone, Calendar, Clock } from 'lucide-react';
+
 function Footer() {
     return (
         <>

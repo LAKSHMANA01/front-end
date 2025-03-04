@@ -1,7 +1,7 @@
 import React from "react";
 import { 
   FaRegClock,
-  FaUserCog,
+ 
   FaUsers,
   FaBox,
   FaUserPlus,
@@ -9,7 +9,7 @@ import {
   FaClipboardCheck,
   FaShieldAlt,
   FaClipboardList,
-  FaBug,
+
   FaBan,
 } from "react-icons/fa";
 import { Bar,Pie } from "react-chartjs-2";
@@ -17,7 +17,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement,ArcElement, Ti
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Card from "./Card";
-import { data } from "react-router-dom";
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement,ArcElement, Title, Tooltip);
 

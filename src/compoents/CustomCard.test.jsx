@@ -1,9 +1,9 @@
-// src/components/CustomCard.test.jsx
+
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import CustomCard from "./CustomCard";
 
-// Dummy Icon component to simulate an icon and verify className
+
 const DummyIcon = ({ className }) => (
   <div data-testid="dummy-icon" className={className}>
     Dummy Icon
@@ -17,7 +17,7 @@ describe("CustomCard Component", () => {
         <p>Test Child Content</p>
       </CustomCard>
     );
-    // Verify that the title is rendered
+  
     expect(screen.getByText("Test Title")).toBeInTheDocument();
     // Verify that the children content is rendered
     expect(screen.getByText("Test Child Content")).toBeInTheDocument();
@@ -29,10 +29,10 @@ describe("CustomCard Component", () => {
         <p>Child Content</p>
       </CustomCard>
     );
-    // Check that the DummyIcon is rendered
+   
     const iconElement = screen.getByTestId("dummy-icon");
     expect(iconElement).toBeInTheDocument();
-    // Verify that the DummyIcon receives the expected class
+   
     expect(iconElement).toHaveClass("text-yellow-500");
   });
 
@@ -42,7 +42,7 @@ describe("CustomCard Component", () => {
         <p>Child Content</p>
       </CustomCard>
     );
-    // There should be no element with the test id "dummy-icon"
+    
     expect(screen.queryByTestId("dummy-icon")).toBeNull();
   });
 });

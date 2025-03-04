@@ -9,8 +9,8 @@ const Card = ({
 }) => {
 
 
-  // Larger icon sizes
-  const iconSize = 32; // Increase icon size for better prominence
+
+  const iconSize = 32; 
 
   return (
     <div
